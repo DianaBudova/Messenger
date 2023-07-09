@@ -1,0 +1,173 @@
+﻿<Window x:Class="Messenger.Views.SignUpView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Messenger.Views"
+        mc:Ignorable="d"
+        Title="Sign Up" Height="375" Width="450"
+        Background="Azure"
+        WindowStartupLocation="CenterScreen"
+        Icon="Resources/Images/UserPlus_White.png">
+    <Window.Resources>
+        <ResourceDictionary Source="Resources/UIStyles.xaml"/>
+    </Window.Resources>
+
+    <Grid Margin="10"
+          HorizontalAlignment="Center"
+          VerticalAlignment="Top">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <!--#region First row-->
+        <Label Grid.Row="0"
+               FontSize="24"
+               Padding="0, 40"
+               Style="{StaticResource Caption}">
+            Sign Up
+        </Label>
+        <!--#endregion-->
+
+        <!--#region Second row-->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <Label Grid.Column="0"
+                   Style="{StaticResource InnerCaption}">
+                New nickname:
+            </Label>
+
+            <TextBox Grid.Column="1"
+                     MinWidth="200"
+                     Style="{StaticResource TextBox}"
+                     Validation.ErrorTemplate="{StaticResource ErrorTemplate}"
+                     Name="textBoxInputNewNickname"/>
+        </Grid>
+        <!--#endregion-->
+
+        <!--#region Third row-->
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <Label Grid.Column="0"
+                   Style="{StaticResource InnerCaption}">
+                New password:
+            </Label>
+
+            <TextBox Grid.Column="1"
+                     MinWidth="200"
+                     Style="{StaticResource TextBox}"
+                     Validation.ErrorTemplate="{StaticResource ErrorTemplate}"
+                     Name="textBoxInputNewPassword"/>
+
+            <!--<Button Grid.Column="2"
+                    Style="{StaticResource Button}"
+                    Name="buttonShowNewPassword">
+                <StackPanel>
+                    <Image Width="16"
+                           Height="16"
+                           Margin="1.5, 0"
+                           Source="/Messenger.Views;component/Resources/Images/OpenedEye.png"/>
+                </StackPanel>
+            </Button>-->
+        </Grid>
+        <!--#endregion-->
+
+        <!--#region Fourth row-->
+        <Grid Grid.Row="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <Label Grid.Column="0"
+                   Style="{StaticResource InnerCaption}">
+                Repeat password:
+            </Label>
+
+            <TextBox Grid.Column="1"
+                     MinWidth="200"
+                     Style="{StaticResource TextBox}"
+                     Validation.ErrorTemplate="{StaticResource ErrorTemplate}"
+                     Name="textBoxInputRepeatedPassword"/>
+
+            <!--<Button Grid.Column="2"
+                    Style="{StaticResource Button}"
+                    Name="buttonShowRepeatedPassword">
+                <StackPanel>
+                    <Image Width="16"
+                           Height="16"
+                           Margin="1.5, 0"
+                           Source="/Messenger.Views;component/Resources/Images/OpenedEye.png"/>
+                </StackPanel>
+            </Button>-->
+        </Grid>
+        <!--#endregion-->
+
+        <!--#region Fifth row-->
+        <Grid Grid.Row="4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <Button Grid.Column="0"
+                    Padding="0, 10"
+                    Name="buttonCreate">
+                Create
+                <Button.Style>
+                    <Style TargetType="Button"
+                           BasedOn="{StaticResource Button}">
+                        <Setter Property="IsEnabled" 
+                                Value="False"/>
+                        <Style.Triggers>
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding Path=(Validation.HasError), ElementName=textBoxInputNewNickname}" 
+                                               Value="False"/>
+                                    <Condition Binding="{Binding Path=(Validation.HasError), ElementName=textBoxInputNewPassword}" 
+                                               Value="False"/>
+                                    <Condition Binding="{Binding Path=(Validation.HasError), ElementName=textBoxInputRepeatedPassword}" 
+                                               Value="False"/>
+                                </MultiDataTrigger.Conditions>
+                                <Setter Property="IsEnabled" 
+                                        Value="True"/>
+                            </MultiDataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+
+            <Button Grid.Column="1"
+                    Padding="0, 10"
+                    Style="{StaticResource Button}"
+                    Name="buttonCancel">
+                Cancel
+            </Button>
+        </Grid>
+        <!--#endregion-->
+        
+        <!--#region Sixth row-->
+        <Button Grid.Row="5"
+                Padding="0, 5"
+                Style="{StaticResource Button}"
+                Name="buttonSignIn">
+            Back to Sign In
+        </Button>
+        <!--#endregion-->
+    </Grid>
+</Window>

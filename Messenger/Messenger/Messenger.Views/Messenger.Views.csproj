@@ -1,0 +1,58 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Resources\Images\Attach.png" />
+    <None Remove="Resources\Images\ClosedEye.png" />
+    <None Remove="Resources\Images\Deaf.png" />
+    <None Remove="Resources\Images\Ear.png" />
+    <None Remove="Resources\Images\Error.png" />
+    <None Remove="Resources\Images\File.png" />
+	<None Remove="Resources\Images\Loupe.png" />
+    <None Remove="Resources\Images\Microphone.png" />
+    <None Remove="Resources\Images\Microphone2.png" />
+    <None Remove="Resources\Images\Microphone_White.png" />
+    <None Remove="Resources\Images\OpenedEye.png" />
+    <None Remove="Resources\Images\Pause.png" />
+    <None Remove="Resources\Images\Play.png" />
+    <None Remove="Resources\Images\Send.png" />
+    <None Remove="Resources\Images\Send_White.png" />
+    <None Remove="Resources\Images\StopCircled.png" />
+    <None Remove="Resources\Images\User.png" />
+    <None Remove="Resources\Images\UserPlus.png" />
+    <None Remove="Resources\Images\UserPlus_White.png" />
+    <None Remove="Resources\Images\User_White.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Messenger.Repositories\Messenger.Repositories.csproj" />
+    <ProjectReference Include="..\Messenger.Validation\Messenger.Validation.csproj" />
+    <ProjectReference Include="..\Messenger.ViewModels\Messenger.ViewModels.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\Images\Attach.png" />
+    <Resource Include="Resources\Images\ClosedEye.png" />
+    <Resource Include="Resources\Images\Deaf.png" />
+    <Resource Include="Resources\Images\Ear.png" />
+    <Resource Include="Resources\Images\Error.png" />
+    <Resource Include="Resources\Images\File.png" />
+	<Resource Include="Resources\Images\Loupe.png" />
+    <Resource Include="Resources\Images\Microphone.png" />
+    <Resource Include="Resources\Images\Microphone_White.png" />
+    <Resource Include="Resources\Images\OpenedEye.png" />
+    <Resource Include="Resources\Images\Pause.png" />
+    <Resource Include="Resources\Images\Play.png" />
+    <Resource Include="Resources\Images\Send.png" />
+    <Resource Include="Resources\Images\Send_White.png" />
+    <Resource Include="Resources\Images\StopCircled.png" />
+    <Resource Include="Resources\Images\UserPlus_White.png" />
+    <Resource Include="Resources\Images\User_White.png" />
+  </ItemGroup>
+
+</Project>

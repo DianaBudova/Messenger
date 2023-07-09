@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Messenger.BL\Messenger.BL.csproj" />
+    <ProjectReference Include="..\Messenger.Cryptography\Messenger.Cryptography.csproj" />
+    <ProjectReference Include="..\Messenger.Models\Messenger.Models.csproj" />
+    <ProjectReference Include="..\Messenger.Repositories\Messenger.Repositories.csproj" />
+  </ItemGroup>
+
+</Project>
