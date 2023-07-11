@@ -20,6 +20,7 @@
     <None Remove="Resources\Images\OpenedEye.png" />
     <None Remove="Resources\Images\Pause.png" />
     <None Remove="Resources\Images\Play.png" />
+	<None Remove="Resources\Images\Redo.png" />
     <None Remove="Resources\Images\Send.png" />
     <None Remove="Resources\Images\Send_White.png" />
     <None Remove="Resources\Images\StopCircled.png" />
@@ -48,6 +49,7 @@
     <Resource Include="Resources\Images\OpenedEye.png" />
     <Resource Include="Resources\Images\Pause.png" />
     <Resource Include="Resources\Images\Play.png" />
+	<Resource Include="Resources\Images\Redo.png" />
     <Resource Include="Resources\Images\Send.png" />
     <Resource Include="Resources\Images\Send_White.png" />
     <Resource Include="Resources\Images\StopCircled.png" />

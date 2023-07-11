@@ -6,12 +6,12 @@ using System.Collections.ObjectModel;
 using Messenger.Repositories;
 using Microsoft.IdentityModel.Tokens;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Messenger.ViewModels;
 
 public class MainViewModel : ViewModelBase
 {
+    public event Action? CompleteChangeNickname;
     public event Action? CompleteVoiceRecord;
     public event Action? CompleteAttachFile;
     public event Func<byte[]?>? CompleteChangeProfilePhoto;
@@ -23,6 +23,7 @@ public class MainViewModel : ViewModelBase
     public CommandBase ChangeNicknameCommand { get; }
     public CommandBase ChangePasswordCommand { get; }
     public CommandBase ChangeProfilePhotoCommand { get; }
+    public CommandBase ClearProfilePhotoCommand { get; }
 
     private string? searchedUser;
     private string? inputMessage;
@@ -128,6 +129,7 @@ public class MainViewModel : ViewModelBase
         this.ChangeNicknameCommand = new(this.ChangeNickname);
         this.ChangePasswordCommand = new(this.ChangePassword);
         this.ChangeProfilePhotoCommand = new(this.ChangeProfilePhoto);
+        this.ClearProfilePhotoCommand = new(this.ClearProfilePhoto);
         #endregion
 
         this.signedUser = signedUser;
@@ -216,7 +218,10 @@ public class MainViewModel : ViewModelBase
 
     private void ChangeNickname(object obj)
     {
-
+        int currentUserId = RepositoryFactory.GetUserRepository().GetByNickname(this.signedUser.Nickname).Id;
+        this.CompleteChangeNickname?.Invoke();
+        this.signedUser.Nickname = RepositoryFactory.GetUserRepository().GetById(currentUserId)!.Nickname;
+        this.Nickname = this.signedUser.Nickname;
     }
 
     private void ChangePassword(object obj)
@@ -229,12 +234,28 @@ public class MainViewModel : ViewModelBase
         byte[]? image = this.CompleteChangeProfilePhoto?.Invoke();
         if (image is null)
             return;
-        Models.DB.User? updatedUser = RepositoryFactory.GetUserRepository().GetByNickname(this.signedUser.Nickname);
+        this.signedUser.ProfilePhoto = image;
+        this.ProfilePhoto = image;
+        var updatedUser = RepositoryFactory.GetUserRepository().GetByNickname(this.signedUser.Nickname);
         if (updatedUser is null)
             return;
         updatedUser.ProfilePhoto = image;
         RepositoryFactory.GetUserRepository().Update(updatedUser);
-        this.signedUser.ProfilePhoto = image;
-        this.ProfilePhoto = image;
+    }
+
+    private void ClearProfilePhoto(object obj)
+    {
+        if (this.profilePhoto is null)
+            return;
+        if (MessageBox.Show("Are you sure you want to clear the profile photo?", "To clear profile photo?",
+            MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes)
+            return;
+        this.signedUser.ProfilePhoto = null;
+        this.ProfilePhoto = null;
+        var updatedUser = RepositoryFactory.GetUserRepository().GetByNickname(this.signedUser.Nickname);
+        if (updatedUser is null)
+            return;
+        updatedUser.ProfilePhoto = null;
+        RepositoryFactory.GetUserRepository().Update(updatedUser);
     }
 }

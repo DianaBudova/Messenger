@@ -13,14 +13,17 @@ namespace Messenger.Views
     /// </summary>
     public partial class MainView : Window
     {
+        private readonly MainViewModel viewModel;
+
         public MainView(User signedUser)
         {
             InitializeComponent();
 
-            MainViewModel viewModel = new(signedUser);
+            this.viewModel = new(signedUser);
             this.DataContext = viewModel;
 
             #region ViewModel Events
+            viewModel.CompleteChangeNickname += ViewModel_CompleteChangeNickname;
             viewModel.CompleteVoiceRecord += ViewModel_CompleteVoiceRecord;
             viewModel.CompleteAttachFile += ViewModel_CompleteAttachFile;
             viewModel.CompleteChangeProfilePhoto += ViewModel_CompleteChangeProfilePhoto;
@@ -68,17 +71,23 @@ namespace Messenger.Views
             this.buttonChangeNickname.Command = viewModel.ChangeNicknameCommand;
             this.buttonChangePassword.Command = viewModel.ChangePasswordCommand;
             this.buttonChangePhoto.Command = viewModel.ChangeProfilePhotoCommand;
+            this.buttonClearPhoto.Command = viewModel.ClearProfilePhotoCommand;
             #endregion
+        }
+
+        private void ViewModel_CompleteChangeNickname()
+        {
+            new ChangeNicknameView(this.viewModel.Nickname).ShowDialog();
         }
 
         private void ViewModel_CompleteAttachFile()
         {
-            new AttachFileControlView().Show();
+            new AttachFileControlView().ShowDialog();
         }
 
         private void ViewModel_CompleteVoiceRecord()
         {
-            new VoiceRecordControlView().Show();
+            new VoiceRecordControlView().ShowDialog();
         }
 
         private byte[]? ViewModel_CompleteChangeProfilePhoto()
