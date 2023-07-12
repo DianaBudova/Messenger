@@ -117,7 +117,7 @@
                 <Label ToolTip="{Binding [0].ErrorContent}"
                        VerticalAlignment="Center"
                        HorizontalAlignment="Right">
-                    <Image Source="/Messenger.Views;component/Resources/Error.png"
+                    <Image Source="/Messenger.Views;component/Resources/Images/Error.png"
                            Width="10"
                            Height="10"/>
                 </Label>

@@ -12,6 +12,7 @@ namespace Messenger.ViewModels;
 public class MainViewModel : ViewModelBase
 {
     public event Action? CompleteChangeNickname;
+    public event Action? CompleteChangePassword;
     public event Action? CompleteVoiceRecord;
     public event Action? CompleteAttachFile;
     public event Func<byte[]?>? CompleteChangeProfilePhoto;
@@ -116,7 +117,7 @@ public class MainViewModel : ViewModelBase
         }
     }
 
-    private readonly User signedUser;
+    public readonly User SignedUser;
     private readonly VoiceRecorderAdapter recorder;
 
     public MainViewModel(User signedUser)
@@ -132,7 +133,7 @@ public class MainViewModel : ViewModelBase
         this.ClearProfilePhotoCommand = new(this.ClearProfilePhoto);
         #endregion
 
-        this.signedUser = signedUser;
+        this.SignedUser = signedUser;
         this.Nickname = signedUser.Nickname;
         this.ProfilePhoto = signedUser.ProfilePhoto;
         this.Users = new();
@@ -142,7 +143,7 @@ public class MainViewModel : ViewModelBase
         {
             try
             {
-                if (this.signedUser.IsSimilar(User.Parse(user)))
+                if (this.SignedUser.IsSimilar(User.Parse(user)))
                     continue;
                 this.Users?.Add(new()
                 {
@@ -177,7 +178,7 @@ public class MainViewModel : ViewModelBase
             var allUsers = RepositoryFactory.GetUserRepository().GetAll();
             if (allUsers is null)
                 return;
-            allUsers.Remove(allUsers.Find(user => this.signedUser.IsSimilar(User.Parse(user))));
+            allUsers.Remove(allUsers.Find(user => this.SignedUser.IsSimilar(User.Parse(user))));
             if (this.tempUsers is null || this.tempUsers.Count == 0)
                 this.tempUsers = new(this.Users);
             List<User> searchedUsers = new();
@@ -218,15 +219,17 @@ public class MainViewModel : ViewModelBase
 
     private void ChangeNickname(object obj)
     {
-        int currentUserId = RepositoryFactory.GetUserRepository().GetByNickname(this.signedUser.Nickname).Id;
+        int currentUserId = RepositoryFactory.GetUserRepository().GetByNickname(this.SignedUser.Nickname).Id;
         this.CompleteChangeNickname?.Invoke();
-        this.signedUser.Nickname = RepositoryFactory.GetUserRepository().GetById(currentUserId)!.Nickname;
-        this.Nickname = this.signedUser.Nickname;
+        this.SignedUser.Nickname = RepositoryFactory.GetUserRepository().GetById(currentUserId)!.Nickname;
+        this.Nickname = this.SignedUser.Nickname;
     }
 
     private void ChangePassword(object obj)
     {
-
+        int currentUserId = RepositoryFactory.GetUserRepository().GetByNickname(this.SignedUser.Nickname).Id;
+        this.CompleteChangePassword?.Invoke();
+        this.SignedUser.EncryptedPassword = RepositoryFactory.GetUserRepository().GetById(currentUserId)!.EncryptedPassword;
     }
 
     private void ChangeProfilePhoto(object obj)
@@ -234,9 +237,9 @@ public class MainViewModel : ViewModelBase
         byte[]? image = this.CompleteChangeProfilePhoto?.Invoke();
         if (image is null)
             return;
-        this.signedUser.ProfilePhoto = image;
+        this.SignedUser.ProfilePhoto = image;
         this.ProfilePhoto = image;
-        var updatedUser = RepositoryFactory.GetUserRepository().GetByNickname(this.signedUser.Nickname);
+        var updatedUser = RepositoryFactory.GetUserRepository().GetByNickname(this.SignedUser.Nickname);
         if (updatedUser is null)
             return;
         updatedUser.ProfilePhoto = image;
@@ -250,9 +253,9 @@ public class MainViewModel : ViewModelBase
         if (MessageBox.Show("Are you sure you want to clear the profile photo?", "To clear profile photo?",
             MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes)
             return;
-        this.signedUser.ProfilePhoto = null;
+        this.SignedUser.ProfilePhoto = null;
         this.ProfilePhoto = null;
-        var updatedUser = RepositoryFactory.GetUserRepository().GetByNickname(this.signedUser.Nickname);
+        var updatedUser = RepositoryFactory.GetUserRepository().GetByNickname(this.SignedUser.Nickname);
         if (updatedUser is null)
             return;
         updatedUser.ProfilePhoto = null;

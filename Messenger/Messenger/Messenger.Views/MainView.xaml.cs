@@ -24,6 +24,7 @@ namespace Messenger.Views
 
             #region ViewModel Events
             viewModel.CompleteChangeNickname += ViewModel_CompleteChangeNickname;
+            viewModel.CompleteChangePassword += ViewModel_CompleteChangePassword;
             viewModel.CompleteVoiceRecord += ViewModel_CompleteVoiceRecord;
             viewModel.CompleteAttachFile += ViewModel_CompleteAttachFile;
             viewModel.CompleteChangeProfilePhoto += ViewModel_CompleteChangeProfilePhoto;
@@ -75,9 +76,14 @@ namespace Messenger.Views
             #endregion
         }
 
+        private void ViewModel_CompleteChangePassword()
+        {
+            new ChangePasswordView(this.viewModel.SignedUser).ShowDialog();
+        }
+
         private void ViewModel_CompleteChangeNickname()
         {
-            new ChangeNicknameView(this.viewModel.Nickname).ShowDialog();
+            new ChangeNicknameView(this.viewModel.SignedUser).ShowDialog();
         }
 
         private void ViewModel_CompleteAttachFile()

@@ -1,11 +1,12 @@
-﻿using Messenger.Models.Application;
+﻿using Messenger.Cryptography;
+using Messenger.Models.Application;
 using Messenger.Repositories;
 using Microsoft.IdentityModel.Tokens;
 using System;
 
 namespace Messenger.ViewModels;
 
-public class ChangeNicknameViewModel : ViewModelBase
+public class ChangePasswordViewModel : ViewModelBase
 {
     public event Action? ConfirmCompleted;
     public event Action? CompleteCancel;
@@ -13,49 +14,37 @@ public class ChangeNicknameViewModel : ViewModelBase
     public CommandBase ConfirmCommand { get; }
     public CommandBase CancelCommand { get; }
 
-    private string? newNickname;
-    private readonly string? oldNickname;
-    public string NewNickname
+    private string? newPassword;
+    public string NewPassword
     {
         get
-        { return newNickname; }
+        { return newPassword; }
         set
         {
-            newNickname = value;
+            newPassword = value;
             this.OnPropertyChanged();
         }
     }
-    public string OldNickname
-    {
-        get
-        { return this.oldNickname; }
-        set
-        {
-            this.OnPropertyChanged();
-        }
-    }
+    private readonly User currentUser;
 
-    public ChangeNicknameViewModel(User currentUser)
+    public ChangePasswordViewModel(User currentUser)
     {
         #region Initialize Commands
         this.ConfirmCommand = new(Confirm);
         this.CancelCommand = new(Cancel);
         #endregion
 
-        this.NewNickname = currentUser.Nickname;
-        this.oldNickname = currentUser.Nickname;
+        this.currentUser = currentUser;
     }
 
     private void Confirm(object obj)
     {
-        if (this.NewNickname.IsNullOrEmpty())
+        if (this.NewPassword.IsNullOrEmpty())
             return;
-        if (this.NewNickname.Equals(this.OldNickname))
-            return;
-        var updatedUser = RepositoryFactory.GetUserRepository().GetByNickname(this.OldNickname);
+        var updatedUser = RepositoryFactory.GetUserRepository().GetByNickname(this.currentUser.Nickname);
         if (updatedUser is null)
             return;
-        updatedUser.Nickname = this.NewNickname;
+        updatedUser.EncryptedPassword = HashData.EncryptData(this.NewPassword);
         RepositoryFactory.GetUserRepository().Update(updatedUser);
         this.ConfirmCompleted?.Invoke();
     }

@@ -8,15 +8,15 @@ using System.Windows.Data;
 namespace Messenger.Views
 {
     /// <summary>
-    /// Interaction logic for ChangeNicknameView.xaml
+    /// Interaction logic for ChangePasswordView.xaml
     /// </summary>
-    public partial class ChangeNicknameView : Window
+    public partial class ChangePasswordView : Window
     {
-        public ChangeNicknameView(User currentUser)
+        public ChangePasswordView(User currentUser)
         {
             InitializeComponent();
 
-            ChangeNicknameViewModel viewModel = new(currentUser);
+            ChangePasswordViewModel viewModel = new(currentUser);
             this.DataContext = viewModel;
 
             #region ViewModel Events
@@ -25,15 +25,10 @@ namespace Messenger.Views
             #endregion
 
             #region ViewModel Bindings
-            Binding newNicknameBinding = new(nameof(viewModel.NewNickname));
-            newNicknameBinding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
-            newNicknameBinding.ValidationRules.Add(new SignUpNicknameValidationRule());
-            this.textBoxNewNickname.SetBinding(TextBox.TextProperty, newNicknameBinding);
-
-            Binding oldNicknameBinding = new(nameof(viewModel.OldNickname));
-            oldNicknameBinding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
-            oldNicknameBinding.ValidationRules.Add(new SignInNicknameValidationRule());
-            this.textBoxOldNickname.SetBinding(TextBox.TextProperty, oldNicknameBinding);
+            Binding newPasswordBinding = new(nameof(viewModel.NewPassword));
+            newPasswordBinding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
+            newPasswordBinding.ValidationRules.Add(new PasswordValidationRule());
+            this.textBoxNewPassword.SetBinding(TextBox.TextProperty, newPasswordBinding);
             #endregion
 
             #region ViewModel Commands
@@ -44,7 +39,7 @@ namespace Messenger.Views
 
         private void ViewModel_ConfirmCompleted()
         {
-            MessageBox.Show("Nickname has been changed successfully!", "",
+            MessageBox.Show("Password has been changed successfully!", "",
                 MessageBoxButton.OK, MessageBoxImage.Information);
             this.Close();
         }
