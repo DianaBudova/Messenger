@@ -40,6 +40,7 @@ internal class UserRepository : IUserRepository
     public bool Remove(User user)
     {
         this.context.User.Remove(user);
+        this.context.ReseedIdentity<User>();
         try
         { return this.context.SaveChanges() > 0; }
         catch

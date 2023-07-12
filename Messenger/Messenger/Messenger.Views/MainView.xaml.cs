@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using Microsoft.Win32;
 using System.IO;
+using Messenger.Repositories;
 
 namespace Messenger.Views
 {
@@ -73,6 +74,7 @@ namespace Messenger.Views
             this.buttonChangePassword.Command = viewModel.ChangePasswordCommand;
             this.buttonChangePhoto.Command = viewModel.ChangeProfilePhotoCommand;
             this.buttonClearPhoto.Command = viewModel.ClearProfilePhotoCommand;
+            this.buttonDeleteAccount.Command = viewModel.DeleteAccountCommand;
             #endregion
         }
 

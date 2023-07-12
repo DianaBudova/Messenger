@@ -192,7 +192,7 @@
                 <RowDefinition Height="0.3*"/>
                 <RowDefinition Height="0.3*"/>
                 <RowDefinition Height="0.3*"/>
-                <RowDefinition Height="0.2*"/>
+                <RowDefinition Height="0.3*"/>
             </Grid.RowDefinitions>
 
             <Label Grid.Row="0"
@@ -235,6 +235,13 @@
                     Style="{StaticResource Button}"
                     Name="buttonChangePassword">
                 Change password
+            </Button>
+
+            <Button Grid.Row="9"
+                    Style="{StaticResource Button}"
+                    Background="IndianRed"
+                    Name="buttonDeleteAccount">
+                Delete account
             </Button>
         </Grid>
         <!--#endregion-->

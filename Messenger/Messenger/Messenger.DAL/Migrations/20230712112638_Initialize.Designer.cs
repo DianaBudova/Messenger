@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Messenger.DAL.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20230627142302_UpdateTableUser_AddColumnProfilePhoto")]
-    partial class UpdateTableUser_AddColumnProfilePhoto
+    [Migration("20230712112638_Initialize")]
+    partial class Initialize
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -23,21 +23,6 @@ namespace Messenger.DAL.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("EndpointUser", b =>
-                {
-                    b.Property<int>("EndpointId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("EndpointId", "UserId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("EndpointUser");
-                });
 
             modelBuilder.Entity("Messenger.Models.DB.Chat", b =>
                 {
@@ -64,30 +49,6 @@ namespace Messenger.DAL.Migrations
                     b.ToTable("Chat");
                 });
 
-            modelBuilder.Entity("Messenger.Models.DB.Endpoint", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("IpAddress")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Port")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Port")
-                        .IsUnique();
-
-                    b.ToTable("Endpoint");
-                });
-
             modelBuilder.Entity("Messenger.Models.DB.User", b =>
                 {
                     b.Property<int>("Id")
@@ -110,7 +71,7 @@ namespace Messenger.DAL.Migrations
 
                     b.Property<string>("Port")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<byte[]>("ProfilePhoto")
                         .HasColumnType("varbinary(max)");
@@ -120,25 +81,7 @@ namespace Messenger.DAL.Migrations
                     b.HasIndex("Nickname")
                         .IsUnique();
 
-                    b.HasIndex("Port")
-                        .IsUnique();
-
                     b.ToTable("User");
-                });
-
-            modelBuilder.Entity("EndpointUser", b =>
-                {
-                    b.HasOne("Messenger.Models.DB.Endpoint", null)
-                        .WithMany()
-                        .HasForeignKey("EndpointId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Messenger.Models.DB.User", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("Messenger.Models.DB.Chat", b =>

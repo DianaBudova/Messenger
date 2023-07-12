@@ -8,5 +8,4 @@ public class User
     public string IpAddress { get; set; } = null!;
     public string Port { get; set; } = null!;
     public byte[]? ProfilePhoto { get; set; }
-    public List<Endpoint>? Endpoint { get; set; } = new();
 }

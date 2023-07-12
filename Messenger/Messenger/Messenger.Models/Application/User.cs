@@ -33,10 +33,6 @@ public class User
     {
         if (this.Nickname.Equals(another.Nickname))
             return true;
-        if (this.EncryptedPassword.Equals(another.EncryptedPassword))
-            return true;
-        if (this.ProfilePhoto == another.ProfilePhoto)
-            return true;
         return false;
     }
 }

@@ -16,13 +16,4 @@ public static class RepositoryFactory
             .GetRequiredService<DbContextOptions>();
         return new UserRepository(new DataContext(options));
     }
-
-    public static IEndpointRepository GetEndpointRepository()
-    {
-        var options = new ServiceCollection()
-            .AddDbContext<DataContext>(options => options.UseSqlServer(ConfigurationManager.ConnectionStrings["LocalConnection"].ConnectionString))
-            .BuildServiceProvider()
-            .GetRequiredService<DbContextOptions>();
-        return new EndpointRepository(new DataContext(options));
-    }
 }

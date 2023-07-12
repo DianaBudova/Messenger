@@ -25,6 +25,7 @@ public class MainViewModel : ViewModelBase
     public CommandBase ChangePasswordCommand { get; }
     public CommandBase ChangeProfilePhotoCommand { get; }
     public CommandBase ClearProfilePhotoCommand { get; }
+    public CommandBase DeleteAccountCommand { get; }
 
     private string? searchedUser;
     private string? inputMessage;
@@ -131,6 +132,7 @@ public class MainViewModel : ViewModelBase
         this.ChangePasswordCommand = new(this.ChangePassword);
         this.ChangeProfilePhotoCommand = new(this.ChangeProfilePhoto);
         this.ClearProfilePhotoCommand = new(this.ClearProfilePhoto);
+        this.DeleteAccountCommand = new(this.DeleteAccount);
         #endregion
 
         this.SignedUser = signedUser;
@@ -250,15 +252,37 @@ public class MainViewModel : ViewModelBase
     {
         if (this.profilePhoto is null)
             return;
-        if (MessageBox.Show("Are you sure you want to clear the profile photo?", "To clear profile photo?",
+        if (MessageBox.Show("Are you sure you want to clear the profile photo?", "To clear the profile photo?",
             MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes)
             return;
         this.SignedUser.ProfilePhoto = null;
         this.ProfilePhoto = null;
         var updatedUser = RepositoryFactory.GetUserRepository().GetByNickname(this.SignedUser.Nickname);
         if (updatedUser is null)
+        {
+            MessageBox.Show("Such a user does not exist in the database.", "",
+                MessageBoxButton.OK, MessageBoxImage.Error);
             return;
+        }
         updatedUser.ProfilePhoto = null;
         RepositoryFactory.GetUserRepository().Update(updatedUser);
+    }
+
+    public void DeleteAccount(object obj)
+    {
+        if (MessageBox.Show("Are you sure you want to delete the current account?", "To delete the account?",
+            MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes)
+            return;
+        var deletedUser = RepositoryFactory.GetUserRepository().GetByNickname(this.SignedUser.Nickname);
+        if (deletedUser is null)
+        {
+            MessageBox.Show("Such a user does not exist in the database.", "",
+                MessageBoxButton.OK, MessageBoxImage.Error);
+            return;
+        }
+        RepositoryFactory.GetUserRepository().Remove(deletedUser);
+        MessageBox.Show("User was deleted successfully!", "",
+            MessageBoxButton.OK, MessageBoxImage.Information);
+        Application.Current.Shutdown();
     }
 }

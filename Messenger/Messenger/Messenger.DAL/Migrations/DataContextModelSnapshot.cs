@@ -21,21 +21,6 @@ namespace Messenger.DAL.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("EndpointUser", b =>
-                {
-                    b.Property<int>("EndpointId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("EndpointId", "UserId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("EndpointUser");
-                });
-
             modelBuilder.Entity("Messenger.Models.DB.Chat", b =>
                 {
                     b.Property<int>("Id")
@@ -59,27 +44,6 @@ namespace Messenger.DAL.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Chat");
-                });
-
-            modelBuilder.Entity("Messenger.Models.DB.Endpoint", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("IpAddress")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Port")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Endpoint");
                 });
 
             modelBuilder.Entity("Messenger.Models.DB.User", b =>
@@ -115,21 +79,6 @@ namespace Messenger.DAL.Migrations
                         .IsUnique();
 
                     b.ToTable("User");
-                });
-
-            modelBuilder.Entity("EndpointUser", b =>
-                {
-                    b.HasOne("Messenger.Models.DB.Endpoint", null)
-                        .WithMany()
-                        .HasForeignKey("EndpointId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Messenger.Models.DB.User", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("Messenger.Models.DB.Chat", b =>

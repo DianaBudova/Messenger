@@ -126,7 +126,7 @@
             </Grid.ColumnDefinitions>
 
             <Button Grid.Column="0"
-                    Padding="0, 10"
+                    Height="30"
                     Name="buttonCreate">
                 Create
                 <Button.Style>
@@ -153,7 +153,7 @@
             </Button>
 
             <Button Grid.Column="1"
-                    Padding="0, 10"
+                    Height="30"
                     Style="{StaticResource Button}"
                     Name="buttonCancel">
                 Cancel
