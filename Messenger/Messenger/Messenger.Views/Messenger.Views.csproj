@@ -24,10 +24,13 @@
     <None Remove="Resources\Images\Send.png" />
     <None Remove="Resources\Images\Send_White.png" />
     <None Remove="Resources\Images\StopCircled.png" />
+	<None Remove="Resources\Images\UnknownUser.png" />
     <None Remove="Resources\Images\User.png" />
     <None Remove="Resources\Images\UserPlus.png" />
     <None Remove="Resources\Images\UserPlus_White.png" />
     <None Remove="Resources\Images\User_White.png" />
+	<None Remove="Resources\Images\Wallpaper1GradientDifference.png" />
+	<None Remove="Resources\Images\Wallpaper2GradientDifference.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -53,8 +56,11 @@
     <Resource Include="Resources\Images\Send.png" />
     <Resource Include="Resources\Images\Send_White.png" />
     <Resource Include="Resources\Images\StopCircled.png" />
+	<Resource Include="Resources\Images\UnknownUser.png" />
     <Resource Include="Resources\Images\UserPlus_White.png" />
     <Resource Include="Resources\Images\User_White.png" />
+	<Resource Include="Resources\Images\Wallpaper1GradientDifference.png" />
+	<Resource Include="Resources\Images\Wallpaper2GradientDifference.png" />
   </ItemGroup>
 
 </Project>

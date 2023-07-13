@@ -13,71 +13,78 @@
     <Window.Resources>
         <ResourceDictionary Source="Resources/UIStyles.xaml"/>
     </Window.Resources>
-    
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition/>
-            <RowDefinition Height="0.2*"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition/>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
 
-        <Label Grid.Row="0"
+    <Grid>
+        <Grid.Background>
+            <ImageBrush ImageSource="Resources/Images/Wallpaper2GradientDifference.png"
+                        Stretch="UniformToFill"/>
+        </Grid.Background>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+                <RowDefinition Height="0.2*"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <Label Grid.Row="0"
                Style="{StaticResource Caption}"
                Margin="0, 5"
                Content="Old nickname:"/>
 
-        <TextBox Grid.Row="1"
+            <TextBox Grid.Row="1"
                  Validation.ErrorTemplate="{StaticResource ErrorTemplate}"
                  Style="{StaticResource TextBox}"
                  IsReadOnly="True"
                  Name="textBoxOldNickname"/>
 
-        <Label Grid.Row="3"
+            <Label Grid.Row="3"
                Style="{StaticResource Caption}"
                Margin="0, 5"
                Content="New nickname:"/>
 
-        <TextBox Grid.Row="4"
+            <TextBox Grid.Row="4"
                  Validation.ErrorTemplate="{StaticResource ErrorTemplate}"
                  Style="{StaticResource TextBox}"
                  Name="textBoxNewNickname"/>
 
-        <Grid Grid.Row="5">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
+            <Grid Grid.Row="5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
 
-            <Button Grid.Column="0"
+                <Button Grid.Column="0"
                     Name="buttonConfirm">
-                Confirm
-                <Button.Style>
-                    <Style TargetType="Button"
+                    Confirm
+                    <Button.Style>
+                        <Style TargetType="Button"
                            BasedOn="{StaticResource Button}">
-                        <Setter Property="IsEnabled" 
+                            <Setter Property="IsEnabled" 
                                 Value="False"/>
-                        <Style.Triggers>
-                            <MultiDataTrigger>
-                                <MultiDataTrigger.Conditions>
-                                    <Condition Binding="{Binding Path=(Validation.HasError), ElementName=textBoxNewNickname}" 
+                            <Style.Triggers>
+                                <MultiDataTrigger>
+                                    <MultiDataTrigger.Conditions>
+                                        <Condition Binding="{Binding Path=(Validation.HasError), ElementName=textBoxNewNickname}" 
                                                Value="False"/>
-                                    <Condition Binding="{Binding Path=(Validation.HasError), ElementName=textBoxOldNickname}" 
+                                        <Condition Binding="{Binding Path=(Validation.HasError), ElementName=textBoxOldNickname}" 
                                                Value="False"/>
-                                </MultiDataTrigger.Conditions>
-                                <Setter Property="IsEnabled" Value="True"/>
-                            </MultiDataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Button.Style>
-            </Button>
+                                    </MultiDataTrigger.Conditions>
+                                    <Setter Property="IsEnabled" Value="True"/>
+                                </MultiDataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
 
-            <Button Grid.Column="1"
+                <Button Grid.Column="1"
                     Style="{StaticResource Button}"
                     Name="buttonCancel"
                     Content="Cancel"/>
+            </Grid>
         </Grid>
     </Grid>
 </Window>

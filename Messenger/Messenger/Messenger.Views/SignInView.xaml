@@ -13,72 +13,78 @@
         <ResourceDictionary Source="Resources/UIStyles.xaml"/>
     </Window.Resources>
 
-    <Grid Margin="10"
-          HorizontalAlignment="Center"
-          VerticalAlignment="Top">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
+    <Grid>
+        <Grid.Background>
+            <ImageBrush ImageSource="Resources/Images/Wallpaper2GradientDifference.png"
+                        Stretch="UniformToFill"/>
+        </Grid.Background>
 
-        <!--#region First row-->
-        <Label Grid.Row="0"
+        <Grid Margin="10"
+              HorizontalAlignment="Center"
+          VerticalAlignment="Top">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <!--#region First row-->
+            <Label Grid.Row="0"
                FontSize="24"
                Padding="0, 40"
                Style="{StaticResource Caption}">
-            Sign In
-        </Label>
-        <!--#endregion-->
-
-        <!--#region Second row-->
-        <Grid Grid.Row="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
-
-            <Label Grid.Column="0"
-                   Style="{StaticResource InnerCaption}">
-                Nickname:
+                Sign In
             </Label>
+            <!--#endregion-->
 
-            <TextBox Grid.Column="1"
+            <!--#region Second row-->
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <Label Grid.Column="0"
+                   Style="{StaticResource InnerCaption}">
+                    Nickname:
+                </Label>
+
+                <TextBox Grid.Column="1"
                      MinWidth="200"
                      Style="{StaticResource TextBox}"
                      Validation.ErrorTemplate="{StaticResource ErrorTemplate}"
                      Name="textBoxInputNickname"/>
-        </Grid>
-        <!--#endregion-->
+            </Grid>
+            <!--#endregion-->
 
-        <!--#region Third row-->
-        <Grid Grid.Row="2">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
+            <!--#region Third row-->
+            <Grid Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
 
-            <Label Grid.Column="0"
+                <Label Grid.Column="0"
                    Style="{StaticResource InnerCaption}">
-                Password:
-            </Label>
+                    Password:
+                </Label>
 
-            <TextBox Grid.Column="1"
+                <TextBox Grid.Column="1"
                      MinWidth="200"
                      Style="{StaticResource TextBox}"
                      Validation.ErrorTemplate="{StaticResource ErrorTemplate}"
                      Name="textBoxInputPassword"/>
 
-            <!--<PasswordBox Grid.Column="1"
+                <!--<PasswordBox Grid.Column="1"
                      MinWidth="200"
                      Style="{StaticResource PasswordBox}"
                      Validation.ErrorTemplate="{StaticResource ErrorTemplate}"
                      Name="passwordBoxInputPassword"/>-->
 
-            <!--<Button Grid.Column="2"
+                <!--<Button Grid.Column="2"
                     Style="{StaticResource Button}"
                     Name="buttonShowPassword">
                 <StackPanel>
@@ -88,56 +94,57 @@
                            Source="/Messenger.Views;component/Resources/Images/OpenedEye.png"/>
                 </StackPanel>
             </Button>-->
-        </Grid>
-        <!--#endregion-->
+            </Grid>
+            <!--#endregion-->
 
-        <!--#region Fourth row-->
-        <Grid Grid.Row="3">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
+            <!--#region Fourth row-->
+            <Grid Grid.Row="3">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
 
-            <Button Grid.Column="0"
+                <Button Grid.Column="0"
                     Padding="0, 10"
                     Name="buttonLogin">
-                Login
-                <Button.Style>
-                    <Style TargetType="Button"
+                    Login
+                    <Button.Style>
+                        <Style TargetType="Button"
                            BasedOn="{StaticResource Button}">
-                        <Setter Property="IsEnabled" 
+                            <Setter Property="IsEnabled" 
                                 Value="False"/>
-                        <Style.Triggers>
-                            <MultiDataTrigger>
-                                <MultiDataTrigger.Conditions>
-                                    <Condition Binding="{Binding Path=(Validation.HasError), ElementName=textBoxInputNickname}" 
+                            <Style.Triggers>
+                                <MultiDataTrigger>
+                                    <MultiDataTrigger.Conditions>
+                                        <Condition Binding="{Binding Path=(Validation.HasError), ElementName=textBoxInputNickname}" 
                                                Value="False"/>
-                                    <Condition Binding="{Binding Path=(Validation.HasError), ElementName=textBoxInputPassword}" 
+                                        <Condition Binding="{Binding Path=(Validation.HasError), ElementName=textBoxInputPassword}" 
                                                Value="False"/>
-                                </MultiDataTrigger.Conditions>
-                                <Setter Property="IsEnabled" Value="True"/>
-                            </MultiDataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Button.Style>
-            </Button>
+                                    </MultiDataTrigger.Conditions>
+                                    <Setter Property="IsEnabled" Value="True"/>
+                                </MultiDataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
 
-            <Button Grid.Column="1"
+                <Button Grid.Column="1"
                     Padding="0, 10"
                     Style="{StaticResource Button}"
                     Name="buttonCancel">
-                Cancel
-            </Button>
-        </Grid>
-        <!--#endregion-->
+                    Cancel
+                </Button>
+            </Grid>
+            <!--#endregion-->
 
-        <!--#region Fifth row-->
-        <Button Grid.Row="4"
+            <!--#region Fifth row-->
+            <Button Grid.Row="4"
                 Padding="0, 5"
                 Style="{StaticResource Button}"
                 Name="buttonCreateAccount">
-            Create an account
-        </Button>
-        <!--#endregion-->
+                Create an account
+            </Button>
+            <!--#endregion-->
+        </Grid>
     </Grid>
 </Window>

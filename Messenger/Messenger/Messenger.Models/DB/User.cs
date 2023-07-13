@@ -7,5 +7,5 @@ public class User
     public string EncryptedPassword { get; set; } = null!;
     public string IpAddress { get; set; } = null!;
     public string Port { get; set; } = null!;
-    public byte[]? ProfilePhoto { get; set; }
+    public byte[] ProfilePhoto { get; set; } = File.ReadAllBytes($@"../../../../Messenger.Views/Resources/Images/UnknownUser.png");
 }

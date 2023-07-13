@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using Messenger.Repositories;
 using Microsoft.IdentityModel.Tokens;
 using System.Collections.Generic;
+using System.Configuration;
 
 namespace Messenger.ViewModels;
 
@@ -250,13 +251,11 @@ public class MainViewModel : ViewModelBase
 
     private void ClearProfilePhoto(object obj)
     {
-        if (this.profilePhoto is null)
-            return;
         if (MessageBox.Show("Are you sure you want to clear the profile photo?", "To clear the profile photo?",
             MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes)
             return;
-        this.SignedUser.ProfilePhoto = null;
-        this.ProfilePhoto = null;
+        this.SignedUser.ProfilePhoto = System.IO.File.ReadAllBytes(ConfigurationManager.AppSettings["ImagesPath"] + "UnknownUser.png");
+        this.ProfilePhoto = System.IO.File.ReadAllBytes(ConfigurationManager.AppSettings["ImagesPath"] + "UnknownUser.png");
         var updatedUser = RepositoryFactory.GetUserRepository().GetByNickname(this.SignedUser.Nickname);
         if (updatedUser is null)
         {
@@ -264,7 +263,7 @@ public class MainViewModel : ViewModelBase
                 MessageBoxButton.OK, MessageBoxImage.Error);
             return;
         }
-        updatedUser.ProfilePhoto = null;
+        updatedUser.ProfilePhoto = System.IO.File.ReadAllBytes(ConfigurationManager.AppSettings["ImagesPath"] + "UnknownUser.png");
         RepositoryFactory.GetUserRepository().Update(updatedUser);
     }
 

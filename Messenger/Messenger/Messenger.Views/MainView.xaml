@@ -6,244 +6,260 @@
         xmlns:local="clr-namespace:Messenger.Views"
         mc:Ignorable="d"
         Title="Messenger" Height="450" Width="800"
-        Background="Azure"
         WindowStartupLocation="CenterScreen"
         Icon="Resources/Images/Send_White.png">
     <Window.Resources>
         <ResourceDictionary Source="Resources/UIStyles.xaml"/>
     </Window.Resources>
 
-    <Grid Margin="10">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
-            <ColumnDefinition Width="2*"/>
-            <ColumnDefinition/>
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition/>
-            <RowDefinition Height="10*"/>
-        </Grid.RowDefinitions>
+    <Grid>
+        <Grid.Background>
+            <ImageBrush ImageSource="Resources/Images/Wallpaper2GradientDifference.png"
+                        Stretch="UniformToFill"/>
+        </Grid.Background>
 
-        <!--#region First column-->
-        <Label Grid.Row="0"
-               Grid.Column="0"
-               Style="{StaticResource Caption}">
-            Chats:
-        </Label>
-
-        <Grid Grid.Row="1">
+        <Grid Margin="10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition/>
-                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="10*"/>
             </Grid.RowDefinitions>
 
-            <ListView Grid.Row="0"
-                      Name="listViewUsers"
-                      Style="{StaticResource ListViewUsers}">
-                <ListView.View>
-                    <GridView>
-                        <GridViewColumn Header="Photo">
-                            <GridViewColumn.CellTemplate>
-                                <DataTemplate>
-                                    <Ellipse Height="70" 
-                                             Width="70">
-                                        <Ellipse.Fill>
-                                            <ImageBrush ImageSource="{Binding ProfilePhoto}"/>
-                                        </Ellipse.Fill>
-                                    </Ellipse>
-                                </DataTemplate>
-                            </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
-                        <GridViewColumn Header="Nickname">
-                            <GridViewColumn.CellTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding Nickname}"/>
-                                </DataTemplate>
-                            </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
-                    </GridView>
-                </ListView.View>
-            </ListView>
+            <!--#region First column-->
+            <Label Grid.Row="0"
+               Grid.Column="0"
+               Style="{StaticResource Caption}">
+                Chats:
+            </Label>
 
             <Grid Grid.Row="1">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
 
-                <Label Grid.Column="0"
+                <ListView Grid.Row="0"
+                      Name="listViewUsers"
+                      Style="{StaticResource ListViewUsers}">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="Photo">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Ellipse Height="70" 
+                                             Width="70">
+                                            <Ellipse.Fill>
+                                                <ImageBrush ImageSource="{Binding ProfilePhoto}"/>
+                                            </Ellipse.Fill>
+                                        </Ellipse>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="Nickname">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Nickname}"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Label Grid.Column="0"
                        Style="{StaticResource InnerCaption}">
-                    Search:
-                </Label>
+                        Search:
+                    </Label>
 
-                <TextBox Grid.Column="1"
+                    <TextBox Grid.Column="1"
                          Style="{StaticResource TextBox}"
                          x:Name="textBoxSearchUser"/>
 
-                <Button Grid.Column="2"
+                    <Button Grid.Column="2"
                         Style="{StaticResource Button}"
                         x:Name="buttonSearchUser">
-                    <StackPanel>
-                        <Image Width="20"
+                        <StackPanel>
+                            <Image Width="20"
                                Height="18"
                                Margin="0, 1"
                                Source="/Messenger.Views;component/Resources/Images/Loupe.png"/>
-                    </StackPanel>
-                </Button>
+                        </StackPanel>
+                    </Button>
+                </Grid>
             </Grid>
-        </Grid>
-        <!--#endregion-->
+            <!--#endregion-->
 
-        <!--#region Second column-->
-        <Label Grid.Row="0"
+            <!--#region Second column-->
+            <Label Grid.Row="0"
                Grid.Column="1"
                Style="{StaticResource Caption}">
-            Messages:
-        </Label>
+                Messages:
+            </Label>
 
-        <Grid Grid.Row="1"
+            <Grid Grid.Row="1"
               Grid.Column="1">
-            <Grid.RowDefinitions>
-                <RowDefinition/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
 
-            <ListBox Grid.Row="0"
+                <ListBox Grid.Row="0"
                      BorderThickness="1"
                      Margin="5"
                      x:Name="listBoxMessagesInChat">
-            </ListBox>
+                </ListBox>
 
-            <Grid Grid.Row="1">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
 
-                <Label Grid.Column="0"
+                    <Label Grid.Column="0"
                        Style="{StaticResource InnerCaption}">
-                    Your message:
-                </Label>
+                        Your message:
+                    </Label>
 
-                <TextBox Grid.Column="1"
+                    <TextBox Grid.Column="1"
                          Style="{StaticResource TextBox}"
                          AcceptsReturn="True"
                          x:Name="textBoxYourMessage"/>
 
-                <Button Grid.Column="2"
+                    <Button Grid.Column="2"
                         Style="{StaticResource Button}"
                         Padding="5, 0"
                         Name="buttonSendMessage">
-                    <StackPanel>
-                        <Image Width="18"
+                        <StackPanel>
+                            <Image Width="18"
                                Height="18"
                                Margin="0, 1.5"
                                Source="/Messenger.Views;component/Resources/Images/Send.png"/>
-                    </StackPanel>
-                </Button>
+                        </StackPanel>
+                    </Button>
 
-                <Button Grid.Column="3"
+                    <Button Grid.Column="3"
                         Style="{StaticResource Button}"
                         Padding="5, 0"
                         Name="buttonVoiceRecord">
-                    <StackPanel>
-                        <Image Width="18"
+                        <StackPanel>
+                            <Image Width="18"
                                Height="18"
                                Margin="0, 1.5"
                                Source="/Messenger.Views;component/Resources/Images/Microphone.png"/>
-                    </StackPanel>
-                </Button>
+                        </StackPanel>
+                    </Button>
 
-                <Button Grid.Column="4"
+                    <Button Grid.Column="4"
                         Style="{StaticResource Button}"
                         Padding="5, 0"
                         Name="buttonAttachFile">
-                    <StackPanel>
-                        <Image Width="18" 
+                        <StackPanel>
+                            <Image Width="18" 
                                Height="18"
                                Margin="0, 1.5"
                                Source="/Messenger.Views;component/Resources/Images/File.png"/>
-                    </StackPanel>
-                </Button>
+                        </StackPanel>
+                    </Button>
+                </Grid>
             </Grid>
-        </Grid>
-        <!--#endregion-->
+            <!--#endregion-->
 
-        <!--#region Third column-->
-        <Label Grid.Row="0"
+            <!--#region Third column-->
+            <Label Grid.Row="0"
                Grid.Column="2"
                Style="{StaticResource Caption}">
-            Profile:
-        </Label>
-
-        <Grid Grid.Row="1"
-              Grid.Column="2">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="0.3*"/>
-                <RowDefinition Height="1.5*"/>
-                <RowDefinition Height="0.3*"/>
-                <RowDefinition Height="0.3*"/>
-                <RowDefinition Height="0.2*"/>
-                <RowDefinition Height="0.3*"/>
-                <RowDefinition Height="0.3*"/>
-                <RowDefinition Height="0.3*"/>
-                <RowDefinition Height="0.3*"/>
-                <RowDefinition Height="0.3*"/>
-            </Grid.RowDefinitions>
-
-            <Label Grid.Row="0"
-                   Style="{StaticResource InnerCaption}">
-                Your photo:
+                Profile:
             </Label>
 
-            <Image Grid.Row="1"
-                   Name="imagePhotoProfile"/>
+            <Grid Grid.Row="1"
+              Grid.Column="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition Height="0.05*"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
 
-            <Button Grid.Row="2"
+
+                <Grid Grid.Row="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition Height="4*"/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+
+                    <Label Grid.Row="0"
+                       Style="{StaticResource InnerCaption}"
+                       Content="Your photo:"/>
+
+                    <Image Grid.Row="1"
+                    Name="imagePhotoProfile"/>
+
+                    <Button Grid.Row="2"
                     Style="{StaticResource Button}"
                     Name="buttonChangePhoto">
-                Change photo
-            </Button>
+                        Change photo
+                    </Button>
 
-            <Button Grid.Row="3"
+                    <Button Grid.Row="3"
                     Style="{StaticResource Button}"
                     Name="buttonClearPhoto">
-                Clear photo
-            </Button>
+                        Clear photo
+                    </Button>
+                </Grid>
 
-            <Label Grid.Row="5"
-                   Style="{StaticResource InnerCaption}">
-                Your nickname:
-            </Label>
+                <Grid Grid.Row="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
 
-            <TextBox Grid.Row="6"
+                    <Label Grid.Row="0"
+                       Style="{StaticResource InnerCaption}"
+                       Content="Your nickname:"/>
+
+                    <TextBox Grid.Row="1"
                      Style="{StaticResource TextBox}"
                      IsReadOnly="True"
                      Name="textBoxYourNickname"/>
 
-            <Button Grid.Row="7"
+                    <Button Grid.Row="2"
                     Style="{StaticResource Button}"
                     Name="buttonChangeNickname">
-                Change nickname
-            </Button>
+                        Change nickname
+                    </Button>
 
-            <Button Grid.Row="8"
+                    <Button Grid.Row="3"
                     Style="{StaticResource Button}"
                     Name="buttonChangePassword">
-                Change password
-            </Button>
+                        Change password
+                    </Button>
 
-            <Button Grid.Row="9"
-                    Style="{StaticResource Button}"
-                    Background="IndianRed"
-                    Name="buttonDeleteAccount">
-                Delete account
-            </Button>
+                    <Button Grid.Row="4"
+                        Style="{StaticResource DeletingButton}"
+                        Name="buttonDeleteAccount">
+                        Delete account
+                    </Button>
+                </Grid>
+            </Grid>
+            <!--#endregion-->
         </Grid>
-        <!--#endregion-->
     </Grid>
 </Window>

@@ -52,7 +52,7 @@ namespace Messenger.Views
             {
                 Nickname = this.textBoxInputNickname.Text,
                 EncryptedPassword = HashData.EncryptData(this.textBoxInputPassword.Text),
-                ProfilePhoto = RepositoryFactory.GetUserRepository().GetByNickname(this.textBoxInputNickname.Text)?.ProfilePhoto,
+                ProfilePhoto = RepositoryFactory.GetUserRepository().GetByNickname(this.textBoxInputNickname.Text).ProfilePhoto,
             };
             new MainView(signedUser).Show();
             this.Close();

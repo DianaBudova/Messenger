@@ -13,109 +13,116 @@
     <Window.Resources>
         <ResourceDictionary Source="Resources/UIStyles.xaml"/>
     </Window.Resources>
-    
+
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition/>
-            <RowDefinition Height="0.75*"/>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
+        <Grid.Background>
+            <ImageBrush ImageSource="Resources/Images/Wallpaper2GradientDifference.png"
+                        Stretch="UniformToFill"/>
+        </Grid.Background>
 
-        <!--#region First row-->
-        <Grid Grid.Row="0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-                <ColumnDefinition Width="2*"/>
-            </Grid.ColumnDefinitions>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition Height="0.75*"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
 
-            <Button Grid.Column="0"
+            <!--#region First row-->
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="2*"/>
+                </Grid.ColumnDefinitions>
+
+                <Button Grid.Column="0"
                     Name="buttonStartRecordingVoice"
                     Style="{StaticResource Button}">
-                <StackPanel>
-                    <Image Width="40"
+                    <StackPanel>
+                        <Image Width="40"
                            Height="40"
                            Source="/Messenger.Views;component/Resources/Images/Play.png"/>
-                </StackPanel>
-            </Button>
+                    </StackPanel>
+                </Button>
 
-            <Button Grid.Column="1"
+                <Button Grid.Column="1"
                     Name="buttonPauseRecordingVoice"
                     Style="{StaticResource Button}">
-                <StackPanel>
-                    <Image Width="40"
+                    <StackPanel>
+                        <Image Width="40"
                            Height="40"
                            Source="/Messenger.Views;component/Resources/Images/Pause.png"/>
-                </StackPanel>
-            </Button>
+                    </StackPanel>
+                </Button>
 
-            <Button Grid.Column="2"
+                <Button Grid.Column="2"
                     Name="buttonStopRecordingVoice"
                     Style="{StaticResource Button}">
-                <StackPanel>
-                    <Image Width="40"
+                    <StackPanel>
+                        <Image Width="40"
                            Height="40"
                            Source="/Messenger.Views;component/Resources/Images/StopCircled.png"/>
-                </StackPanel>
-            </Button>
+                    </StackPanel>
+                </Button>
 
-            <Label Grid.Column="3"
+                <Label Grid.Column="3"
                    Style="{StaticResource Caption}">
-                00:00:00
-            </Label>
-        </Grid>
-        <!--#endregion-->
+                    00:00:00
+                </Label>
+            </Grid>
+            <!--#endregion-->
 
-        <!--#region Second row-->
-        <Grid Grid.Row="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="5*"/>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
+            <!--#region Second row-->
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="5*"/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
 
-            <Button Grid.Column="1"
+                <Button Grid.Column="1"
                     Name="buttonStartListeningVoiceMessage"
                     Style="{StaticResource Button}">
-                <StackPanel>
-                    <Image Width="30"
+                    <StackPanel>
+                        <Image Width="30"
                            Height="30"
                            Source="/Messenger.Views;component/Resources/Images/Ear.png"/>
-                </StackPanel>
-            </Button>
+                    </StackPanel>
+                </Button>
 
-            <Button Grid.Column="2"
+                <Button Grid.Column="2"
                     Name="buttonStopListeningVoiceMessage"
                     Style="{StaticResource Button}">
-                <StackPanel>
-                    <Image Width="30"
+                    <StackPanel>
+                        <Image Width="30"
                            Height="30"
                            Source="/Messenger.Views;component/Resources/Images/Deaf.png"/>
-                </StackPanel>
-            </Button>
-        </Grid>
-        <!--#endregion-->
-        
-        <!--#region Third row-->
-        <Grid Grid.Row="2">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
+                    </StackPanel>
+                </Button>
+            </Grid>
+            <!--#endregion-->
 
-            <Button Grid.Column="0"
+            <!--#region Third row-->
+            <Grid Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <Button Grid.Column="0"
                     Name="buttonConfirm"
                     Style="{StaticResource Button}">
-                Confirm
-            </Button>
+                    Confirm
+                </Button>
 
-            <Button Grid.Column="1"
+                <Button Grid.Column="1"
                     Name="buttonCancel"
                     Style="{StaticResource Button}">
-                Cancel
-            </Button>
+                    Cancel
+                </Button>
+            </Grid>
+            <!--#endregion-->
         </Grid>
-        <!--#endregion-->
     </Grid>
 </Window>

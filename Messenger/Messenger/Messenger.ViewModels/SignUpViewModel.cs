@@ -6,6 +6,7 @@ using System.Net.Sockets;
 using System.Net;
 using System;
 using Messenger.Models.DB;
+using System.Configuration;
 
 namespace Messenger.ViewModels;
 
@@ -92,12 +93,13 @@ public class SignUpViewModel : ViewModelBase
         {
             Nickname = this.NewNickname!,
             EncryptedPassword = HashData.EncryptData(this.NewPassword!),
+            ProfilePhoto = System.IO.File.ReadAllBytes(ConfigurationManager.AppSettings["ImagesPath"] + "UnknownUser.png"),
             IpAddress = ipAddress!,
             Port = "8888",
         };
         if (RepositoryFactory.GetUserRepository().Add(newUser) is null)
         {
-            MessageBox.Show("Some error occurred", "", MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show("Some error occurred while adding new user", "", MessageBoxButton.OK, MessageBoxImage.Information);
             return;
         }
         MessageBox.Show("New user was registered successfully", "", MessageBoxButton.OK, MessageBoxImage.Information);

@@ -48,12 +48,55 @@
                     Value="Center"/>
         <Setter Property="Margin"
                     Value="3"/>
+        <Setter Property="BorderThickness"
+                Value="1"/>
+        <Setter Property="BorderBrush"
+                Value="DimGray"/>
         <Style.Resources>
             <Style TargetType="{x:Type Border}">
                 <Setter Property="CornerRadius"
                             Value="5"/>
             </Style>
         </Style.Resources>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver"
+                     Value="True">
+                <Setter Property="FontSize"
+                        Value="16"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="DeletingButton"
+           TargetType="Button"
+           BasedOn="{StaticResource Button}">
+        <Setter Property="Background"
+                Value="#f75252"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="#424242"
+                            BorderThickness="1">
+                        <ContentPresenter Content="{TemplateBinding Content}"
+                                          HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver"
+                     Value="True">
+                <Setter Property="Background"
+                        Value="#f27e7e"/>
+            </Trigger>
+            <Trigger Property="IsPressed"
+                     Value="True">
+                <Setter Property="Background"
+                        Value="#f08b8b"/>
+            </Trigger>
+        </Style.Triggers>
     </Style>
 
     <Style x:Key="TextBox"

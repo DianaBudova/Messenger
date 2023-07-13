@@ -13,82 +13,89 @@
     <Window.Resources>
         <ResourceDictionary Source="Resources/UIStyles.xaml"/>
     </Window.Resources>
-    
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition/>
-            <RowDefinition Height="1.5*"/>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
-        
-        <!--#region First row-->
-        <Button Grid.Row="0"
-                Name="buttonAttachFile"
-                Style="{StaticResource Button}">
-            <StackPanel Orientation="Horizontal">
-                <Image Width="40"
-                       Height="20"
-                       Source="/Messenger.Views;component/Resources/Images/Attach.png"/>
-                <TextBlock Style="{StaticResource TextBlock}">
-                    Attach
-                </TextBlock>
-            </StackPanel>
-        </Button>
-        <!--#endregion-->
 
-        <!--#region Second row-->
-        <Grid Grid.Row="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="0.3*"/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
-            
+    <Grid>
+        <Grid.Background>
+            <ImageBrush ImageSource="Resources/Images/Wallpaper2GradientDifference.png"
+                        Stretch="UniformToFill"/>
+        </Grid.Background>
+
+        <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition/>
+                <RowDefinition Height="1.5*"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
 
-            <Label Grid.Row="0"
+            <!--#region First row-->
+            <Button Grid.Row="0"
+                Name="buttonAttachFile"
+                Style="{StaticResource Button}">
+                <StackPanel Orientation="Horizontal">
+                    <Image Width="40"
+                       Height="20"
+                       Source="/Messenger.Views;component/Resources/Images/Attach.png"/>
+                    <TextBlock Style="{StaticResource TextBlock}">
+                    Attach
+                    </TextBlock>
+                </StackPanel>
+            </Button>
+            <!--#endregion-->
+
+            <!--#region Second row-->
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="0.3*"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <Label Grid.Row="0"
                    Grid.Column="0"
                    Style="{StaticResource InnerCaption}"
                    Content="Path:"/>
-            
-            <Label Grid.Row="1"
+
+                <Label Grid.Row="1"
                    Grid.Column="0"
                    Style="{StaticResource InnerCaption}"
                    Content="Size:"/>
 
-            <TextBox Grid.Row="0"
+                <TextBox Grid.Row="0"
                      Grid.Column="1"
                      Style="{StaticResource TextBox}"
                      x:Name="textBoxPath"
                      IsReadOnly="True"/>
 
-            <TextBox Grid.Row="1"
+                <TextBox Grid.Row="1"
                      Grid.Column="1"
                      Style="{StaticResource TextBox}"
                      x:Name="textBoxSize"
                      IsReadOnly="True"/>
-        </Grid>
-        <!--#endregion-->
+            </Grid>
+            <!--#endregion-->
 
-        <!--#region Third row-->
-        <Grid Grid.Row="2">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
+            <!--#region Third row-->
+            <Grid Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
 
-            <Button Grid.Column="0"
+                <Button Grid.Column="0"
                     Style="{StaticResource Button}"
                     Name="buttonConfirm"
                     Content="Confirm"/>
 
-            <Button Grid.Column="1"
+                <Button Grid.Column="1"
                     Style="{StaticResource Button}"
                     Name="buttonCancel"
                     Content="Cancel"/>
+            </Grid>
+            <!--#endregion-->
         </Grid>
-        <!--#endregion-->
     </Grid>
 </Window>
