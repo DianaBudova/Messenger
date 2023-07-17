@@ -20,10 +20,11 @@ public class VoiceRecordControlViewModel : ViewModelBase
     public CommandBase ConfirmCommand { get; }
     public CommandBase CancelCommand { get; }
 
-    private VoiceRecorderAdapter voiceRecorder;
+    private readonly User signedUser;
     private byte[]? currentVoiceMessage;
+    private VoiceRecorderAdapter voiceRecorder;
 
-    public VoiceRecordControlViewModel()
+    public VoiceRecordControlViewModel(User signedUser)
     {
         #region Initialize Commands
         this.StartRecordingVoiceCommand = new(this.StartRecordingVoiceMessage);
@@ -36,6 +37,7 @@ public class VoiceRecordControlViewModel : ViewModelBase
         #endregion
 
         this.voiceRecorder = new();
+        this.signedUser = signedUser;
     }
 
     public void StartRecordingVoiceMessage(object? obj)
@@ -73,8 +75,10 @@ public class VoiceRecordControlViewModel : ViewModelBase
             return;
         Message message = new()
         {
+            User = this.signedUser,
             Content = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(this.currentVoiceMessage)),
-            Type = MessageType.File,
+            DateTime = DateTime.Now,
+            Type = MessageType.Audio,
         };
         this.CompleteConfirm?.Invoke(message);
     }

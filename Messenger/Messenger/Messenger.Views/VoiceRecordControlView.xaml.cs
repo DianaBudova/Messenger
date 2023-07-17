@@ -1,4 +1,5 @@
-﻿using Messenger.ViewModels;
+﻿using Messenger.Models.Application;
+using Messenger.ViewModels;
 using System.Windows;
 
 namespace Messenger.Views
@@ -8,11 +9,13 @@ namespace Messenger.Views
     /// </summary>
     public partial class VoiceRecordControlView : Window
     {
-        public VoiceRecordControlView()
+        public Message? ObtainedMessage { get; private set; }
+
+        public VoiceRecordControlView(User currentUser)
         {
             InitializeComponent();
 
-            VoiceRecordControlViewModel viewModel = new();
+            VoiceRecordControlViewModel viewModel = new(currentUser);
             this.DataContext = viewModel;
 
             #region ViewModel Events
@@ -34,9 +37,10 @@ namespace Messenger.Views
             #endregion
         }
 
-        private void ViewModel_CompleteConfirm(Models.Application.Message obj)
+        private void ViewModel_CompleteConfirm(Message message)
         {
-            
+            this.ObtainedMessage = message;
+            this.Close();
         }
 
         private void ViewModel_CompleteCancel()
