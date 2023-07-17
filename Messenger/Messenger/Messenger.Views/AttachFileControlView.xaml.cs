@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using Messenger.Models.Application;
 using Messenger.ViewModels;
 using Microsoft.Win32;
 
@@ -12,11 +13,13 @@ namespace Messenger.Views
     /// </summary>
     public partial class AttachFileControlView : Window
     {
-        public AttachFileControlView()
+        public Message? ObtainedMessage { get; private set; }
+
+        public AttachFileControlView(User currentUser)
         {
             InitializeComponent();
 
-            AttachFileControlViewModel viewModel = new();
+            AttachFileControlViewModel viewModel = new(currentUser);
             this.DataContext = viewModel;
 
             #region ViewModel Events
@@ -50,14 +53,15 @@ namespace Messenger.Views
             return new Models.Application.File
             {
                 Path = fileDialog.FileName,
-                Content = File.ReadAllBytes(fileDialog.FileName),
+                Content = System.IO.File.ReadAllBytes(fileDialog.FileName),
                 SizeBytes = new FileInfo(fileDialog.FileName).Length,
             };
         }
 
-        private void ViewModel_CompleteConfirm(Models.Application.Message obj)
+        private void ViewModel_CompleteConfirm(Message message)
         {
-            
+            this.ObtainedMessage = message;
+            this.Close();
         }
 
         private void ViewModel_CompleteCancel()

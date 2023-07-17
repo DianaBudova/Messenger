@@ -120,7 +120,9 @@ public class MainViewModel : ViewModelBase
     }
 
     public readonly User SignedUser;
+    public Message? MessageToSend { get; set; }
     private readonly VoiceRecorderAdapter recorder;
+    private readonly TcpSocket socket;
 
     public MainViewModel(User signedUser)
     {
@@ -163,6 +165,12 @@ public class MainViewModel : ViewModelBase
             }
         }
         this.recorder = new();
+        //this.socket = new();
+        //var currentUser = RepositoryFactory.GetUserRepository().GetByNickname(this.Nickname);
+        //if (currentUser is null)
+        //    return;
+        //this.socket.Connect(currentUser.IpAddress, int.Parse(currentUser.Port));
+        //this.socket.MessageReceived += Socket_MessageReceived;
     }
 
     private void SearchUser(object obj)
@@ -201,7 +209,7 @@ public class MainViewModel : ViewModelBase
 
     private void SendMessage(object obj)
     {
-        
+        //this.MessageToSend;
     }
 
     private void VoiceRecord(object obj)

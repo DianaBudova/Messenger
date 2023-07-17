@@ -4,8 +4,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using Microsoft.Win32;
-using System.IO;
-using Messenger.Repositories;
 
 namespace Messenger.Views
 {
@@ -54,7 +52,7 @@ namespace Messenger.Views
 
             Binding messagesInChatBinding = new(nameof(viewModel.Messages));
             messagesInChatBinding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
-            this.listBoxMessagesInChat.SetBinding(ListBox.ItemsSourceProperty, messagesInChatBinding);
+            this.listViewMessagesInChat.SetBinding(ListBox.ItemsSourceProperty, messagesInChatBinding);
 
             Binding selectedUserBinding = new(nameof(viewModel.SelectedUser));
             selectedUserBinding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
@@ -62,7 +60,7 @@ namespace Messenger.Views
 
             Binding selectedMessageBinding = new(nameof(viewModel.SelectedMessage));
             selectedMessageBinding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
-            this.listBoxMessagesInChat.SetBinding(ListBox.SelectedItemProperty, selectedMessageBinding);
+            this.listViewMessagesInChat.SetBinding(ListBox.SelectedItemProperty, selectedMessageBinding);
             #endregion
 
             #region ViewModel Commands
@@ -78,24 +76,30 @@ namespace Messenger.Views
             #endregion
         }
 
-        private void ViewModel_CompleteChangePassword()
-        {
+        private void ViewModel_CompleteChangePassword() =>
             new ChangePasswordView(this.viewModel.SignedUser).ShowDialog();
-        }
 
-        private void ViewModel_CompleteChangeNickname()
-        {
+        private void ViewModel_CompleteChangeNickname() =>
             new ChangeNicknameView(this.viewModel.SignedUser).ShowDialog();
-        }
 
         private void ViewModel_CompleteAttachFile()
         {
-            new AttachFileControlView().ShowDialog();
+            AttachFileControlView view = new(this.viewModel.SignedUser);
+            view.ShowDialog();
+            if (view.ObtainedMessage is null)
+                return;
+            this.viewModel.MessageToSend = view.ObtainedMessage;
+            this.viewModel.Messages.Add(new() { Message = (Message)view.ObtainedMessage });
         }
 
         private void ViewModel_CompleteVoiceRecord()
         {
-            new VoiceRecordControlView().ShowDialog();
+            VoiceRecordControlView view = new(this.viewModel.SignedUser);
+            view.ShowDialog();
+            if (view.ObtainedMessage is null)
+                return;
+            this.viewModel.MessageToSend = view.ObtainedMessage;
+            this.viewModel.Messages.Add(new() { Message = (Message)view.ObtainedMessage });
         }
 
         private byte[]? ViewModel_CompleteChangeProfilePhoto()
