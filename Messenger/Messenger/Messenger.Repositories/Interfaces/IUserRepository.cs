@@ -12,5 +12,6 @@ public interface IUserRepository
     public bool ExistsNickname(string nickname);
     public User? GetById(int id);
     public User? GetByNickname(string nickname);
+    public User? GetByPort(string port);
     public List<User>? GetAll();
 }

@@ -52,21 +52,21 @@ public class SignInViewModel : ViewModelBase
         if (this.Nickname.IsNullOrEmpty() ||
             this.Password.IsNullOrEmpty())
         {
-            MessageBox.Show("Login or password are empty", "", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show("Login or password are empty.", "", MessageBoxButton.OK, MessageBoxImage.Error);
             return;
         }
         User? user = RepositoryFactory.GetUserRepository().GetByNickname(this.Nickname!);
         if (user is null)
         {
-            MessageBox.Show("Nickname was entered incorrectly", "", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show("Nickname was entered incorrectly.", "", MessageBoxButton.OK, MessageBoxImage.Error);
             return;
         }
         if (!HashData.VerifyData(user.EncryptedPassword, this.Password!))
         {
-            MessageBox.Show("Password was entered incorrectly", "", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show("Password was entered incorrectly.", "", MessageBoxButton.OK, MessageBoxImage.Error);
             return;
         }
-        MessageBox.Show("Login successfully", "", MessageBoxButton.OK, MessageBoxImage.Information);
+        MessageBox.Show("Login successfully.", "", MessageBoxButton.OK, MessageBoxImage.Information);
         this.SignInCompleted?.Invoke();
     }
 

@@ -7,6 +7,7 @@ using Messenger.Repositories;
 using Microsoft.IdentityModel.Tokens;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Linq;
 
 namespace Messenger.ViewModels;
 
@@ -16,6 +17,7 @@ public class MainViewModel : ViewModelBase
     public event Action? CompleteChangePassword;
     public event Action? CompleteVoiceRecord;
     public event Action? CompleteAttachFile;
+    public event Action? CompleteExit;
     public event Func<byte[]?>? CompleteChangeProfilePhoto;
 
     public CommandBase SearchUserCommand { get; }
@@ -122,7 +124,7 @@ public class MainViewModel : ViewModelBase
     public readonly User SignedUser;
     public Message? MessageToSend { get; set; }
     private readonly VoiceRecorderAdapter recorder;
-    private readonly TcpSocket socket;
+    private readonly TCPClient client;
 
     public MainViewModel(User signedUser)
     {
@@ -161,16 +163,12 @@ public class MainViewModel : ViewModelBase
             {
                 System.Windows.Forms.MessageBox.Show("Some error occured.", "", 
                     System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
-                Application.Current.Shutdown();
+                this.CompleteExit?.Invoke();
             }
         }
         this.recorder = new();
-        //this.socket = new();
-        //var currentUser = RepositoryFactory.GetUserRepository().GetByNickname(this.Nickname);
-        //if (currentUser is null)
-        //    return;
-        //this.socket.Connect(currentUser.IpAddress, int.Parse(currentUser.Port));
-        //this.socket.MessageReceived += Socket_MessageReceived;
+        this.client = new(existedUsers.Where(user => user.Nickname == this.SignedUser.Nickname).First().IpAddress,
+            int.Parse(existedUsers.Where(user => user.Nickname == this.SignedUser.Nickname).First().Port));
     }
 
     private void SearchUser(object obj)
@@ -209,18 +207,18 @@ public class MainViewModel : ViewModelBase
 
     private void SendMessage(object obj)
     {
-        //this.MessageToSend;
+        if (this.MessageToSend is null)
+            return;
+        this.client.SendMessage((Message)this.MessageToSend);
     }
 
     private void VoiceRecord(object obj)
     {
-        if (this.recorder.State is VoiceRecorderState.None ||
-            this.recorder.State is VoiceRecorderState.NonRecords)
-        {
-            if (MessageBox.Show("Click OK to start recording voice message.", "Start recording voice message?",
-                MessageBoxButton.OKCancel, MessageBoxImage.Information) == MessageBoxResult.OK)
-                this.CompleteVoiceRecord?.Invoke();
-        }
+        if (!this.recorder.CanStartRecording())
+            return;
+        if (MessageBox.Show("Click OK to start recording voice message.", "Start recording voice message?",
+            MessageBoxButton.OKCancel, MessageBoxImage.Information) == MessageBoxResult.OK)
+            this.CompleteVoiceRecord?.Invoke();
     }
 
     private void AttachFile(object obj)
@@ -290,6 +288,6 @@ public class MainViewModel : ViewModelBase
         RepositoryFactory.GetUserRepository().Remove(deletedUser);
         MessageBox.Show("User was deleted successfully!", "",
             MessageBoxButton.OK, MessageBoxImage.Information);
-        Application.Current.Shutdown();
+        this.CompleteExit?.Invoke();
     }
 }

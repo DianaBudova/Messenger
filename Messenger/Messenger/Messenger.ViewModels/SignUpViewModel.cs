@@ -7,6 +7,7 @@ using System.Net;
 using System;
 using Messenger.Models.DB;
 using System.Configuration;
+using Messenger.BL;
 
 namespace Messenger.ViewModels;
 
@@ -67,42 +68,34 @@ public class SignUpViewModel : ViewModelBase
             this.NewPassword.IsNullOrEmpty() ||
             this.RepeatedPassword.IsNullOrEmpty())
         {
-            MessageBox.Show("Login or password are empty", "", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show("Login or password are empty.", "", MessageBoxButton.OK, MessageBoxImage.Error);
             return;
         }
         if (!this.NewPassword!.Equals(this.RepeatedPassword))
         {
-            MessageBox.Show("New password and repeated password do not match", "", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show("New password and repeated password do not match.", "", MessageBoxButton.OK, MessageBoxImage.Error);
             return;
         }
-        string? ipAddress = null;
-        try
-        {
-            foreach (var ip in Dns.GetHostEntry(Dns.GetHostName()).AddressList)
-                if (ip.AddressFamily == AddressFamily.InterNetwork)
-                    ipAddress = ip.ToString();
-            if (ipAddress.IsNullOrEmpty())
-                throw new Exception();
-        }
-        catch
-        {
-            MessageBox.Show("No network adapters with an IPv4 address in the system", "", MessageBoxButton.OK, MessageBoxImage.Error);
-            return;
-        }
+        string ipAddress = "127.0.0.1";
+        int freePort = 8891;
+        //do
+        //{
+        //    freePort = FreePortFinder.FindFreePort();
+        //} while (RepositoryFactory.GetUserRepository().GetByPort(freePort.ToString()) is not null);
         User newUser = new()
         {
             Nickname = this.NewNickname!,
             EncryptedPassword = HashData.EncryptData(this.NewPassword!),
             ProfilePhoto = System.IO.File.ReadAllBytes(ConfigurationManager.AppSettings["ImagesPath"] + "UnknownUser.png"),
-            IpAddress = ipAddress!,
-            Port = "8888",
+            IpAddress = ipAddress,
+            Port = freePort.ToString(),
         };
         if (RepositoryFactory.GetUserRepository().Add(newUser) is null)
         {
-            MessageBox.Show("Some error occurred while adding new user", "", MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show("Some error occurred while adding new user.", "", MessageBoxButton.OK, MessageBoxImage.Error);
             return;
         }
-        MessageBox.Show("New user was registered successfully", "", MessageBoxButton.OK, MessageBoxImage.Information);
+        MessageBox.Show("New user was registered successfully.", "", MessageBoxButton.OK, MessageBoxImage.Information);
         this.SignUpCompleted?.Invoke();
     }
 

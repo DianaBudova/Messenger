@@ -6,6 +6,7 @@ using Messenger.Validation;
 using Messenger.Models.Application;
 using Messenger.Repositories;
 using Messenger.Cryptography;
+using System;
 
 namespace Messenger.Views
 {
@@ -66,7 +67,7 @@ namespace Messenger.Views
 
         private void ViewModel_CompleteCancel()
         {
-            this.Close();
+            Environment.Exit(0);
         }
     }
 }

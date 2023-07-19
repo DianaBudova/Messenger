@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="NAudio" Version="2.1.0" />
+    <PackageReference Include="SuperSimpleTcp" Version="3.0.12" />
   </ItemGroup>
 
   <ItemGroup>

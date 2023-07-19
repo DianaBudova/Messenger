@@ -1,5 +1,6 @@
 ﻿using Messenger.Validation;
 using Messenger.ViewModels;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -62,7 +63,7 @@ namespace Messenger.Views
 
         private void ViewModel_CompleteCancel()
         {
-            this.Close();
+            Environment.Exit(0);
         }
     }
 }

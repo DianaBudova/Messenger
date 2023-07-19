@@ -97,6 +97,18 @@ internal class UserRepository : IUserRepository
         { return null; }
     }
 
+    public User? GetByPort(string port)
+    {
+        try
+        {
+            return this.context.User
+                .Where(prop => prop.Port.Equals(port))
+                .First();
+        }
+        catch
+        { return null; }
+    }
+
     public List<User>? GetAll()
     {
         try

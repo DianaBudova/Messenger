@@ -4,6 +4,10 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using Microsoft.Win32;
+using Messenger.Cryptography;
+using Messenger.Repositories;
+using System.ComponentModel;
+using System;
 
 namespace Messenger.Views
 {
@@ -27,6 +31,7 @@ namespace Messenger.Views
             viewModel.CompleteVoiceRecord += ViewModel_CompleteVoiceRecord;
             viewModel.CompleteAttachFile += ViewModel_CompleteAttachFile;
             viewModel.CompleteChangeProfilePhoto += ViewModel_CompleteChangeProfilePhoto;
+            viewModel.CompleteExit += ViewModel_CompleteExit;
             #endregion
 
             #region ViewModel Bindings
@@ -89,7 +94,7 @@ namespace Messenger.Views
             if (view.ObtainedMessage is null)
                 return;
             this.viewModel.MessageToSend = view.ObtainedMessage;
-            this.viewModel.Messages.Add(new() { Message = (Message)view.ObtainedMessage });
+            //this.viewModel.Messages.Add(new() { Message = (Message)view.ObtainedMessage });
         }
 
         private void ViewModel_CompleteVoiceRecord()
@@ -99,7 +104,7 @@ namespace Messenger.Views
             if (view.ObtainedMessage is null)
                 return;
             this.viewModel.MessageToSend = view.ObtainedMessage;
-            this.viewModel.Messages.Add(new() { Message = (Message)view.ObtainedMessage });
+            //this.viewModel.Messages.Add(new() { Message = (Message)view.ObtainedMessage });
         }
 
         private byte[]? ViewModel_CompleteChangeProfilePhoto()
@@ -109,6 +114,19 @@ namespace Messenger.Views
             if (fileDialog.ShowDialog() != true)
                 return null;
             return System.IO.File.ReadAllBytes(fileDialog.FileName);
+        }
+
+        private void ViewModel_CompleteExit()
+        {
+            //Environment.Exit(0);
+            this.Close();
+        }
+
+        protected override void OnClosed(EventArgs e)
+        {
+            base.OnClosed(e);
+            //Environment.Exit(0);
+            this.Close();
         }
     }
 }
