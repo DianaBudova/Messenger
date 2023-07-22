@@ -13,10 +13,14 @@ public class TCPClient
     {
         this.client = new(ipAddress, 8888);
         this.client.Events.DataReceived += Events_DataReceived;
+    }
+
+    public void Connect()
+    {
         this.client.Connect();
     }
 
-    ~TCPClient()
+    public void Disconnect()
     {
         this.client.Disconnect();
     }

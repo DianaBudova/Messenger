@@ -81,14 +81,14 @@ public class SignUpViewModel : ViewModelBase
         //do
         //{
         //    freePort = FreePortFinder.FindFreePort();
-        //} while (RepositoryFactory.GetUserRepository().GetByPort(freePort.ToString()) is not null);
+        //} while (RepositoryFactory.GetUserRepository().GetByPort(freePort) is not null);
         User newUser = new()
         {
             Nickname = this.NewNickname!,
             EncryptedPassword = HashData.EncryptData(this.NewPassword!),
             ProfilePhoto = System.IO.File.ReadAllBytes(ConfigurationManager.AppSettings["ImagesPath"] + "UnknownUser.png"),
             IpAddress = ipAddress,
-            Port = freePort.ToString(),
+            Port = freePort,
         };
         if (RepositoryFactory.GetUserRepository().Add(newUser) is null)
         {

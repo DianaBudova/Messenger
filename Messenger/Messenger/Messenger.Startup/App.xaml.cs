@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using Messenger.DAL;
+using System.Diagnostics;
+using System.Windows;
 
 namespace Messenger.Startup
 {

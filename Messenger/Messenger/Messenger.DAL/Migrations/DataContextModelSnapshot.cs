@@ -43,7 +43,34 @@ namespace Messenger.DAL.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Chat");
+                    b.ToTable("Chat", (string)null);
+                });
+
+            modelBuilder.Entity("Messenger.Models.DB.Server", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("IpAddress")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NameServer")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Port")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NameServer")
+                        .IsUnique();
+
+                    b.ToTable("Server", (string)null);
                 });
 
             modelBuilder.Entity("Messenger.Models.DB.User", b =>
@@ -66,9 +93,8 @@ namespace Messenger.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("Port")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Port")
+                        .HasColumnType("int");
 
                     b.Property<byte[]>("ProfilePhoto")
                         .IsRequired()
@@ -79,7 +105,7 @@ namespace Messenger.DAL.Migrations
                     b.HasIndex("Nickname")
                         .IsUnique();
 
-                    b.ToTable("User");
+                    b.ToTable("User", (string)null);
                 });
 
             modelBuilder.Entity("Messenger.Models.DB.Chat", b =>

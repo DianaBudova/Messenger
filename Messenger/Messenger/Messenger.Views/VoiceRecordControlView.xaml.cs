@@ -1,4 +1,5 @@
 ﻿using Messenger.Models.Application;
+using Messenger.Models.DB;
 using Messenger.ViewModels;
 using System.Windows;
 

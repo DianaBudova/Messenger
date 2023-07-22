@@ -1,5 +1,6 @@
 ﻿using Messenger.BL;
 using Messenger.Models.Application;
+using Messenger.Models.DB;
 using System;
 using System.Windows;
 using System.Collections.ObjectModel;
@@ -8,6 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
+using System.Text.Json;
 
 namespace Messenger.ViewModels;
 
@@ -18,6 +20,7 @@ public class MainViewModel : ViewModelBase
     public event Action? CompleteVoiceRecord;
     public event Action? CompleteAttachFile;
     public event Action? CompleteExit;
+    public event Action<Message>? MessageReceived;
     public event Func<byte[]?>? CompleteChangeProfilePhoto;
 
     public CommandBase SearchUserCommand { get; }
@@ -36,7 +39,8 @@ public class MainViewModel : ViewModelBase
     private byte[]? profilePhoto;
     private User? selectedUser;
     private Chat? selectedMessage;
-    public string SearchedUser
+    private Message? messageToSend;
+    public string? SearchedUser
     {
         get
         { return this.searchedUser; }
@@ -46,17 +50,28 @@ public class MainViewModel : ViewModelBase
             this.OnPropertyChanged();
         }
     }
-    public string InputMessage
+    public string? InputMessage
     {
         get
         { return this.inputMessage; }
         set
         {
             this.inputMessage = value;
+            //if (this.SelectedUser is not null)
+            //{
+                this.MessageToSend = new()
+                {
+                    Sender = this.SignedUser,
+                    Recipient = this.SelectedUser,
+                    Content = JsonSerializer.SerializeToUtf8Bytes(this.inputMessage),
+                    DateTime = DateTime.Now,
+                    Type = MessageType.Text,
+                };
+            //}
             this.OnPropertyChanged();
         }
     }
-    public string Nickname
+    public string? Nickname
     {
         get
         { return this.nickname; }
@@ -76,7 +91,7 @@ public class MainViewModel : ViewModelBase
             OnPropertyChanged();
         }
     }
-    public User SelectedUser
+    public User? SelectedUser
     {
         get
         { return this.selectedUser; }
@@ -86,7 +101,7 @@ public class MainViewModel : ViewModelBase
             OnPropertyChanged();
         }
     }
-    public Chat SelectedMessage
+    public Chat? SelectedMessage
     {
         get
         { return this.selectedMessage; }
@@ -122,9 +137,20 @@ public class MainViewModel : ViewModelBase
     }
 
     public readonly User SignedUser;
-    public Message? MessageToSend { get; set; }
-    private readonly VoiceRecorderAdapter recorder;
+    public Message? MessageToSend
+    {
+        get
+        { return this.messageToSend; }
+        set
+        {
+            this.messageToSend = value;
+            //if (this.messageToSend is not null)
+            //    ((Message)this.messageToSend).Recipient = this.SelectedUser.Value;
+            this.OnPropertyChanged();
+        }
+    }
     private readonly TCPClient client;
+    private readonly VoiceRecorderAdapter recorder;
 
     public MainViewModel(User signedUser)
     {
@@ -156,6 +182,8 @@ public class MainViewModel : ViewModelBase
                 {
                     Nickname = user.Nickname,
                     EncryptedPassword = user.EncryptedPassword,
+                    IpAddress = user.IpAddress,
+                    Port = user.Port,
                     ProfilePhoto = user.ProfilePhoto,
                 });
             }
@@ -167,8 +195,20 @@ public class MainViewModel : ViewModelBase
             }
         }
         this.recorder = new();
-        this.client = new(existedUsers.Where(user => user.Nickname == this.SignedUser.Nickname).First().IpAddress,
-            int.Parse(existedUsers.Where(user => user.Nickname == this.SignedUser.Nickname).First().Port));
+        this.client = new(existedUsers.Where(user => user.Nickname == this.SignedUser.Nickname).First().IpAddress, 
+            existedUsers.Where(user => user.Nickname == this.SignedUser.Nickname).First().Port);
+        this.client.MessageReceived += Client_MessageReceived;
+        this.client.Connect();
+    }
+
+    private void Client_MessageReceived(Message receivedMessage)
+    {
+        this.MessageReceived?.Invoke(receivedMessage);
+    }
+
+    public void DisconnectFromServer()
+    {
+        this.client.Disconnect();
     }
 
     private void SearchUser(object obj)
@@ -207,9 +247,9 @@ public class MainViewModel : ViewModelBase
 
     private void SendMessage(object obj)
     {
-        if (this.MessageToSend is null)
+        if (this.MessageToSend is null || this.MessageToSend.Value.Content.IsNullOrEmpty())
             return;
-        this.client.SendMessage((Message)this.MessageToSend);
+        this.client.SendMessage(this.MessageToSend.Value);
     }
 
     private void VoiceRecord(object obj)
@@ -288,6 +328,7 @@ public class MainViewModel : ViewModelBase
         RepositoryFactory.GetUserRepository().Remove(deletedUser);
         MessageBox.Show("User was deleted successfully!", "",
             MessageBoxButton.OK, MessageBoxImage.Information);
+        this.client.Disconnect();
         this.CompleteExit?.Invoke();
     }
 }

@@ -5,11 +5,26 @@
 namespace Messenger.DAL.Migrations
 {
     /// <inheritdoc />
-    public partial class Initialize : Migration
+    public partial class Init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "Server",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    NameServer = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    IpAddress = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Port = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Server", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "User",
                 columns: table => new
@@ -19,8 +34,8 @@ namespace Messenger.DAL.Migrations
                     Nickname = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     EncryptedPassword = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IpAddress = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Port = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ProfilePhoto = table.Column<byte[]>(type: "varbinary(max)", nullable: true)
+                    Port = table.Column<int>(type: "int", nullable: false),
+                    ProfilePhoto = table.Column<byte[]>(type: "varbinary(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -54,6 +69,12 @@ namespace Messenger.DAL.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Server_NameServer",
+                table: "Server",
+                column: "NameServer",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_User_Nickname",
                 table: "User",
                 column: "Nickname",
@@ -65,6 +86,9 @@ namespace Messenger.DAL.Migrations
         {
             migrationBuilder.DropTable(
                 name: "Chat");
+
+            migrationBuilder.DropTable(
+                name: "Server");
 
             migrationBuilder.DropTable(
                 name: "User");

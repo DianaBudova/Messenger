@@ -5,6 +5,7 @@ namespace Messenger.DAL;
 
 public class DataContext : DbContext
 {
+    public DbSet<Server> Server { get; set; }
     public DbSet<User> User { get; set; }
     public DbSet<Chat> Chat { get; set; }
 
@@ -14,6 +15,10 @@ public class DataContext : DbContext
     {
         modelBuilder.Entity<User>()
             .HasIndex(prop => prop.Nickname)
+            .IsUnique();
+
+        modelBuilder.Entity<Server>()
+            .HasIndex(prop => prop.NameServer)
             .IsUnique();
     }
 

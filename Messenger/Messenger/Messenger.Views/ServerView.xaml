@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Messenger.Views"
         mc:Ignorable="d"
-        Title="Server" Height="400" Width="650"
+        Height="400" Width="650"
         WindowStartupLocation="CenterScreen"
         Icon="Resources/Images/Server.png">
     <Window.Resources>
@@ -13,6 +13,11 @@
     </Window.Resources>
     
     <Grid>
+        <Grid.Background>
+            <ImageBrush ImageSource="Resources/Images/Wallpaper2GradientDifference.png"
+                        Stretch="UniformToFill"/>
+        </Grid.Background>
+        
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="0.3*"/>
             <ColumnDefinition/>
@@ -62,8 +67,7 @@
 
                 <Image Grid.Column="1"
                        Name="imageStatus"
-                       Width="10px"
-                       Height="10px"/>
+                       Height="20px"/>
             </Grid>
         </Grid>
         <!--#endregion-->
@@ -103,11 +107,6 @@
                      Style="{StaticResource ListBox}"
                      Margin="3"
                      Name="listBoxMessages"/>
-
-            <Button Grid.Row="2"
-                    Style="{StaticResource Button}"
-                    Content="Send"
-                    Name="buttonSend"/>
         </Grid>
         <!--#endregion-->
 

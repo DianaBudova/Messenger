@@ -1,4 +1,6 @@
-﻿using System.Text.Json;
+﻿using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.Text.Json;
 using Messenger.Models.Application;
 using SuperSimpleTcp;
 
@@ -6,11 +8,10 @@ namespace Messenger.BL;
 
 public class TCPServer
 {
-    public event Action? ClientConnected;
-    public event Action<string>? ClientDisconnected;
+    public event Action<object?, NotifyCollectionChangedEventArgs>? ClientsChanged;
     public event Action<Message>? MessageReceived;
-    private SimpleTcpServer server;
-    public List<string> Clients { get; private set; }
+    private readonly SimpleTcpServer server;
+    public ObservableCollection<string> Clients { get; private set; }
 
     public TCPServer(string ipAddress, int port)
     {
@@ -18,37 +19,40 @@ public class TCPServer
         this.server.Events.ClientConnected += Events_ClientConnected;
         this.server.Events.ClientDisconnected += Events_ClientDisconnected;
         this.server.Events.DataReceived += Events_DataReceived;
-        this.server.Start();
         this.Clients = new();
+        this.Clients.CollectionChanged += Clients_CollectionChanged;
     }
 
-    ~TCPServer()
+    private void Clients_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
-        this.server.Stop();
+        this.ClientsChanged?.Invoke(sender, e);
     }
 
     public void Start()
     {
-        this.server.Start();
+        if (!this.server.IsListening)
+        {
+            this.server.Start();
+        }
     }
 
     public void Stop()
     {
-        this.server.Stop();
+        if (this.server.IsListening)
+            this.server.Stop();
     }
 
     private void Events_ClientConnected(object? sender, ConnectionEventArgs e)
     {
         this.Clients.Add(e.IpPort);
-        this.ClientConnected?.Invoke();
     }
 
     private void Events_ClientDisconnected(object? sender, ConnectionEventArgs e)
     {
-        this.ClientDisconnected?.Invoke(e.IpPort);
+        this.Clients.Remove(e.IpPort);
     }
 
-    private void Events_DataReceived(object? sender, SuperSimpleTcp.DataReceivedEventArgs e)
+    private void Events_DataReceived(object? sender, DataReceivedEventArgs e)
     {
         byte[] receivedData = e.Data.ToArray();
         Message receivedMessage = JsonSerializer.Deserialize<Message>(receivedData);

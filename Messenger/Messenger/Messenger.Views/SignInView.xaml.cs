@@ -3,7 +3,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using Messenger.ViewModels;
 using Messenger.Validation;
-using Messenger.Models.Application;
+using Messenger.Models.DB;
 using Messenger.Repositories;
 using Messenger.Cryptography;
 using System;
@@ -53,6 +53,8 @@ namespace Messenger.Views
             {
                 Nickname = this.textBoxInputNickname.Text,
                 EncryptedPassword = HashData.EncryptData(this.textBoxInputPassword.Text),
+                IpAddress = RepositoryFactory.GetUserRepository().GetByNickname(this.textBoxInputNickname.Text).IpAddress,
+                Port = RepositoryFactory.GetUserRepository().GetByNickname(this.textBoxInputNickname.Text).Port,
                 ProfilePhoto = RepositoryFactory.GetUserRepository().GetByNickname(this.textBoxInputNickname.Text).ProfilePhoto,
             };
             new MainView(signedUser).Show();
@@ -67,7 +69,7 @@ namespace Messenger.Views
 
         private void ViewModel_CompleteCancel()
         {
-            Environment.Exit(0);
+            this.Close();
         }
     }
 }

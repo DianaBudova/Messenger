@@ -1,4 +1,4 @@
-﻿using Messenger.Models.Application;
+﻿using Messenger.Models.DB;
 using Messenger.Repositories;
 using Microsoft.IdentityModel.Tokens;
 using System;

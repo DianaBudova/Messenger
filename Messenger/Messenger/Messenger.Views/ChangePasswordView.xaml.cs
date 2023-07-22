@@ -1,4 +1,4 @@
-﻿using Messenger.Models.Application;
+﻿using Messenger.Models.DB;
 using Messenger.Validation;
 using Messenger.ViewModels;
 using System.Windows;

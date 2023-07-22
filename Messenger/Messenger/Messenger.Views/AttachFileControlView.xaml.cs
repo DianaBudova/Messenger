@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using Messenger.Models.Application;
+using Messenger.Models.DB;
 using Messenger.ViewModels;
 using Microsoft.Win32;
 

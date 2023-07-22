@@ -1,4 +1,5 @@
 ﻿using Messenger.Models.Application;
+using Messenger.Models.DB;
 using Newtonsoft.Json;
 using System;
 using System.Text;
@@ -65,7 +66,7 @@ public class AttachFileControlViewModel : ViewModelBase
             return;
         Message message = new()
         {
-            User = this.signedUser,
+            Sender = this.signedUser,
             Content = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(this.currentFile)),
             DateTime = DateTime.Now,
             Type = MessageType.File,

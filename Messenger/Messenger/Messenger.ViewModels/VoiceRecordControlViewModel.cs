@@ -2,6 +2,7 @@
 using Messenger.BL;
 using System;
 using Messenger.Models.Application;
+using Messenger.Models.DB;
 using Newtonsoft.Json;
 using System.Text;
 
@@ -75,7 +76,7 @@ public class VoiceRecordControlViewModel : ViewModelBase
             return;
         Message message = new()
         {
-            User = this.signedUser,
+            Sender = this.signedUser,
             Content = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(this.currentVoiceMessage)),
             DateTime = DateTime.Now,
             Type = MessageType.Audio,

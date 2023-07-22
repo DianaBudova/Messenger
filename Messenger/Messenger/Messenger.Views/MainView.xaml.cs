@@ -1,12 +1,10 @@
 ﻿using Messenger.Models.Application;
+using Messenger.Models.DB;
 using Messenger.ViewModels;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using Microsoft.Win32;
-using Messenger.Cryptography;
-using Messenger.Repositories;
-using System.ComponentModel;
 using System;
 
 namespace Messenger.Views
@@ -32,6 +30,7 @@ namespace Messenger.Views
             viewModel.CompleteAttachFile += ViewModel_CompleteAttachFile;
             viewModel.CompleteChangeProfilePhoto += ViewModel_CompleteChangeProfilePhoto;
             viewModel.CompleteExit += ViewModel_CompleteExit;
+            viewModel.MessageReceived += ViewModel_MessageReceived;
             #endregion
 
             #region ViewModel Bindings
@@ -93,8 +92,7 @@ namespace Messenger.Views
             view.ShowDialog();
             if (view.ObtainedMessage is null)
                 return;
-            this.viewModel.MessageToSend = view.ObtainedMessage;
-            //this.viewModel.Messages.Add(new() { Message = (Message)view.ObtainedMessage });
+            this.viewModel.MessageToSend = view.ObtainedMessage.Value;
         }
 
         private void ViewModel_CompleteVoiceRecord()
@@ -103,8 +101,7 @@ namespace Messenger.Views
             view.ShowDialog();
             if (view.ObtainedMessage is null)
                 return;
-            this.viewModel.MessageToSend = view.ObtainedMessage;
-            //this.viewModel.Messages.Add(new() { Message = (Message)view.ObtainedMessage });
+            this.viewModel.MessageToSend = view.ObtainedMessage.Value;
         }
 
         private byte[]? ViewModel_CompleteChangeProfilePhoto()
@@ -118,14 +115,20 @@ namespace Messenger.Views
 
         private void ViewModel_CompleteExit()
         {
-            //Environment.Exit(0);
+            this.viewModel.DisconnectFromServer();
             this.Close();
+        }
+
+        private void ViewModel_MessageReceived(Message receivedMessage)
+        {
+            Message message = new(receivedMessage);
+            System.Windows.Forms.MessageBox.Show("Got message in client");
         }
 
         protected override void OnClosed(EventArgs e)
         {
             base.OnClosed(e);
-            //Environment.Exit(0);
+            this.viewModel.DisconnectFromServer();
             this.Close();
         }
     }
