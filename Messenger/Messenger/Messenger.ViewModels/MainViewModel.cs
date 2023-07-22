@@ -195,8 +195,13 @@ public class MainViewModel : ViewModelBase
             }
         }
         this.recorder = new();
-        this.client = new(existedUsers.Where(user => user.Nickname == this.SignedUser.Nickname).First().IpAddress, 
-            existedUsers.Where(user => user.Nickname == this.SignedUser.Nickname).First().Port);
+        try
+        { this.client = new(ConfigurationManager.AppSettings["ServerNameByDefault"]); }
+        catch
+        {
+            this.CompleteExit?.Invoke();
+            return;
+        }
         this.client.MessageReceived += Client_MessageReceived;
         this.client.Connect();
     }

@@ -15,7 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Messenger.DAL\Messenger.DAL.csproj" />
     <ProjectReference Include="..\Messenger.Views\Messenger.Views.csproj" />
   </ItemGroup>
 

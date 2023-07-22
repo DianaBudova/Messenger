@@ -1,57 +1,22 @@
 ﻿using Messenger.BL;
-using Messenger.Models.DB;
-using Messenger.Repositories;
 using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Configuration;
-using System.Windows.Forms;
 
 namespace Messenger.ViewModels;
 
 public class ServerViewModel : ViewModelBase
 {
     public event Action? CompleteSignIn;
+    public event Action? CompleteExit;
     public event Action<string>? ServerChanged;
     public CommandBase StartCommand { get; }
     public CommandBase StopCommand { get; }
     public CommandBase SignInCommand { get; }
 
-    private string? ipAddress;
-    private int port;
-    private string? serverName;
     private string? selectedClient;
     private bool isStarted;
-    public string IpAddress
-    {
-        get
-        { return this.ipAddress; }
-        set
-        {
-            this.ipAddress = value;
-            this.OnPropertyChanged();
-        }
-    }
-    public int Port
-    {
-        get
-        { return this.port; }
-        set
-        {
-            this.port = value;
-            this.OnPropertyChanged();
-        }
-    }
-    public string ServerName
-    {
-        get
-        { return this.serverName; }
-        set
-        {
-            this.serverName = value;
-            this.OnPropertyChanged();
-        }
-    }
     public string SelectedClient
     {
         get
@@ -108,17 +73,19 @@ public class ServerViewModel : ViewModelBase
         this.SignInCommand = new(this.SignIn);
         #endregion
 
-        Server? server = RepositoryFactory.GetServerRepository().GetByNameServer(ConfigurationManager.AppSettings["ServerNameByDefault"]);
-        if (server is null)
+        string? serverName = ConfigurationManager.AppSettings["ServerNameByDefault"];
+        if (serverName is null)
         {
-            MessageBox.Show("Messenger was not succeded in connecting to server", "Server was not found",
-                MessageBoxButtons.OK, MessageBoxIcon.Error);
-            Environment.Exit(0);
+            this.CompleteExit?.Invoke();
+            return;
         }
-        this.IpAddress = server.IpAddress;
-        this.Port = server.Port;
-        this.ServerName = server.NameServer;
-        this.server = new(this.ipAddress!, this.port);
+        try
+        { this.server = new(serverName); }
+        catch
+        {
+            this.CompleteExit?.Invoke();
+            return;
+        }
         this.server.ClientsChanged += Server_ClientsChanged;
         this.server.MessageReceived += Server_MessageReceived;
     }
@@ -135,7 +102,6 @@ public class ServerViewModel : ViewModelBase
 
     private void Start(object obj)
     {
-        this.ServerChanged?.Invoke(this.ServerName);
         this.server.Start();
         this.IsStarted = true;
     }

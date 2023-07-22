@@ -25,18 +25,10 @@ namespace Messenger.Views
 
             #region ViewModel Events
             viewModel.CompleteSignIn += ViewModel_CompleteSignIn;
-            viewModel.ServerChanged += ViewModel_ServerChanged;
+            viewModel.CompleteExit += ViewModel_CompleteExit;
             #endregion
 
             #region ViewModel Bindings
-            Binding ipAddressBinding = new(nameof(viewModel.IpAddress));
-            ipAddressBinding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
-            this.textBoxIpAddress.SetBinding(TextBox.TextProperty, ipAddressBinding);
-
-            Binding portBinding = new(nameof(viewModel.Port));
-            portBinding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
-            this.textBoxPort.SetBinding(TextBox.TextProperty, portBinding);
-
             Binding clientsBinding = new(nameof(viewModel.Clients));
             clientsBinding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
             this.listBoxClients.SetBinding(ListBox.ItemsSourceProperty, clientsBinding);
@@ -80,11 +72,6 @@ namespace Messenger.Views
             #endregion
         }
 
-        private void ViewModel_ServerChanged(string serverName)
-        {
-            this.Title = serverName;
-        }
-
         private void ViewModel_CompleteSignIn()
         {
             new SignInView().Show();
@@ -94,6 +81,11 @@ namespace Messenger.Views
         {
             base.OnClosing(e);
             this.viewModel.StopCommand.Execute(null);
+            Environment.Exit(0);
+        }
+
+        private void ViewModel_CompleteExit()
+        {
             Environment.Exit(0);
         }
     }

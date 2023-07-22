@@ -1,5 +1,8 @@
 ﻿using Messenger.Models.Application;
+using Messenger.Models.DB;
+using Messenger.Repositories;
 using SuperSimpleTcp;
+using System.Net.Sockets;
 using System.Text.Json;
 
 namespace Messenger.BL;
@@ -7,11 +10,13 @@ namespace Messenger.BL;
 public class TCPClient
 {
     public event Action<Message>? MessageReceived;
-    private SimpleTcpClient client;
+    private readonly SimpleTcpClient client;
 
-    public TCPClient(string ipAddress, int port)
+    public TCPClient(string serverName)
     {
-        this.client = new(ipAddress, 8888);
+        Server? chosenServer = RepositoryFactory.GetServerRepository().GetByNameServer(serverName) 
+            ?? throw new SocketException();
+        this.client = new(chosenServer.IpAddress, chosenServer.Port);
         this.client.Events.DataReceived += Events_DataReceived;
     }
 
@@ -25,7 +30,7 @@ public class TCPClient
         this.client.Disconnect();
     }
 
-    private void Events_DataReceived(object? sender, SuperSimpleTcp.DataReceivedEventArgs e)
+    private void Events_DataReceived(object? sender, DataReceivedEventArgs e)
     {
         byte[] receivedData = e.Data.ToArray();
         Message receivedMessage = JsonSerializer.Deserialize<Message>(receivedData);

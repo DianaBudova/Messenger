@@ -1,7 +1,10 @@
 ﻿using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Net.Sockets;
 using System.Text.Json;
 using Messenger.Models.Application;
+using Messenger.Models.DB;
+using Messenger.Repositories;
 using SuperSimpleTcp;
 
 namespace Messenger.BL;
@@ -13,9 +16,11 @@ public class TCPServer
     private readonly SimpleTcpServer server;
     public ObservableCollection<string> Clients { get; private set; }
 
-    public TCPServer(string ipAddress, int port)
+    public TCPServer(string serverName)
     {
-        this.server = new(ipAddress, port);
+        Server? chosenServer = RepositoryFactory.GetServerRepository().GetByNameServer(serverName)
+            ?? throw new SocketException();
+        this.server = new(chosenServer.IpAddress, chosenServer.Port);
         this.server.Events.ClientConnected += Events_ClientConnected;
         this.server.Events.ClientDisconnected += Events_ClientDisconnected;
         this.server.Events.DataReceived += Events_DataReceived;
@@ -31,9 +36,7 @@ public class TCPServer
     public void Start()
     {
         if (!this.server.IsListening)
-        {
             this.server.Start();
-        }
     }
 
     public void Stop()

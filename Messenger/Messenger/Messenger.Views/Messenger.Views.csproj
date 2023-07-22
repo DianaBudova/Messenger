@@ -37,7 +37,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Messenger.Repositories\Messenger.Repositories.csproj" />
     <ProjectReference Include="..\Messenger.Validation\Messenger.Validation.csproj" />
     <ProjectReference Include="..\Messenger.ViewModels\Messenger.ViewModels.csproj" />
   </ItemGroup>
