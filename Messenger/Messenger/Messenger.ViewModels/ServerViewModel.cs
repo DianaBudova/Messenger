@@ -1,8 +1,12 @@
 ﻿using Messenger.BL;
+using Messenger.Models.DB;
+using Messenger.Repositories;
 using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Configuration;
+using System.Net;
+using System.Net.Sockets;
 
 namespace Messenger.ViewModels;
 
@@ -45,14 +49,14 @@ public class ServerViewModel : ViewModelBase
         set
         {
             this.receivedMessage = value;
-            if (this.receivedMessage is not null)
-                this.server!.SendMessage(this.clients[0], this.ReceivedMessage!.Value);
+            //if (this.receivedMessage is not null)
+            //    this.server!.SendMessage(this.clients[0], this.ReceivedMessage!.Value);
             this.OnPropertyChanged();
         }
     }
 
-    private ObservableCollection<string>? clients;
-    public ObservableCollection<string>? Clients
+    private ObservableCollection<TcpClient>? clients;
+    public ObservableCollection<TcpClient>? Clients
     {
         get
         { return this.clients; }
@@ -73,15 +77,16 @@ public class ServerViewModel : ViewModelBase
         this.SignInCommand = new(this.SignIn);
         #endregion
 
-        string? serverName = ConfigurationManager.AppSettings["ServerNameByDefault"];
-        if (serverName is null)
-        {
-            this.CompleteExit?.Invoke();
-            return;
-        }
         try
         {
-            this.server = new(serverName);
+            Server? chosenServer = RepositoryFactory.GetServerRepository().GetByNameServer(ConfigurationManager.AppSettings["ServerNameByDefault"]);
+            if (chosenServer is null)
+            {
+                this.CompleteExit?.Invoke();
+                return;
+            }
+            IPEndPoint ep = new(IPAddress.Parse(chosenServer.IpAddress), chosenServer.Port);
+            this.server = new(ep);
             this.server.ClientsChanged += Server_ClientsChanged;
             this.server.MessageReceived += Server_MessageReceived;
         }

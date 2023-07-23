@@ -13,8 +13,10 @@ public class User
     {
     }
 
-    public User(User user)
+    public User(User? user)
     {
+        if (user is null)
+            return;
         this.Id = user.Id;
         this.Nickname = new(user.Nickname);
         this.EncryptedPassword = new(user.EncryptedPassword);

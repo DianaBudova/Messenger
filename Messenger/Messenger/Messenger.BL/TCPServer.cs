@@ -1,31 +1,47 @@
 ﻿using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Net;
 using System.Net.Sockets;
 using System.Text.Json;
-using Messenger.Models.Application;
-using Messenger.Models.DB;
-using Messenger.Repositories;
-using SuperSimpleTcp;
+using SimpleTCP;
 
 namespace Messenger.BL;
 
 public class TCPServer
 {
     public event Action<object?, NotifyCollectionChangedEventArgs>? ClientsChanged;
-    public event Action<Message>? MessageReceived;
+    public event Action<Models.Application.Message>? MessageReceived;
     private readonly SimpleTcpServer server;
-    public ObservableCollection<string> Clients { get; private set; }
+    private readonly IPEndPoint ep;
+    public ObservableCollection<TcpClient> Clients { get; private set; }
 
-    public TCPServer(string serverName)
+    public TCPServer(IPEndPoint ep)
     {
-        Server? chosenServer = RepositoryFactory.GetServerRepository().GetByNameServer(serverName)
-            ?? throw new SocketException();
-        this.server = new(chosenServer.IpAddress, chosenServer.Port);
-        this.server.Events.ClientConnected += Events_ClientConnected;
-        this.server.Events.ClientDisconnected += Events_ClientDisconnected;
-        this.server.Events.DataReceived += Events_DataReceived;
+        this.ep = ep;
+        this.server = new();
+        this.server.ClientConnected += Server_ClientConnected;
+        this.server.ClientDisconnected += Server_ClientDisconnected;
+        this.server.DataReceived += Server_DataReceived;
         this.Clients = new();
         this.Clients.CollectionChanged += Clients_CollectionChanged;
+    }
+
+    private void Server_ClientConnected(object? sender, TcpClient e)
+    {
+        this.Clients.Add(e);
+    }
+
+    private void Server_ClientDisconnected(object? sender, TcpClient e)
+    {
+        this.Clients.Remove(e);
+    }
+
+    private void Server_DataReceived(object? sender, Message e)
+    {
+        byte[] receivedData = e.Data.ToArray();
+        Models.Application.Message receivedMessage = JsonSerializer.Deserialize<Models.Application.Message>(receivedData);
+        this.MessageReceived?.Invoke(receivedMessage);
+        this.SendMessage(this.Clients[0], receivedMessage);
     }
 
     private void Clients_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -35,37 +51,20 @@ public class TCPServer
 
     public void Start()
     {
-        if (!this.server.IsListening)
-            this.server.Start();
+        if (!this.server.IsStarted)
+            this.server.Start(this.ep.Address, this.ep.Port);
     }
 
     public void Stop()
     {
-        if (this.server.IsListening)
+        if (this.server.IsStarted)
             this.server.Stop();
     }
 
-    private void Events_ClientConnected(object? sender, ConnectionEventArgs e)
-    {
-        this.Clients.Add(e.IpPort);
-    }
-
-    private void Events_ClientDisconnected(object? sender, ConnectionEventArgs e)
-    {
-        this.Clients.Remove(e.IpPort);
-    }
-
-    private void Events_DataReceived(object? sender, DataReceivedEventArgs e)
-    {
-        byte[] receivedData = e.Data.ToArray();
-        Message receivedMessage = JsonSerializer.Deserialize<Message>(receivedData);
-        this.MessageReceived?.Invoke(receivedMessage);
-    }
-
-    public void SendMessage(string ipPort, Message message)
+    public void SendMessage(TcpClient tcpClient, Models.Application.Message message)
     {
         byte[] data = JsonSerializer.SerializeToUtf8Bytes(message);
-        if (this.server.IsConnected(ipPort))
-            this.server.Send(ipPort, data);
+        if (this.server.IsStarted)
+            tcpClient.GetStream().Write(data, 0, data.Length);
     }
 }
