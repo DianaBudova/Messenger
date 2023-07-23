@@ -17,7 +17,7 @@ public class ServerViewModel : ViewModelBase
 
     private string? selectedClient;
     private bool isStarted;
-    public string SelectedClient
+    public string? SelectedClient
     {
         get
         { return this.selectedClient; }
@@ -46,13 +46,13 @@ public class ServerViewModel : ViewModelBase
         {
             this.receivedMessage = value;
             if (this.receivedMessage is not null)
-                this.server.SendMessage(this.clients[0], this.ReceivedMessage!.Value);
+                this.server!.SendMessage(this.clients[0], this.ReceivedMessage!.Value);
             this.OnPropertyChanged();
         }
     }
 
     private ObservableCollection<string>? clients;
-    public ObservableCollection<string> Clients
+    public ObservableCollection<string>? Clients
     {
         get
         { return this.clients; }
@@ -63,7 +63,7 @@ public class ServerViewModel : ViewModelBase
         }
     }
 
-    private readonly TCPServer server;
+    private readonly TCPServer? server;
 
     public ServerViewModel()
     {
@@ -80,19 +80,21 @@ public class ServerViewModel : ViewModelBase
             return;
         }
         try
-        { this.server = new(serverName); }
+        {
+            this.server = new(serverName);
+            this.server.ClientsChanged += Server_ClientsChanged;
+            this.server.MessageReceived += Server_MessageReceived;
+        }
         catch
         {
             this.CompleteExit?.Invoke();
             return;
         }
-        this.server.ClientsChanged += Server_ClientsChanged;
-        this.server.MessageReceived += Server_MessageReceived;
     }
 
     private void Server_ClientsChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
-        this.Clients = new(this.server.Clients);
+        this.Clients = new(this.server!.Clients);
     }
 
     private void Server_MessageReceived(Models.Application.Message message)
@@ -102,13 +104,13 @@ public class ServerViewModel : ViewModelBase
 
     private void Start(object obj)
     {
-        this.server.Start();
+        this.server!.Start();
         this.IsStarted = true;
     }
 
     private void Stop(object obj)
     {
-        this.server.Stop();
+        this.server!.Stop();
         this.IsStarted = false;
     }
 
