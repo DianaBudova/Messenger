@@ -10,6 +10,8 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Text.Json;
+using System.Net.Sockets;
+using System.Net;
 
 namespace Messenger.ViewModels;
 
@@ -196,7 +198,12 @@ public class MainViewModel : ViewModelBase
         }
         this.recorder = new();
         try
-        { this.client = new(ConfigurationManager.AppSettings["ServerNameByDefault"]); }
+        {
+            Server? chosenServer = RepositoryFactory.GetServerRepository().GetByNameServer(ConfigurationManager.AppSettings["ServerNameByDefault"])
+                ?? throw new Exception();
+            IPEndPoint ep = new(IPAddress.Parse(chosenServer.IpAddress), chosenServer.Port);
+            this.client = new(ep);
+        }
         catch
         {
             this.CompleteExit?.Invoke();

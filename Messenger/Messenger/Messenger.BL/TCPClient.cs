@@ -1,28 +1,25 @@
-﻿using Messenger.Models.Application;
-using Messenger.Models.DB;
-using Messenger.Repositories;
-using SuperSimpleTcp;
-using System.Net.Sockets;
+﻿using SimpleTCP;
+using System.Net;
 using System.Text.Json;
 
 namespace Messenger.BL;
 
 public class TCPClient
 {
-    public event Action<Message>? MessageReceived;
+    public event Action<Models.Application.Message>? MessageReceived;
+    private readonly IPEndPoint ep;
     private readonly SimpleTcpClient client;
 
-    public TCPClient(string serverName)
+    public TCPClient(IPEndPoint ep)
     {
-        Server? chosenServer = RepositoryFactory.GetServerRepository().GetByNameServer(serverName) 
-            ?? throw new SocketException();
-        this.client = new(chosenServer.IpAddress, chosenServer.Port);
-        this.client.Events.DataReceived += Events_DataReceived;
+        this.ep = ep;
+        this.client = new();
+        this.client.DataReceived += Events_DataReceived;
     }
 
     public void Connect()
     {
-        this.client.Connect();
+        this.client.Connect(ep.Address.ToString(), ep.Port);
     }
 
     public void Disconnect()
@@ -30,16 +27,16 @@ public class TCPClient
         this.client.Disconnect();
     }
 
-    private void Events_DataReceived(object? sender, DataReceivedEventArgs e)
+    private void Events_DataReceived(object? sender, SimpleTCP.Message e)
     {
         byte[] receivedData = e.Data.ToArray();
-        Message receivedMessage = JsonSerializer.Deserialize<Message>(receivedData);
+        Models.Application.Message receivedMessage = JsonSerializer.Deserialize<Models.Application.Message>(receivedData);
         this.MessageReceived?.Invoke(receivedMessage);
     }
 
-    public void SendMessage(Message message)
+    public void SendMessage(Models.Application.Message message)
     {
         byte[] data = JsonSerializer.SerializeToUtf8Bytes(message);
-        this.client.Send(data);
+        this.client.Write(data);
     }
 }
