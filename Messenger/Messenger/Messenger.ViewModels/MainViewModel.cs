@@ -178,7 +178,7 @@ public class MainViewModel : ViewModelBase
         {
             try
             {
-                if (this.SignedUser.IsSimilar(User.Parse(user)))
+                if (this.SignedUser.IsSimilar(user))
                     continue;
                 this.Users?.Add(new()
                 {
@@ -210,7 +210,10 @@ public class MainViewModel : ViewModelBase
             return;
         }
         this.client.MessageReceived += Client_MessageReceived;
-        this.client.Connect();
+        int port = ((IPEndPoint)this.client.Connect().Client.LocalEndPoint!).Port;
+        User? existedUser = RepositoryFactory.GetUserRepository().GetByNickname(this.SignedUser.Nickname);
+        existedUser.Port = port;
+        RepositoryFactory.GetUserRepository().Update(existedUser);
     }
 
     private void Client_MessageReceived(Message receivedMessage)
@@ -221,6 +224,11 @@ public class MainViewModel : ViewModelBase
     public void DisconnectFromServer()
     {
         this.client.Disconnect();
+        User? existedUser = RepositoryFactory.GetUserRepository().GetByNickname(this.SignedUser.Nickname);
+        if (existedUser is null)
+            return;
+        existedUser.Port = null;
+        RepositoryFactory.GetUserRepository().Update(existedUser);
     }
 
     private void SearchUser(object obj)
@@ -239,13 +247,13 @@ public class MainViewModel : ViewModelBase
             var allUsers = RepositoryFactory.GetUserRepository().GetAll();
             if (allUsers is null)
                 return;
-            allUsers.Remove(allUsers.Find(user => this.SignedUser.IsSimilar(User.Parse(user))));
+            allUsers.Remove(allUsers.Find(user => this.SignedUser.IsSimilar(user)));
             if (this.tempUsers is null || this.tempUsers.Count == 0)
                 this.tempUsers = new(this.Users);
             List<User> searchedUsers = new();
             foreach (var user in allUsers)
                 if (user.Nickname.Contains(this.SearchedUser!))
-                    searchedUsers.Add(User.Parse(user));
+                    searchedUsers.Add(user);
             this.Users.Clear();
             this.Users = new(searchedUsers);
         }
@@ -340,6 +348,7 @@ public class MainViewModel : ViewModelBase
         RepositoryFactory.GetUserRepository().Remove(deletedUser);
         MessageBox.Show("User was deleted successfully!", "",
             MessageBoxButton.OK, MessageBoxImage.Information);
+        RepositoryFactory.GetUserRepository().Update(new(RepositoryFactory.GetUserRepository().GetByNickname(this.SignedUser.Nickname)) { Port = null });
         this.client.Disconnect();
         this.CompleteExit?.Invoke();
     }

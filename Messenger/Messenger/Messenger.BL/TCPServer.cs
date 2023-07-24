@@ -26,6 +26,18 @@ public class TCPServer
         this.Clients.CollectionChanged += Clients_CollectionChanged;
     }
 
+    public void Start()
+    {
+        if (!this.server.IsStarted)
+            this.server.Start(this.ep.Address, this.ep.Port);
+    }
+
+    public void Stop()
+    {
+        if (this.server.IsStarted)
+            this.server.Stop();
+    }
+
     private void Server_ClientConnected(object? sender, TcpClient e)
     {
         this.Clients.Add(e);
@@ -47,18 +59,6 @@ public class TCPServer
     private void Clients_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
         this.ClientsChanged?.Invoke(sender, e);
-    }
-
-    public void Start()
-    {
-        if (!this.server.IsStarted)
-            this.server.Start(this.ep.Address, this.ep.Port);
-    }
-
-    public void Stop()
-    {
-        if (this.server.IsStarted)
-            this.server.Stop();
     }
 
     public void SendMessage(TcpClient tcpClient, Models.Application.Message message)

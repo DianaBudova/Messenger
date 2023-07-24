@@ -1,5 +1,6 @@
 ﻿using SimpleTCP;
 using System.Net;
+using System.Net.Sockets;
 using System.Text.Json;
 
 namespace Messenger.BL;
@@ -17,9 +18,10 @@ public class TCPClient
         this.client.DataReceived += Events_DataReceived;
     }
 
-    public void Connect()
+    public TcpClient Connect()
     {
-        this.client.Connect(ep.Address.ToString(), ep.Port);
+        return this.client.Connect(ep.Address.ToString(), ep.Port).TcpClient ??
+            throw new SocketException();
     }
 
     public void Disconnect()

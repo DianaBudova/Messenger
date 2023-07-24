@@ -1,5 +1,4 @@
 ﻿using Messenger.Models.DB;
-using System.Collections.Generic;
 
 namespace Messenger.Repositories.Interfaces;
 

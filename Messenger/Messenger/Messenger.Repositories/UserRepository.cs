@@ -1,7 +1,5 @@
 ﻿using Messenger.Repositories.Interfaces;
 using Messenger.DAL;
-using System.Collections.Generic;
-using System.Linq;
 using Messenger.Models.DB;
 
 namespace Messenger.Repositories;
@@ -11,7 +9,7 @@ internal class UserRepository : IUserRepository
     private readonly DataContext context;
 
     public UserRepository(DataContext context) =>
-        this.context = context;
+        this.context = context ?? throw new ArgumentNullException(nameof(context));
 
     public User? Add(User user)
     {
@@ -22,19 +20,30 @@ internal class UserRepository : IUserRepository
             return result;
         }
         catch
-        { return null; }
+        {
+            return null;
+        }
     }
 
     public User? Update(User user)
     {
-        var result = this.context.User.Update(user).Entity;
+        User? existingUser = this.context.User.FirstOrDefault(u => u.Id == user.Id);
+        if (existingUser is null)
+            return null;
+        existingUser.Nickname = user.Nickname;
+        existingUser.EncryptedPassword = user.EncryptedPassword;
+        existingUser.IpAddress = user.IpAddress;
+        existingUser.Port = user.Port;
+        existingUser.ProfilePhoto = user.ProfilePhoto;
         try
         {
             this.context.SaveChanges();
-            return result;
+            return existingUser;
         }
         catch
-        { return null; }
+        {
+            return null;
+        }
     }
 
     public bool Remove(User user)
@@ -52,11 +61,11 @@ internal class UserRepository : IUserRepository
         try
         {
             return this.context.User
-                //.Where(prop => prop.Id == user.Id)
+                .Where(prop => prop.Id == user.Id)
                 .Where(prop => prop.Nickname.Equals(user.Nickname))
                 .Where(prop => prop.EncryptedPassword.Equals(user.EncryptedPassword))
-                //.Where(prop => prop.IpAddress.Equals(user.IpAddress))
-                //.Where(prop => prop.Port.Equals(user.Port))
+                .Where(prop => prop.IpAddress.Equals(user.IpAddress))
+                .Where(prop => prop.Port.Equals(user.Port))
                 .Any();
         }
         catch

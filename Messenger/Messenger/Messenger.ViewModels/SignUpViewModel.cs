@@ -77,18 +77,12 @@ public class SignUpViewModel : ViewModelBase
             return;
         }
         string ipAddress = "127.0.0.1";
-        int freePort = 8891;
-        //do
-        //{
-        //    freePort = FreePortFinder.FindFreePort();
-        //} while (RepositoryFactory.GetUserRepository().GetByPort(freePort) is not null);
         User newUser = new()
         {
             Nickname = this.NewNickname!,
             EncryptedPassword = HashData.EncryptData(this.NewPassword!),
             ProfilePhoto = System.IO.File.ReadAllBytes(ConfigurationManager.AppSettings["ImagesPath"] + "UnknownUser.png"),
             IpAddress = ipAddress,
-            Port = freePort,
         };
         if (RepositoryFactory.GetUserRepository().Add(newUser) is null)
         {

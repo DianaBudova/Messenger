@@ -77,15 +77,14 @@ public class ServerViewModel : ViewModelBase
         this.SignInCommand = new(this.SignIn);
         #endregion
 
+        this.isStarted = false;
         try
         {
-            Server? chosenServer = RepositoryFactory.GetServerRepository().GetByNameServer(ConfigurationManager.AppSettings["ServerNameByDefault"]);
-            if (chosenServer is null)
-            {
-                this.CompleteExit?.Invoke();
-                return;
-            }
-            IPEndPoint ep = new(IPAddress.Parse(chosenServer.IpAddress), chosenServer.Port);
+            string? serverName = ConfigurationManager.AppSettings["ServerNameByDefault"] 
+                ?? throw new ArgumentNullException(nameof(serverName));
+            Server? chosenServer = RepositoryFactory.GetServerRepository().GetByNameServer(serverName)
+                ?? throw new ArgumentNullException(nameof(chosenServer));
+            IPEndPoint ep = new(IPAddress.Parse(chosenServer!.IpAddress), chosenServer.Port);
             this.server = new(ep);
             this.server.ClientsChanged += Server_ClientsChanged;
             this.server.MessageReceived += Server_MessageReceived;
@@ -95,16 +94,6 @@ public class ServerViewModel : ViewModelBase
             this.CompleteExit?.Invoke();
             return;
         }
-    }
-
-    private void Server_ClientsChanged(object? sender, NotifyCollectionChangedEventArgs e)
-    {
-        this.Clients = new(this.server!.Clients);
-    }
-
-    private void Server_MessageReceived(Models.Application.Message message)
-    {
-        this.ReceivedMessage = new(message);
     }
 
     private void Start(object obj)
@@ -122,5 +111,15 @@ public class ServerViewModel : ViewModelBase
     private void SignIn(object obj)
     {
         this.CompleteSignIn?.Invoke();
+    }
+
+    private void Server_ClientsChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        this.Clients = new(this.server!.Clients);
+    }
+
+    private void Server_MessageReceived(Models.Application.Message message)
+    {
+        this.ReceivedMessage = new(message);
     }
 }
