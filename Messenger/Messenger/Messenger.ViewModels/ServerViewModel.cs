@@ -1,12 +1,14 @@
 ﻿using Messenger.BL;
+using Messenger.Models.Application;
 using Messenger.Models.DB;
 using Messenger.Repositories;
 using System;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.Configuration;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Messenger.ViewModels;
 
@@ -15,6 +17,7 @@ public class ServerViewModel : ViewModelBase
     public event Action? CompleteSignIn;
     public event Action? CompleteExit;
     public event Action<string>? ServerChanged;
+    public event Action<TcpClient>? ClientConnected;
     public CommandBase StartCommand { get; }
     public CommandBase StopCommand { get; }
     public CommandBase SignInCommand { get; }
@@ -41,28 +44,26 @@ public class ServerViewModel : ViewModelBase
             this.OnPropertyChanged();
         }
     }
-    private Models.Application.Message? receivedMessage;
-    public Models.Application.Message? ReceivedMessage
-    {
-        get
-        { return this.receivedMessage; }
-        set
-        {
-            this.receivedMessage = value;
-            //if (this.receivedMessage is not null)
-            //    this.server!.SendMessage(this.clients[0], this.ReceivedMessage!.Value);
-            this.OnPropertyChanged();
-        }
-    }
 
     private ObservableCollection<TcpClient>? clients;
-    public ObservableCollection<TcpClient>? Clients
+    public ObservableCollection<TcpClient> Clients
     {
         get
-        { return this.clients; }
+        { return this.clients!; }
         set
         {
             this.clients = value;
+            this.OnPropertyChanged();
+        }
+    }
+    private ObservableCollection<Message>? messages;
+    public ObservableCollection<Message> Messages
+    {
+        get
+        { return this.messages!; }
+        set
+        {
+            this.messages = value;
             this.OnPropertyChanged();
         }
     }
@@ -86,15 +87,18 @@ public class ServerViewModel : ViewModelBase
                 ?? throw new ArgumentNullException(nameof(chosenServer));
             IPEndPoint ep = new(IPAddress.Parse(chosenServer!.IpAddress), chosenServer.Port);
             this.server = new(ep);
-            this.server.ClientsChanged += Server_ClientsChanged;
+            this.server.ClientConnected += Server_ClientConnected;
+            this.server.ClientDisconnected += Server_ClientDisconnected;
             this.server.MessageReceived += Server_MessageReceived;
+            this.Clients = new();
+            this.Messages = new();
         }
         catch
         {
             this.CompleteExit?.Invoke();
             return;
         }
-    }
+    }    
 
     private void Start(object obj)
     {
@@ -113,13 +117,19 @@ public class ServerViewModel : ViewModelBase
         this.CompleteSignIn?.Invoke();
     }
 
-    private void Server_ClientsChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    private void Server_ClientConnected()
     {
         this.Clients = new(this.server!.Clients);
     }
 
-    private void Server_MessageReceived(Models.Application.Message message)
+    private void Server_ClientDisconnected()
     {
-        this.ReceivedMessage = new(message);
+        this.Clients = new(this.server!.Clients);
+    }
+
+    private void Server_MessageReceived(Message message)
+    {
+        this.Messages = new(this.server!.Messages);
+        this.server!.SendMessage(this.Clients[0], message);
     }
 }

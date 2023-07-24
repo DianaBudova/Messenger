@@ -1,6 +1,4 @@
-﻿using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.Net;
+﻿using System.Net;
 using System.Net.Sockets;
 using System.Text.Json;
 using SimpleTCP;
@@ -9,11 +7,13 @@ namespace Messenger.BL;
 
 public class TCPServer
 {
-    public event Action<object?, NotifyCollectionChangedEventArgs>? ClientsChanged;
+    public event Action? ClientConnected;
+    public event Action? ClientDisconnected;
     public event Action<Models.Application.Message>? MessageReceived;
     private readonly SimpleTcpServer server;
     private readonly IPEndPoint ep;
-    public ObservableCollection<TcpClient> Clients { get; private set; }
+    public List<TcpClient> Clients { get; private set; }
+    public List<Models.Application.Message> Messages { get; private set; }
 
     public TCPServer(IPEndPoint ep)
     {
@@ -23,7 +23,7 @@ public class TCPServer
         this.server.ClientDisconnected += Server_ClientDisconnected;
         this.server.DataReceived += Server_DataReceived;
         this.Clients = new();
-        this.Clients.CollectionChanged += Clients_CollectionChanged;
+        this.Messages = new();
     }
 
     public void Start()
@@ -38,33 +38,37 @@ public class TCPServer
             this.server.Stop();
     }
 
+    public void SendMessage(TcpClient tcpClient, Models.Application.Message message)
+    {
+        byte[] data = JsonSerializer.SerializeToUtf8Bytes(message);
+        if (this.server.IsStarted)
+        {
+            try
+            { tcpClient.GetStream().Write(data, 0, data.Length); }
+            catch
+            { throw new Exception("Error occurred while sending a message"); }
+        }
+    }
+
     private void Server_ClientConnected(object? sender, TcpClient e)
     {
         this.Clients.Add(e);
+        this.ClientConnected?.Invoke();
     }
 
     private void Server_ClientDisconnected(object? sender, TcpClient e)
     {
         this.Clients.Remove(e);
+        this.ClientDisconnected?.Invoke();
     }
 
     private void Server_DataReceived(object? sender, Message e)
     {
         byte[] receivedData = e.Data.ToArray();
         Models.Application.Message receivedMessage = JsonSerializer.Deserialize<Models.Application.Message>(receivedData);
+        if (receivedMessage.Content.Length <= 0)
+            return;
+        this.Messages.Add(receivedMessage);
         this.MessageReceived?.Invoke(receivedMessage);
-        this.SendMessage(this.Clients[0], receivedMessage);
-    }
-
-    private void Clients_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
-    {
-        this.ClientsChanged?.Invoke(sender, e);
-    }
-
-    public void SendMessage(TcpClient tcpClient, Models.Application.Message message)
-    {
-        byte[] data = JsonSerializer.SerializeToUtf8Bytes(message);
-        if (this.server.IsStarted)
-            tcpClient.GetStream().Write(data, 0, data.Length);
     }
 }

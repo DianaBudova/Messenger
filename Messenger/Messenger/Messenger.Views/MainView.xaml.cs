@@ -78,6 +78,8 @@ namespace Messenger.Views
             this.buttonClearPhoto.Command = viewModel.ClearProfilePhotoCommand;
             this.buttonDeleteAccount.Command = viewModel.DeleteAccountCommand;
             #endregion
+
+            this.viewModel.ConnectToServer();
         }
 
         private void ViewModel_CompleteChangePassword() =>

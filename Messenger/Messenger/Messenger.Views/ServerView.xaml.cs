@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media.Imaging;
 using System.Configuration;
+using System.Net.Sockets;
 
 namespace Messenger.Views
 {
@@ -26,12 +27,17 @@ namespace Messenger.Views
             #region ViewModel Events
             viewModel.CompleteSignIn += ViewModel_CompleteSignIn;
             viewModel.CompleteExit += ViewModel_CompleteExit;
+            viewModel.ServerChanged += ViewModel_ServerChanged;
             #endregion
 
             #region ViewModel Bindings
             Binding clientsBinding = new(nameof(viewModel.Clients));
             clientsBinding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
             this.listBoxClients.SetBinding(ListBox.ItemsSourceProperty, clientsBinding);
+
+            Binding messagesBinding = new(nameof(viewModel.Messages));
+            messagesBinding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
+            this.listBoxMessages.SetBinding(ListBox.ItemsSourceProperty, messagesBinding);
 
             Binding selectedClientBinding = new(nameof(viewModel.SelectedClient));
             selectedClientBinding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
@@ -77,15 +83,20 @@ namespace Messenger.Views
             new SignInView().Show();
         }
 
+        private void ViewModel_CompleteExit()
+        {
+            Environment.Exit(0);
+        }
+
+        private void ViewModel_ServerChanged(string obj)
+        {
+            
+        }
+
         protected override void OnClosing(CancelEventArgs e)
         {
             base.OnClosing(e);
             this.viewModel.StopCommand.Execute(null);
-            Environment.Exit(0);
-        }
-
-        private void ViewModel_CompleteExit()
-        {
             Environment.Exit(0);
         }
     }

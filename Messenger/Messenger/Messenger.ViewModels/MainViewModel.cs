@@ -210,10 +210,21 @@ public class MainViewModel : ViewModelBase
             return;
         }
         this.client.MessageReceived += Client_MessageReceived;
-        int port = ((IPEndPoint)this.client.Connect().Client.LocalEndPoint!).Port;
-        User? existedUser = RepositoryFactory.GetUserRepository().GetByNickname(this.SignedUser.Nickname);
-        existedUser.Port = port;
-        RepositoryFactory.GetUserRepository().Update(existedUser);
+    }
+
+    public void ConnectToServer()
+    {
+        try
+        {
+            int port = ((IPEndPoint)this.client.Connect().Client.LocalEndPoint!).Port;
+            User? existedUser = RepositoryFactory.GetUserRepository().GetByNickname(this.SignedUser.Nickname);
+            if (existedUser is null)
+                throw new ArgumentNullException(nameof(existedUser));
+            existedUser.Port = port;
+            RepositoryFactory.GetUserRepository().Update(existedUser);
+        }
+        catch
+        { this.CompleteExit?.Invoke(); }
     }
 
     private void Client_MessageReceived(Message receivedMessage)

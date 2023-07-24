@@ -57,7 +57,13 @@ namespace Messenger.Views
                 Port = RepositoryFactory.GetUserRepository().GetByNickname(this.textBoxInputNickname.Text).Port,
                 ProfilePhoto = RepositoryFactory.GetUserRepository().GetByNickname(this.textBoxInputNickname.Text).ProfilePhoto,
             };
-            new MainView(signedUser).Show();
+            try
+            { new MainView(signedUser).Show(); }
+            catch
+            {
+                System.Windows.Forms.MessageBox.Show("Server is not working at the moment.", "Server error.",
+                    System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Information);
+            }
             this.Close();
         }
 

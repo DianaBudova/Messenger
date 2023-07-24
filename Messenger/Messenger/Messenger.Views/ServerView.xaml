@@ -73,11 +73,30 @@
                    Style="{StaticResource InnerCaption}"
                    Content="Messages"
                    HorizontalContentAlignment="Center"/>
-            
+
             <ListBox Grid.Row="1"
                      Style="{StaticResource ListBox}"
                      Margin="3"
-                     Name="listBoxMessages"/>
+                     Name="listBoxMessages">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="From "/>
+                            <TextBlock Text="{Binding Sender.IpAddress}"/>
+                            <TextBlock>:</TextBlock>
+                            <TextBlock Text="{Binding Sender.Port}"/>
+                            <TextBlock Text=" to "/>
+                            <TextBlock Text="{Binding Recipient.IpAddress}"/>
+                            <TextBlock>:</TextBlock>
+                            <TextBlock Text="{Binding Recipient.Port}"/>
+                            <TextBlock Text=" "/>
+                            <TextBlock Text="{Binding Type}"/>
+                            <TextBlock Text=" message at "/>
+                            <TextBlock Text="{Binding DateTime}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
         </Grid>
         <!--#endregion-->
 
