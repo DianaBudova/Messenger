@@ -1,5 +1,6 @@
 ﻿using SimpleTCP;
 using System.Net;
+using System.Net.Http;
 using System.Net.Sockets;
 using System.Text.Json;
 
@@ -7,9 +8,36 @@ namespace Messenger.BL;
 
 public class TCPClient
 {
+    public delegate void ClientDisconnectedHandler();
+    public event ClientDisconnectedHandler? ClientDisconnected;
     public event Action<Models.Application.Message>? MessageReceived;
     private readonly IPEndPoint ep;
     private readonly SimpleTcpClient client;
+    public bool IsConnected
+    {
+        get
+        {
+            try
+            {
+                if (this.client != null && this.client.TcpClient.Client != null && this.client.TcpClient.Client.Connected)
+                {
+                    if (this.client.TcpClient.Client.Poll(0, SelectMode.SelectRead))
+                    {
+                        byte[] buff = new byte[1];
+                        if (this.client.TcpClient.Client.Receive(buff, SocketFlags.Peek) == 0)
+                            return false;
+                        else
+                            return true;
+                    }
+                    return true;
+                }
+                else
+                    return false;
+            }
+            catch
+            { return false; }
+        }
+    }
 
     public TCPClient(IPEndPoint ep)
     {
@@ -38,7 +66,14 @@ public class TCPClient
 
     public void SendMessage(Models.Application.Message message)
     {
-        byte[] data = JsonSerializer.SerializeToUtf8Bytes(message);
-        this.client.Write(data);
+        try
+        {
+            if (!this.IsConnected)
+                throw new Exception();
+            byte[] data = JsonSerializer.SerializeToUtf8Bytes(message);
+            this.client.Write(data);
+        }
+        catch (Exception ex)
+        { throw ex; }
     }
 }

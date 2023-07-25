@@ -8,9 +8,7 @@ using Messenger.Repositories;
 using Microsoft.IdentityModel.Tokens;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
 using System.Text.Json;
-using System.Net.Sockets;
 using System.Net;
 
 namespace Messenger.ViewModels;
@@ -280,7 +278,13 @@ public class MainViewModel : ViewModelBase
     {
         if (this.MessageToSend is null || this.MessageToSend.Value.Content.IsNullOrEmpty())
             return;
-        this.client.SendMessage(this.MessageToSend.Value);
+        try
+        { this.client.SendMessage(this.MessageToSend.Value); }
+        catch
+        {
+            MessageBox.Show("Server is not working at the moment", "Error occurred when sending a message",
+                MessageBoxButton.OK, MessageBoxImage.Information);
+        }
     }
 
     private void VoiceRecord(object obj)

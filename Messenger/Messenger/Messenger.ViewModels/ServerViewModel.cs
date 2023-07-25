@@ -87,8 +87,7 @@ public class ServerViewModel : ViewModelBase
                 ?? throw new ArgumentNullException(nameof(chosenServer));
             IPEndPoint ep = new(IPAddress.Parse(chosenServer!.IpAddress), chosenServer.Port);
             this.server = new(ep);
-            this.server.ClientConnected += Server_ClientConnected;
-            this.server.ClientDisconnected += Server_ClientDisconnected;
+            this.server.ClientsChanged += Server_ClientsChanged;
             this.server.MessageReceived += Server_MessageReceived;
             this.Clients = new();
             this.Messages = new();
@@ -117,12 +116,7 @@ public class ServerViewModel : ViewModelBase
         this.CompleteSignIn?.Invoke();
     }
 
-    private void Server_ClientConnected()
-    {
-        this.Clients = new(this.server!.Clients);
-    }
-
-    private void Server_ClientDisconnected()
+    private void Server_ClientsChanged()
     {
         this.Clients = new(this.server!.Clients);
     }

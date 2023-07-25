@@ -7,11 +7,11 @@ namespace Messenger.BL;
 
 public class TCPServer
 {
-    public event Action? ClientConnected;
-    public event Action? ClientDisconnected;
+    public event Action? ClientsChanged;
     public event Action<Models.Application.Message>? MessageReceived;
     private readonly SimpleTcpServer server;
     private readonly IPEndPoint ep;
+    public bool IsStarted { get; private set; }
     public List<TcpClient> Clients { get; private set; }
     public List<Models.Application.Message> Messages { get; private set; }
 
@@ -24,18 +24,27 @@ public class TCPServer
         this.server.DataReceived += Server_DataReceived;
         this.Clients = new();
         this.Messages = new();
+        this.IsStarted = this.server.IsStarted;
     }
 
     public void Start()
     {
         if (!this.server.IsStarted)
             this.server.Start(this.ep.Address, this.ep.Port);
+        this.IsStarted = this.server.IsStarted;
     }
 
     public void Stop()
     {
         if (this.server.IsStarted)
+        {
             this.server.Stop();
+            this.Clients.ForEach(client => client.Client.Dispose());
+            this.Clients.ForEach(client => client.Client.Close());
+            this.Clients.Clear();
+            this.ClientsChanged?.Invoke();
+        }
+        this.IsStarted = this.server.IsStarted;
     }
 
     public void SendMessage(TcpClient tcpClient, Models.Application.Message message)
@@ -53,13 +62,13 @@ public class TCPServer
     private void Server_ClientConnected(object? sender, TcpClient e)
     {
         this.Clients.Add(e);
-        this.ClientConnected?.Invoke();
+        this.ClientsChanged?.Invoke();
     }
 
     private void Server_ClientDisconnected(object? sender, TcpClient e)
     {
         this.Clients.Remove(e);
-        this.ClientDisconnected?.Invoke();
+        this.ClientsChanged?.Invoke();
     }
 
     private void Server_DataReceived(object? sender, Message e)
