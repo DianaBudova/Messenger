@@ -16,8 +16,6 @@ public class ServerViewModel : ViewModelBase
 {
     public event Action? CompleteSignIn;
     public event Action? CompleteExit;
-    public event Action<string>? ServerChanged;
-    public event Action<TcpClient>? ClientConnected;
     public CommandBase StartCommand { get; }
     public CommandBase StopCommand { get; }
     public CommandBase SignInCommand { get; }
@@ -88,6 +86,7 @@ public class ServerViewModel : ViewModelBase
             IPEndPoint ep = new(IPAddress.Parse(chosenServer!.IpAddress), chosenServer.Port);
             this.server = new(ep);
             this.server.ClientsChanged += Server_ClientsChanged;
+            this.server.StateChanged += Server_StateChanged;
             this.server.MessageReceived += Server_MessageReceived;
             this.Clients = new();
             this.Messages = new();
@@ -97,18 +96,16 @@ public class ServerViewModel : ViewModelBase
             this.CompleteExit?.Invoke();
             return;
         }
-    }    
+    }
 
     private void Start(object obj)
     {
         this.server!.Start();
-        this.IsStarted = true;
     }
 
     private void Stop(object obj)
     {
         this.server!.Stop();
-        this.IsStarted = false;
     }
 
     private void SignIn(object obj)
@@ -119,6 +116,11 @@ public class ServerViewModel : ViewModelBase
     private void Server_ClientsChanged()
     {
         this.Clients = new(this.server!.Clients);
+    }
+
+    private void Server_StateChanged(bool isStarted)
+    {
+        this.IsStarted = isStarted;
     }
 
     private void Server_MessageReceived(Message message)

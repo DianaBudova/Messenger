@@ -24,14 +24,25 @@
           VerticalAlignment="Top">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition/>
                 <RowDefinition/>
                 <RowDefinition/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
 
-            <!--#region First row-->
-            <Label Grid.Row="0"
+            <!--#region First Row-->
+            <DockPanel Grid.Row="0">
+                <Label Style="{StaticResource InnerCaption}"
+                       Content="Server:"/>
+                <ComboBox Style="{StaticResource ComboBox}"
+                          Name="comboBoxServer"
+                          IsReadOnly="True"/>
+            </DockPanel>
+            <!--#endregion-->
+            
+            <!--#region Second Row-->
+            <Label Grid.Row="1"
                FontSize="24"
                Padding="0, 40"
                Style="{StaticResource Caption}">
@@ -39,8 +50,8 @@
             </Label>
             <!--#endregion-->
 
-            <!--#region Second row-->
-            <Grid Grid.Row="1">
+            <!--#region Third Row-->
+            <Grid Grid.Row="2">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition/>
@@ -59,8 +70,8 @@
             </Grid>
             <!--#endregion-->
 
-            <!--#region Third row-->
-            <Grid Grid.Row="2">
+            <!--#region Fourth Row-->
+            <Grid Grid.Row="3">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition/>
@@ -97,15 +108,15 @@
             </Grid>
             <!--#endregion-->
 
-            <!--#region Fourth row-->
-            <Grid Grid.Row="3">
+            <!--#region Fifth Row-->
+            <Grid Grid.Row="4">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
 
                 <Button Grid.Column="0"
-                    Padding="0, 10"
+                    Padding="0, 5"
                     Name="buttonLogin">
                     Login
                     <Button.Style>
@@ -129,7 +140,7 @@
                 </Button>
 
                 <Button Grid.Column="1"
-                    Padding="0, 10"
+                    Padding="0, 5"
                     Style="{StaticResource Button}"
                     Name="buttonCancel">
                     Cancel
@@ -137,8 +148,8 @@
             </Grid>
             <!--#endregion-->
 
-            <!--#region Fifth row-->
-            <Button Grid.Row="4"
+            <!--#region Sixth Row-->
+            <Button Grid.Row="5"
                 Padding="0, 5"
                 Style="{StaticResource Button}"
                 Name="buttonCreateAccount">

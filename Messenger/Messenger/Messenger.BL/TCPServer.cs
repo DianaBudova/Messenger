@@ -1,6 +1,8 @@
 ﻿using System.Net;
 using System.Net.Sockets;
 using System.Text.Json;
+using Messenger.Models.DB;
+using Messenger.Repositories;
 using SimpleTCP;
 
 namespace Messenger.BL;
@@ -8,6 +10,7 @@ namespace Messenger.BL;
 public class TCPServer
 {
     public event Action? ClientsChanged;
+    public event Action<bool>? StateChanged;
     public event Action<Models.Application.Message>? MessageReceived;
     private readonly SimpleTcpServer server;
     private readonly IPEndPoint ep;
@@ -32,6 +35,7 @@ public class TCPServer
         if (!this.server.IsStarted)
             this.server.Start(this.ep.Address, this.ep.Port);
         this.IsStarted = this.server.IsStarted;
+        this.StateChanged?.Invoke(this.IsStarted);
     }
 
     public void Stop()
@@ -45,6 +49,7 @@ public class TCPServer
             this.ClientsChanged?.Invoke();
         }
         this.IsStarted = this.server.IsStarted;
+        this.StateChanged?.Invoke(this.IsStarted);
     }
 
     public void SendMessage(TcpClient tcpClient, Models.Application.Message message)

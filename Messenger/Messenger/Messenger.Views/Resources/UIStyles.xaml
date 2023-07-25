@@ -163,6 +163,16 @@
                     Value="5"/>
     </Style>
 
+    <Style x:Key="ComboBox"
+           TargetType="ComboBox">
+        <Setter Property="FontSize"
+                    Value="14"/>
+        <Setter Property="FontFamily"
+                    Value="Segou UI"/>
+        <Setter Property="Margin" 
+                    Value="5"/>
+    </Style>
+
     <ControlTemplate x:Key="ErrorTemplate">
         <Border BorderBrush="Red"
                 BorderThickness="1"

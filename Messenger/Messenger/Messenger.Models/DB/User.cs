@@ -1,4 +1,6 @@
-﻿namespace Messenger.Models.DB;
+﻿using System.Configuration;
+
+namespace Messenger.Models.DB;
 
 public class User
 {
@@ -8,6 +10,7 @@ public class User
     public string IpAddress { get; set; } = null!;
     public int? Port { get; set; }
     public byte[] ProfilePhoto { get; set; } = File.ReadAllBytes($@"../../../../Messenger.Views/Resources/Images/UnknownUser.png");
+    public string? LastUsingServer { get; set; } = ConfigurationManager.AppSettings["ServerNameByDefault"];
 
     public User()
     {

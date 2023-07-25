@@ -1,6 +1,5 @@
 ﻿using SimpleTCP;
 using System.Net;
-using System.Net.Http;
 using System.Net.Sockets;
 using System.Text.Json;
 
@@ -46,15 +45,18 @@ public class TCPClient
         this.client.DataReceived += Events_DataReceived;
     }
 
-    public TcpClient Connect()
+    public TcpClient? Connect()
     {
-        return this.client.Connect(ep.Address.ToString(), ep.Port).TcpClient ??
-            throw new SocketException();
+        if (this.IsConnected)
+            return null;
+        return (this.client.Connect(ep.Address.ToString(), ep.Port).TcpClient ??
+            throw new SocketException());
     }
 
     public void Disconnect()
     {
-        this.client.Disconnect();
+        if (this.IsConnected)
+            this.client.Disconnect();
     }
 
     private void Events_DataReceived(object? sender, SimpleTCP.Message e)

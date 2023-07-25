@@ -6,7 +6,10 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media.Imaging;
 using System.Configuration;
-using System.Net.Sockets;
+using Messenger.Repositories;
+using System.Collections.Generic;
+using Messenger.Models.DB;
+using System.Linq;
 
 namespace Messenger.Views
 {
@@ -27,7 +30,6 @@ namespace Messenger.Views
             #region ViewModel Events
             viewModel.CompleteSignIn += ViewModel_CompleteSignIn;
             viewModel.CompleteExit += ViewModel_CompleteExit;
-            viewModel.ServerChanged += ViewModel_ServerChanged;
             #endregion
 
             #region ViewModel Bindings
@@ -80,17 +82,15 @@ namespace Messenger.Views
 
         private void ViewModel_CompleteSignIn()
         {
-            new SignInView().Show();
+            List<Server>? servers = RepositoryFactory.GetServerRepository().GetAll();
+            if (servers is not null ||
+                servers!.Select(s => s.NameServer).Contains(ConfigurationManager.AppSettings["ServerNameByDefault"]))
+                new SignInView(servers!).Show();
         }
 
         private void ViewModel_CompleteExit()
         {
             Environment.Exit(0);
-        }
-
-        private void ViewModel_ServerChanged(string obj)
-        {
-            
         }
 
         protected override void OnClosing(CancelEventArgs e)

@@ -1,6 +1,11 @@
-﻿using Messenger.Validation;
+﻿using Messenger.Models.DB;
+using Messenger.Repositories;
+using Messenger.Validation;
 using Messenger.ViewModels;
 using System;
+using System.Collections.Generic;
+using System.Configuration;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -51,13 +56,25 @@ namespace Messenger.Views
 
         private void ViewModel_CompleteSignIn()
         {
-            new SignInView().Show();
+            List<Server>? servers = RepositoryFactory.GetServerRepository().GetAll();
+            if (servers is not null ||
+                servers!.Select(s => s.NameServer).Contains(ConfigurationManager.AppSettings["ServerNameByDefault"]))
+                new SignInView(servers!).Show();
+            else
+                MessageBox.Show("There are no working servers at the moment. Try again later.", "Servers are not working",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
             this.Close();
         }
 
         private void ViewModel_SignUpCompleted()
         {
-            new SignInView().Show();
+            List<Server>? servers = RepositoryFactory.GetServerRepository().GetAll();
+            if (servers is not null ||
+                servers!.Select(s => s.NameServer).Contains(ConfigurationManager.AppSettings["ServerNameByDefault"]))
+                new SignInView(servers!).Show();
+            else
+                MessageBox.Show("There are no working servers at the moment. Try again later.", "Servers are not working",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
             this.Close();
         }
 

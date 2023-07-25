@@ -1,6 +1,7 @@
 ﻿using Messenger.Repositories.Interfaces;
 using Messenger.DAL;
 using Messenger.Models.DB;
+using System.Collections.Generic;
 
 namespace Messenger.Repositories;
 
@@ -27,7 +28,7 @@ internal class UserRepository : IUserRepository
 
     public User? Update(User user)
     {
-        User? existingUser = this.context.User.FirstOrDefault(u => u.Id == user.Id);
+        User? existingUser = this.context.User.FirstOrDefault(u => u.Nickname == user.Nickname);
         if (existingUser is null)
             return null;
         existingUser.Nickname = user.Nickname;
@@ -35,6 +36,7 @@ internal class UserRepository : IUserRepository
         existingUser.IpAddress = user.IpAddress;
         existingUser.Port = user.Port;
         existingUser.ProfilePhoto = user.ProfilePhoto;
+        existingUser.LastUsingServer = user.LastUsingServer;
         try
         {
             this.context.SaveChanges();
@@ -106,12 +108,12 @@ internal class UserRepository : IUserRepository
         { return null; }
     }
 
-    public User? GetByPort(string port)
+    public User? GetByPort(int port)
     {
         try
         {
             return this.context.User
-                .Where(prop => prop.Port.Equals(port))
+                .Where(prop => prop.Port == port)
                 .First();
         }
         catch

@@ -31,7 +31,7 @@
                 <RowDefinition/>
             </Grid.RowDefinitions>
 
-            <!--#region First row-->
+            <!--#region First Row-->
             <Label Grid.Row="0"
                FontSize="24"
                Padding="0, 40"
@@ -40,7 +40,7 @@
             </Label>
             <!--#endregion-->
 
-            <!--#region Second row-->
+            <!--#region Second Row-->
             <Grid Grid.Row="1">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
@@ -60,7 +60,7 @@
             </Grid>
             <!--#endregion-->
 
-            <!--#region Third row-->
+            <!--#region Third Row-->
             <Grid Grid.Row="2">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
@@ -92,7 +92,7 @@
             </Grid>
             <!--#endregion-->
 
-            <!--#region Fourth row-->
+            <!--#region Fourth Row-->
             <Grid Grid.Row="3">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
@@ -124,7 +124,7 @@
             </Grid>
             <!--#endregion-->
 
-            <!--#region Fifth row-->
+            <!--#region Fifth Row-->
             <Grid Grid.Row="4">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
@@ -167,7 +167,7 @@
             </Grid>
             <!--#endregion-->
 
-            <!--#region Sixth row-->
+            <!--#region Sixth Row-->
             <Button Grid.Row="5"
                 Padding="0, 5"
                 Style="{StaticResource Button}"

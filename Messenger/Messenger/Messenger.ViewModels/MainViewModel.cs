@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Text.Json;
 using System.Net;
+using System.Net.Sockets;
 
 namespace Messenger.ViewModels;
 
@@ -197,14 +198,17 @@ public class MainViewModel : ViewModelBase
         this.recorder = new();
         try
         {
-            Server? chosenServer = RepositoryFactory.GetServerRepository().GetByNameServer(ConfigurationManager.AppSettings["ServerNameByDefault"])
+            string? serverName = this.SignedUser.LastUsingServer ?? ConfigurationManager.AppSettings["ServerNameByDefault"];
+            if (serverName is null)
+                throw new Exception();
+            Server? chosenServer = RepositoryFactory.GetServerRepository().GetByNameServer(serverName)
                 ?? throw new Exception();
             IPEndPoint ep = new(IPAddress.Parse(chosenServer.IpAddress), chosenServer.Port);
             this.client = new(ep);
+            RepositoryFactory.GetUserRepository().Update(this.SignedUser);
         }
         catch
         {
-            this.CompleteExit?.Invoke();
             return;
         }
         this.client.MessageReceived += Client_MessageReceived;
@@ -214,7 +218,12 @@ public class MainViewModel : ViewModelBase
     {
         try
         {
-            int port = ((IPEndPoint)this.client.Connect().Client.LocalEndPoint!).Port;
+            TcpClient? client = this.client.Connect();
+            if (client is null)
+                throw new ArgumentNullException(nameof(client));
+            int port = ((IPEndPoint)client.Client.LocalEndPoint!).Port;
+            if (port <= 0)
+                throw new ArgumentNullException(nameof(port));
             User? existedUser = RepositoryFactory.GetUserRepository().GetByNickname(this.SignedUser.Nickname);
             if (existedUser is null)
                 throw new ArgumentNullException(nameof(existedUser));
@@ -225,19 +234,19 @@ public class MainViewModel : ViewModelBase
         { this.CompleteExit?.Invoke(); }
     }
 
-    private void Client_MessageReceived(Message receivedMessage)
-    {
-        this.MessageReceived?.Invoke(receivedMessage);
-    }
-
     public void DisconnectFromServer()
     {
-        this.client.Disconnect();
-        User? existedUser = RepositoryFactory.GetUserRepository().GetByNickname(this.SignedUser.Nickname);
-        if (existedUser is null)
-            return;
-        existedUser.Port = null;
-        RepositoryFactory.GetUserRepository().Update(existedUser);
+        try
+        {
+            this.client.Disconnect();
+            User? existedUser = RepositoryFactory.GetUserRepository().GetByNickname(this.SignedUser.Nickname);
+            if (existedUser is null)
+                return;
+            existedUser.Port = null;
+            RepositoryFactory.GetUserRepository().Update(existedUser);
+        }
+        catch
+        { }
     }
 
     private void SearchUser(object obj)
@@ -366,5 +375,10 @@ public class MainViewModel : ViewModelBase
         RepositoryFactory.GetUserRepository().Update(new(RepositoryFactory.GetUserRepository().GetByNickname(this.SignedUser.Nickname)) { Port = null });
         this.client.Disconnect();
         this.CompleteExit?.Invoke();
+    }
+
+    private void Client_MessageReceived(Message receivedMessage)
+    {
+        this.MessageReceived?.Invoke(receivedMessage);
     }
 }

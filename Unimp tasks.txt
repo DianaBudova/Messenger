@@ -1,0 +1,2 @@
+1. Change words "row" and "column" to "Row" and "Column" in .xaml files in #region area.
+2. When server disconnects make a broadcast message to clients with end of line of the server.

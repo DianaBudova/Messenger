@@ -7,6 +7,9 @@ using Messenger.Models.DB;
 using Messenger.Repositories;
 using Messenger.Cryptography;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Configuration;
 
 namespace Messenger.Views
 {
@@ -15,7 +18,7 @@ namespace Messenger.Views
     /// </summary>
     public partial class SignInView : Window
     {
-        public SignInView()
+        public SignInView(IEnumerable<Server> servers)
         {
             InitializeComponent();
 
@@ -38,6 +41,9 @@ namespace Messenger.Views
             passwordBinding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
             passwordBinding.ValidationRules.Add(new PasswordValidationRule());
             this.textBoxInputPassword.SetBinding(TextBox.TextProperty, passwordBinding);
+            
+            this.comboBoxServer.ItemsSource = servers.Select(s => s.NameServer);
+            this.comboBoxServer.SelectedItem = ConfigurationManager.AppSettings["ServerNameByDefault"];
             #endregion
 
             #region ViewModel Commands
@@ -56,6 +62,7 @@ namespace Messenger.Views
                 IpAddress = RepositoryFactory.GetUserRepository().GetByNickname(this.textBoxInputNickname.Text).IpAddress,
                 Port = RepositoryFactory.GetUserRepository().GetByNickname(this.textBoxInputNickname.Text).Port,
                 ProfilePhoto = RepositoryFactory.GetUserRepository().GetByNickname(this.textBoxInputNickname.Text).ProfilePhoto,
+                LastUsingServer = this.comboBoxServer.Text,
             };
             try
             { new MainView(signedUser).Show(); }
