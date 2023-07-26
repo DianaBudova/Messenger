@@ -2,8 +2,9 @@
 
 public enum MessageType
 {
-    None = 0,
-    Text = 1,
-    Audio = 2,
-    File = 3,
+    None,
+    Text,
+    Audio,
+    File,
+    EndOfLine,
 }

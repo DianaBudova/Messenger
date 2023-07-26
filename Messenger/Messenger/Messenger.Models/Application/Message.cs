@@ -4,10 +4,10 @@ namespace Messenger.Models.Application;
 
 public struct Message
 {
-    public User Sender { get; set; }
-    public User Recipient { get; set; }
-    public byte[] Content { get; set; } = Array.Empty<byte>();
-    public DateTime DateTime { get; set; }
+    public User? Sender { get; set; }
+    public User? Recipient { get; set; }
+    public byte[]? Content { get; set; } = Array.Empty<byte>();
+    public DateTime? DateTime { get; set; }
     public MessageType Type { get; set; }
 
     public Message()
@@ -16,10 +16,14 @@ public struct Message
 
     public Message(Message message)
     {
-        this.Sender = new(message.Sender);
-        this.Recipient = new(message.Recipient);
-        Array.Copy(message.Content, this.Content = new byte[message.Content.Length], message.Content.Length);
-        this.DateTime = new(message.DateTime.Ticks);
+        if (message.Sender is not null)
+            this.Sender = new(message.Sender);
+        if (message.Recipient is not null)
+            this.Recipient = new(message.Recipient);
+        if (message.Content is not null)
+            Array.Copy(message.Content, this.Content = new byte[message.Content.Length], message.Content.Length);
+        if (this.DateTime is not null)
+            this.DateTime = new(message.DateTime!.Value.Ticks);
         this.Type = message.Type;
     }
 }

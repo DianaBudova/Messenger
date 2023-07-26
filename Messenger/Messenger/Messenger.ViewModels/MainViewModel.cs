@@ -231,7 +231,12 @@ public class MainViewModel : ViewModelBase
             RepositoryFactory.GetUserRepository().Update(existedUser);
         }
         catch
-        { this.CompleteExit?.Invoke(); }
+        {
+            if (this.CompleteExit is not null)
+                this.CompleteExit.Invoke();
+            else
+                Environment.Exit(0);
+        }
     }
 
     public void DisconnectFromServer()
@@ -379,6 +384,17 @@ public class MainViewModel : ViewModelBase
 
     private void Client_MessageReceived(Message receivedMessage)
     {
-        this.MessageReceived?.Invoke(receivedMessage);
+        if (receivedMessage.Type != MessageType.None
+            && receivedMessage.Type != MessageType.EndOfLine)
+            this.MessageReceived?.Invoke(receivedMessage);
+        else if (receivedMessage.Type == MessageType.EndOfLine)
+        {
+            MessageBox.Show("Server is shut down which you were connected. Try again later.", "Server shut down",
+                MessageBoxButton.OK, MessageBoxImage.Information);
+            if (this.CompleteExit is not null)
+                this.CompleteExit.Invoke();
+            else
+                Environment.Exit(0);
+        }
     }
 }

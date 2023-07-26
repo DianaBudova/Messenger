@@ -118,7 +118,7 @@ namespace Messenger.Views
         private void ViewModel_CompleteExit()
         {
             this.viewModel.DisconnectFromServer();
-            this.Close();
+            this.Dispatcher.Invoke(this.Close);
         }
 
         private void ViewModel_MessageReceived(Message receivedMessage)
@@ -129,9 +129,8 @@ namespace Messenger.Views
 
         protected override void OnClosed(EventArgs e)
         {
-            base.OnClosed(e);
             this.viewModel.DisconnectFromServer();
-            this.Close();
+            this.Dispatcher.Invoke(this.Close);
         }
     }
 }

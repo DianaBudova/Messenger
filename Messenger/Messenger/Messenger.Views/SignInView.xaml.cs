@@ -68,7 +68,7 @@ namespace Messenger.Views
             { new MainView(signedUser).Show(); }
             catch
             {
-                System.Windows.Forms.MessageBox.Show("Server is not working at the moment.", "Server error.",
+                System.Windows.Forms.MessageBox.Show("Server is not working at the moment.", "Server shut down.",
                     System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Information);
             }
             this.Close();

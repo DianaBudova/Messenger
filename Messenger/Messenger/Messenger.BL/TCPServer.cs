@@ -14,7 +14,17 @@ public class TCPServer
     public event Action<Models.Application.Message>? MessageReceived;
     private readonly SimpleTcpServer server;
     private readonly IPEndPoint ep;
-    public bool IsStarted { get; private set; }
+    private bool isStarted;
+    public bool IsStarted
+    {
+        get
+        { return this.isStarted; }
+        private set
+        {
+            this.isStarted = value;
+            this.StateChanged?.Invoke(this.isStarted);
+        }
+    }
     public List<TcpClient> Clients { get; private set; }
     public List<Models.Application.Message> Messages { get; private set; }
 
@@ -35,13 +45,15 @@ public class TCPServer
         if (!this.server.IsStarted)
             this.server.Start(this.ep.Address, this.ep.Port);
         this.IsStarted = this.server.IsStarted;
-        this.StateChanged?.Invoke(this.IsStarted);
     }
 
     public void Stop()
     {
         if (this.server.IsStarted)
         {
+            Models.Application.Message serverStoppedMessage = new() { Type = Models.Application.MessageType.EndOfLine };
+            byte[] serializedMessage = JsonSerializer.SerializeToUtf8Bytes(serverStoppedMessage);
+            this.server.Broadcast(serializedMessage);
             this.server.Stop();
             this.Clients.ForEach(client => client.Client.Dispose());
             this.Clients.ForEach(client => client.Client.Close());
@@ -49,7 +61,6 @@ public class TCPServer
             this.ClientsChanged?.Invoke();
         }
         this.IsStarted = this.server.IsStarted;
-        this.StateChanged?.Invoke(this.IsStarted);
     }
 
     public void SendMessage(TcpClient tcpClient, Models.Application.Message message)
@@ -80,7 +91,10 @@ public class TCPServer
     {
         byte[] receivedData = e.Data.ToArray();
         Models.Application.Message receivedMessage = JsonSerializer.Deserialize<Models.Application.Message>(receivedData);
-        if (receivedMessage.Content.Length <= 0)
+        if (receivedMessage.Sender is null
+            || receivedMessage.Recipient is null
+            || receivedMessage.Content is null 
+            || receivedMessage.Content.Length <= 0)
             return;
         this.Messages.Add(receivedMessage);
         this.MessageReceived?.Invoke(receivedMessage);
