@@ -90,20 +90,20 @@ namespace Messenger.Views
 
         private void ViewModel_CompleteAttachFile()
         {
-            AttachFileControlView view = new(this.viewModel.SignedUser);
+            AttachFileControlView view = new();
             view.ShowDialog();
             if (view.ObtainedMessage is null)
                 return;
-            this.viewModel.MessageToSend = view.ObtainedMessage.Value;
+            this.viewModel.multimediaMessage = view.ObtainedMessage.Value;
         }
 
         private void ViewModel_CompleteVoiceRecord()
         {
-            VoiceRecordControlView view = new(this.viewModel.SignedUser);
+            VoiceRecordControlView view = new();
             view.ShowDialog();
             if (view.ObtainedMessage is null)
                 return;
-            this.viewModel.MessageToSend = view.ObtainedMessage.Value;
+            this.viewModel.multimediaMessage = view.ObtainedMessage.Value;
         }
 
         private byte[]? ViewModel_CompleteChangeProfilePhoto()

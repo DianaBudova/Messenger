@@ -10,13 +10,13 @@ namespace Messenger.Views
     /// </summary>
     public partial class VoiceRecordControlView : Window
     {
-        public Message? ObtainedMessage { get; private set; }
+        public MultimediaMessage? ObtainedMessage { get; private set; }
 
-        public VoiceRecordControlView(User currentUser)
+        public VoiceRecordControlView()
         {
             InitializeComponent();
 
-            VoiceRecordControlViewModel viewModel = new(currentUser);
+            VoiceRecordControlViewModel viewModel = new();
             this.DataContext = viewModel;
 
             #region ViewModel Events
@@ -38,7 +38,7 @@ namespace Messenger.Views
             #endregion
         }
 
-        private void ViewModel_CompleteConfirm(Message message)
+        private void ViewModel_CompleteConfirm(MultimediaMessage message)
         {
             this.ObtainedMessage = message;
             this.Close();

@@ -86,7 +86,7 @@ public class SignUpViewModel : ViewModelBase
         };
         if (RepositoryFactory.GetUserRepository().Add(newUser) is null)
         {
-            MessageBox.Show("Some error occurred while adding new user.", "", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show("Some error occurred while adding a new user.", "", MessageBoxButton.OK, MessageBoxImage.Error);
             return;
         }
         MessageBox.Show("New user was registered successfully.", "", MessageBoxButton.OK, MessageBoxImage.Information);

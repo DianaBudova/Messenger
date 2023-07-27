@@ -2,7 +2,6 @@
 using Messenger.BL;
 using System;
 using Messenger.Models.Application;
-using Messenger.Models.DB;
 using Newtonsoft.Json;
 using System.Text;
 
@@ -10,7 +9,7 @@ namespace Messenger.ViewModels;
 
 public class VoiceRecordControlViewModel : ViewModelBase
 {
-    public event Action<Message>? CompleteConfirm;
+    public event Action<MultimediaMessage>? CompleteConfirm;
     public event Action? CompleteCancel;
 
     public CommandBase StartRecordingVoiceCommand { get; }
@@ -21,11 +20,10 @@ public class VoiceRecordControlViewModel : ViewModelBase
     public CommandBase ConfirmCommand { get; }
     public CommandBase CancelCommand { get; }
 
-    private readonly User signedUser;
     private byte[]? currentVoiceMessage;
     private VoiceRecorderAdapter voiceRecorder;
 
-    public VoiceRecordControlViewModel(User signedUser)
+    public VoiceRecordControlViewModel()
     {
         #region Initialize Commands
         this.StartRecordingVoiceCommand = new(this.StartRecordingVoiceMessage);
@@ -38,7 +36,6 @@ public class VoiceRecordControlViewModel : ViewModelBase
         #endregion
 
         this.voiceRecorder = new();
-        this.signedUser = signedUser;
     }
 
     public void StartRecordingVoiceMessage(object? obj)
@@ -74,12 +71,10 @@ public class VoiceRecordControlViewModel : ViewModelBase
     {
         if (this.currentVoiceMessage is null)
             return;
-        Message message = new()
+        MultimediaMessage message = new()
         {
-            Sender = this.signedUser,
             Content = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(this.currentVoiceMessage)),
-            DateTime = DateTime.Now,
-            Type = MessageType.Audio,
+            Type = MultimediaMessageType.Audio,
         };
         this.CompleteConfirm?.Invoke(message);
     }

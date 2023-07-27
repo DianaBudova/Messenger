@@ -1,9 +1,7 @@
 ﻿namespace Messenger.Models.Application;
 
-public enum MessageType
+public enum MultimediaMessageType
 {
-    Text,
     File,
     Audio,
-    EndOfLine,
 }

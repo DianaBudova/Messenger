@@ -14,13 +14,13 @@ namespace Messenger.Views
     /// </summary>
     public partial class AttachFileControlView : Window
     {
-        public Message? ObtainedMessage { get; private set; }
+        public MultimediaMessage? ObtainedMessage { get; private set; }
 
-        public AttachFileControlView(User currentUser)
+        public AttachFileControlView()
         {
             InitializeComponent();
 
-            AttachFileControlViewModel viewModel = new(currentUser);
+            AttachFileControlViewModel viewModel = new();
             this.DataContext = viewModel;
 
             #region ViewModel Events
@@ -59,7 +59,7 @@ namespace Messenger.Views
             };
         }
 
-        private void ViewModel_CompleteConfirm(Message message)
+        private void ViewModel_CompleteConfirm(MultimediaMessage message)
         {
             this.ObtainedMessage = message;
             this.Close();

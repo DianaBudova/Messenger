@@ -1,5 +1,4 @@
 ﻿using Messenger.Models.Application;
-using Messenger.Models.DB;
 using Newtonsoft.Json;
 using System;
 using System.Text;
@@ -9,7 +8,7 @@ namespace Messenger.ViewModels;
 public class AttachFileControlViewModel : ViewModelBase
 {
     public event Func<File?>? CompleteAttachment;
-    public event Action<Message>? CompleteConfirm;
+    public event Action<MultimediaMessage>? CompleteConfirm;
     public event Action? CompleteCancel;
 
     public CommandBase AttachFileCommand { get; set; }
@@ -39,18 +38,13 @@ public class AttachFileControlViewModel : ViewModelBase
         }
     }
 
-    private readonly User signedUser;
     private File? currentFile { get; set; }
 
-    public AttachFileControlViewModel(User signedUser)
+    public AttachFileControlViewModel()
     {
-        #region Initialize Commands
         this.AttachFileCommand = new(this.AttachFile);
         this.ConfirmCommand = new(this.Confirm);
         this.CancelCommand = new(this.Cancel);
-        #endregion
-
-        this.signedUser = signedUser;
     }
 
     public void AttachFile(object obj)
@@ -64,12 +58,10 @@ public class AttachFileControlViewModel : ViewModelBase
     {
         if (this.currentFile is null)
             return;
-        Message message = new()
+        MultimediaMessage message = new()
         {
-            Sender = this.signedUser,
             Content = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(this.currentFile)),
-            DateTime = DateTime.Now,
-            Type = MessageType.File,
+            Type = MultimediaMessageType.File,
         };
         this.CompleteConfirm?.Invoke(message);
     }

@@ -8,9 +8,9 @@ using Messenger.Repositories;
 using Microsoft.IdentityModel.Tokens;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Text.Json;
 using System.Net;
 using System.Net.Sockets;
+using System.Text.Json;
 
 namespace Messenger.ViewModels;
 
@@ -40,7 +40,7 @@ public class MainViewModel : ViewModelBase
     private byte[]? profilePhoto;
     private User? selectedUser;
     private Chat? selectedMessage;
-    private Message? messageToSend;
+    private MultimediaMessage? messageToSend;
     public string? SearchedUser
     {
         get
@@ -58,17 +58,6 @@ public class MainViewModel : ViewModelBase
         set
         {
             this.inputMessage = value;
-            //if (this.SelectedUser is not null)
-            //{
-                this.MessageToSend = new()
-                {
-                    Sender = this.SignedUser,
-                    Recipient = this.SelectedUser,
-                    Content = JsonSerializer.SerializeToUtf8Bytes(this.inputMessage),
-                    DateTime = DateTime.Now,
-                    Type = MessageType.Text,
-                };
-            //}
             this.OnPropertyChanged();
         }
     }
@@ -138,15 +127,13 @@ public class MainViewModel : ViewModelBase
     }
 
     public readonly User SignedUser;
-    public Message? MessageToSend
+    public MultimediaMessage? multimediaMessage
     {
         get
         { return this.messageToSend; }
         set
         {
             this.messageToSend = value;
-            //if (this.messageToSend is not null)
-            //    ((Message)this.messageToSend).Recipient = this.SelectedUser.Value;
             this.OnPropertyChanged();
         }
     }
@@ -290,13 +277,33 @@ public class MainViewModel : ViewModelBase
 
     private void SendMessage(object obj)
     {
-        if (this.MessageToSend is null || this.MessageToSend.Value.Content.IsNullOrEmpty())
+        if (this.SelectedUser is null)
             return;
+        Message messageToSend = new()
+        {
+            Sender = this.SignedUser,
+            Recipient = this.SelectedUser,
+            DateTime = DateTime.Now,
+        };
         try
-        { this.client.SendMessage(this.MessageToSend.Value); }
+        {
+            if (this.multimediaMessage is not null && !this.multimediaMessage.Value.Content.IsNullOrEmpty())
+            {
+                messageToSend.Content = this.multimediaMessage.Value.Content;
+                messageToSend.Type = this.multimediaMessage.Value.Type == MultimediaMessageType.File ? MessageType.File : MessageType.Audio;
+            }
+            else if (!this.InputMessage.IsNullOrEmpty())
+            {
+                messageToSend.Content = JsonSerializer.SerializeToUtf8Bytes(this.InputMessage);
+                messageToSend.Type = MessageType.Text;
+            }
+            else
+                throw new Exception();
+            this.client.SendMessage(messageToSend);
+        }
         catch
         {
-            MessageBox.Show("Server is not working at the moment", "Error occurred when sending a message",
+            MessageBox.Show("Server is not working at the moment or there is no message to send.", "Error occurred when sending a message",
                 MessageBoxButton.OK, MessageBoxImage.Information);
         }
     }
@@ -384,8 +391,7 @@ public class MainViewModel : ViewModelBase
 
     private void Client_MessageReceived(Message receivedMessage)
     {
-        if (receivedMessage.Type != MessageType.None
-            && receivedMessage.Type != MessageType.EndOfLine)
+        if (receivedMessage.Type != MessageType.EndOfLine)
             this.MessageReceived?.Invoke(receivedMessage);
         else if (receivedMessage.Type == MessageType.EndOfLine)
         {

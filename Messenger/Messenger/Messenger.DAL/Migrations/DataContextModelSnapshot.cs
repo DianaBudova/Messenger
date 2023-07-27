@@ -95,7 +95,7 @@ namespace Messenger.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("LastUsingServerId")
+                    b.Property<int>("LastUsingServerId")
                         .HasColumnType("int");
 
                     b.Property<string>("Nickname")
@@ -142,7 +142,9 @@ namespace Messenger.DAL.Migrations
                 {
                     b.HasOne("Messenger.Models.DB.Server", "LastUsingServer")
                         .WithMany()
-                        .HasForeignKey("LastUsingServerId");
+                        .HasForeignKey("LastUsingServerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("LastUsingServer");
                 });
