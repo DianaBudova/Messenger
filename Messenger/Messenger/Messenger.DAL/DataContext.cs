@@ -10,8 +10,6 @@ public class DataContext : DbContext
     public DbSet<User> User { get; set; }
     public DbSet<Chat> Chat { get; set; }
 
-    //public DataContext(DbContextOptions options) : base(options) { }
-
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         string? connectionString = ConfigurationManager.ConnectionStrings["LocalConnection"].ConnectionString;

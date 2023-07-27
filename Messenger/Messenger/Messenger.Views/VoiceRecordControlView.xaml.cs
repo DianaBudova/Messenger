@@ -10,7 +10,7 @@ namespace Messenger.Views
     /// </summary>
     public partial class VoiceRecordControlView : Window
     {
-        public MultimediaMessage? ObtainedMessage { get; private set; }
+        public MultimediaMessage? FinishedMessage { get; private set; }
 
         public VoiceRecordControlView()
         {
@@ -40,7 +40,7 @@ namespace Messenger.Views
 
         private void ViewModel_CompleteConfirm(MultimediaMessage message)
         {
-            this.ObtainedMessage = message;
+            this.FinishedMessage = message;
             this.Close();
         }
 

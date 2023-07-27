@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Messenger.Repositories;
 
-public class ServerRepository : IServerRepository
+internal class ServerRepository : IServerRepository
 {
     private readonly DataContext context;
 

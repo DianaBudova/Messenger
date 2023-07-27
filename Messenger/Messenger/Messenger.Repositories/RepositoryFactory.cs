@@ -25,4 +25,9 @@ public static class RepositoryFactory
         //    .GetRequiredService<DbContextOptions>();
         return new ServerRepository(new DataContext(/*options*/));
     }
+
+    public static IChatRepository GetChatRepository()
+    {
+        return new ChatRepository(new DataContext(/*options*/));
+    }
 }

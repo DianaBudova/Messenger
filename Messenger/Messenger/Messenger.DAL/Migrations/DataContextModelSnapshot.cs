@@ -30,6 +30,9 @@ namespace Messenger.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime>("DateTime")
+                        .HasColumnType("datetime2");
+
                     b.Property<byte[]>("Message")
                         .IsRequired()
                         .HasColumnType("varbinary(max)");
@@ -95,7 +98,7 @@ namespace Messenger.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("LastUsingServerId")
+                    b.Property<int?>("LastUsingServerId")
                         .HasColumnType("int");
 
                     b.Property<string>("Nickname")
@@ -142,9 +145,7 @@ namespace Messenger.DAL.Migrations
                 {
                     b.HasOne("Messenger.Models.DB.Server", "LastUsingServer")
                         .WithMany()
-                        .HasForeignKey("LastUsingServerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("LastUsingServerId");
 
                     b.Navigation("LastUsingServer");
                 });

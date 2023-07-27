@@ -94,9 +94,19 @@ public class TCPServer
         if (receivedMessage.Sender is null
             || receivedMessage.Recipient is null
             || receivedMessage.Content is null 
-            || receivedMessage.Content.Length <= 0)
+            || receivedMessage.Content.Length <= 0
+            || receivedMessage.Type == Models.Application.MessageType.EndOfLine)
             return;
         this.Messages.Add(receivedMessage);
         this.MessageReceived?.Invoke(receivedMessage);
+        Chat chat = new()
+        {
+            SenderId = RepositoryFactory.GetUserRepository().GetByNickname(receivedMessage.Sender.Nickname).Id,
+            RecipientId = RepositoryFactory.GetUserRepository().GetByNickname(receivedMessage.Recipient.Nickname).Id,
+            Message = receivedMessage.Content,
+            MessageType = receivedMessage.Type,
+            DateTime = receivedMessage.DateTime,
+        };
+        RepositoryFactory.GetChatRepository().Add(chat);
     }
 }

@@ -92,18 +92,18 @@ namespace Messenger.Views
         {
             AttachFileControlView view = new();
             view.ShowDialog();
-            if (view.ObtainedMessage is null)
+            if (view.FinishedMessage is null)
                 return;
-            this.viewModel.multimediaMessage = view.ObtainedMessage.Value;
+            this.viewModel.multimediaMessage = view.FinishedMessage.Value;
         }
 
         private void ViewModel_CompleteVoiceRecord()
         {
             VoiceRecordControlView view = new();
             view.ShowDialog();
-            if (view.ObtainedMessage is null)
+            if (view.FinishedMessage is null)
                 return;
-            this.viewModel.multimediaMessage = view.ObtainedMessage.Value;
+            this.viewModel.multimediaMessage = view.FinishedMessage.Value;
         }
 
         private byte[]? ViewModel_CompleteChangeProfilePhoto()

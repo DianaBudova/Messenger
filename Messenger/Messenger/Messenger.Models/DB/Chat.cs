@@ -11,4 +11,5 @@ public class Chat
     public virtual User Recipient { get; set; }
     public byte[] Message { get; set; }
     public MessageType MessageType { get; set; }
+    public DateTime DateTime { get; set; }
 }

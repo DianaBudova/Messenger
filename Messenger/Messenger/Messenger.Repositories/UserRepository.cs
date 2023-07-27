@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Messenger.Repositories;
 
-public class UserRepository : IUserRepository
+internal class UserRepository : IUserRepository
 {
     private readonly DataContext context;
 

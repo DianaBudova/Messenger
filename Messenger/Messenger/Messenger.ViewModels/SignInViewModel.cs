@@ -9,7 +9,7 @@ namespace Messenger.ViewModels;
 
 public class SignInViewModel : ViewModelBase
 {
-    public event Action? SignInCompleted;
+    public event Action<User>? SignInCompleted;
     public event Action? CompleteSignUp;
     public event Action? CompleteCancel;
 
@@ -67,7 +67,7 @@ public class SignInViewModel : ViewModelBase
             return;
         }
         MessageBox.Show("Login successfully.", "", MessageBoxButton.OK, MessageBoxImage.Information);
-        this.SignInCompleted?.Invoke();
+        this.SignInCompleted?.Invoke(user);
     }
 
     private void Cancel(object obj)
