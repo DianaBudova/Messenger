@@ -198,7 +198,7 @@ public class MainViewModel : ViewModelBase
         this.recorder = new();
         try
         {
-            string? serverName = this.SignedUser.LastUsingServer ?? ConfigurationManager.AppSettings["ServerNameByDefault"];
+            string? serverName = this.SignedUser.LastUsingServer?.NameServer ?? ConfigurationManager.AppSettings["ServerNameByDefault"];
             if (serverName is null)
                 throw new Exception();
             Server? chosenServer = RepositoryFactory.GetServerRepository().GetByNameServer(serverName)
@@ -209,7 +209,7 @@ public class MainViewModel : ViewModelBase
         }
         catch
         {
-            return;
+            Environment.Exit(0);
         }
         this.client.MessageReceived += Client_MessageReceived;
     }

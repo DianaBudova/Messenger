@@ -10,19 +10,19 @@ public static class RepositoryFactory
 {
     public static IUserRepository GetUserRepository()
     {
-        var options = new ServiceCollection()
-            .AddDbContext<DataContext>(options => options.UseSqlServer(ConfigurationManager.ConnectionStrings["LocalConnection"].ConnectionString))
-            .BuildServiceProvider()
-            .GetRequiredService<DbContextOptions>();
-        return new UserRepository(new DataContext(options));
+        //var options = new ServiceCollection()
+        //    .AddDbContext<DataContext>(options => options.UseSqlServer(ConfigurationManager.ConnectionStrings["LocalConnection"].ConnectionString))
+        //    .BuildServiceProvider()
+        //    .GetRequiredService<DbContextOptions>();
+        return new UserRepository(new DataContext(/*options*/));
     }
 
     public static IServerRepository GetServerRepository()
     {
-        var options = new ServiceCollection()
-            .AddDbContext<DataContext>(options => options.UseSqlServer(ConfigurationManager.ConnectionStrings["LocalConnection"].ConnectionString))
-            .BuildServiceProvider()
-            .GetRequiredService<DbContextOptions>();
-        return new ServerRepository(new DataContext(options));
+        //var options = new ServiceCollection()
+        //    .AddDbContext<DataContext>(options => options.UseSqlServer(ConfigurationManager.ConnectionStrings["LocalConnection"].ConnectionString))
+        //    .BuildServiceProvider()
+        //    .GetRequiredService<DbContextOptions>();
+        return new ServerRepository(new DataContext(/*options*/));
     }
 }

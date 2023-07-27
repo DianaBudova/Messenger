@@ -10,7 +10,9 @@ public class User
     public string IpAddress { get; set; } = null!;
     public int? Port { get; set; }
     public byte[] ProfilePhoto { get; set; } = File.ReadAllBytes($@"../../../../Messenger.Views/Resources/Images/UnknownUser.png");
-    public string? LastUsingServer { get; set; } = ConfigurationManager.AppSettings["ServerNameByDefault"];
+    public Server? LastUsingServer { get; set; } = Server.DefaultServer;
+    public List<Chat> SentChat { get; set; }
+    public List<Chat> ReceivedChat { get; set; }
 
     public User()
     {

@@ -93,8 +93,7 @@ public class ServerViewModel : ViewModelBase
         }
         catch
         {
-            this.CompleteExit?.Invoke();
-            return;
+            Environment.Exit(0);
         }
     }
 

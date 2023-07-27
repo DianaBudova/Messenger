@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Messenger.DAL.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20230725152831_TableUser_AddColumnLastUsingServer")]
-    partial class TableUser_AddColumnLastUsingServer
+    [Migration("20230727072521_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -33,19 +33,24 @@ namespace Messenger.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Message")
+                    b.Property<byte[]>("Message")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varbinary(max)");
 
                     b.Property<int>("MessageType")
                         .HasColumnType("int");
 
-                    b.Property<int>("UserId")
+                    b.Property<int>("RecipientId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SenderId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("RecipientId");
+
+                    b.HasIndex("SenderId");
 
                     b.ToTable("Chat");
                 });
@@ -93,8 +98,8 @@ namespace Messenger.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("LastUsingServer")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int?>("LastUsingServerId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Nickname")
                         .IsRequired()
@@ -109,6 +114,8 @@ namespace Messenger.DAL.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("LastUsingServerId");
+
                     b.HasIndex("Nickname")
                         .IsUnique();
 
@@ -117,13 +124,37 @@ namespace Messenger.DAL.Migrations
 
             modelBuilder.Entity("Messenger.Models.DB.Chat", b =>
                 {
-                    b.HasOne("Messenger.Models.DB.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                    b.HasOne("Messenger.Models.DB.User", "Recipient")
+                        .WithMany("ReceivedChat")
+                        .HasForeignKey("RecipientId")
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.Navigation("User");
+                    b.HasOne("Messenger.Models.DB.User", "Sender")
+                        .WithMany("SentChat")
+                        .HasForeignKey("SenderId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Recipient");
+
+                    b.Navigation("Sender");
+                });
+
+            modelBuilder.Entity("Messenger.Models.DB.User", b =>
+                {
+                    b.HasOne("Messenger.Models.DB.Server", "LastUsingServer")
+                        .WithMany()
+                        .HasForeignKey("LastUsingServerId");
+
+                    b.Navigation("LastUsingServer");
+                });
+
+            modelBuilder.Entity("Messenger.Models.DB.User", b =>
+                {
+                    b.Navigation("ReceivedChat");
+
+                    b.Navigation("SentChat");
                 });
 #pragma warning restore 612, 618
         }

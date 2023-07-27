@@ -10,6 +10,8 @@ using Messenger.Repositories;
 using System.Collections.Generic;
 using Messenger.Models.DB;
 using System.Linq;
+using System.Net.Sockets;
+using System.Net;
 
 namespace Messenger.Views
 {
@@ -90,14 +92,13 @@ namespace Messenger.Views
 
         private void ViewModel_CompleteExit()
         {
-            Environment.Exit(0);
+            Dispatcher.Invoke(this.Close);
         }
 
         protected override void OnClosing(CancelEventArgs e)
         {
-            base.OnClosing(e);
             this.viewModel.StopCommand.Execute(null);
-            Environment.Exit(0);
+            base.OnClosing(e);
         }
     }
 }

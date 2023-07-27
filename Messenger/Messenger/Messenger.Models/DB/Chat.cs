@@ -5,7 +5,10 @@ namespace Messenger.Models.DB;
 public class Chat
 {
     public int Id { get; set; }
-    public User User { get; set; }
-    public string Message { get; set; } = null!;
+    public int SenderId { get; set; }
+    public int RecipientId { get; set; }
+    public virtual User Sender { get; set; }
+    public virtual User Recipient { get; set; }
+    public byte[] Message { get; set; }
     public MessageType MessageType { get; set; }
 }

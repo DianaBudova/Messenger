@@ -62,7 +62,7 @@ namespace Messenger.Views
                 IpAddress = RepositoryFactory.GetUserRepository().GetByNickname(this.textBoxInputNickname.Text).IpAddress,
                 Port = RepositoryFactory.GetUserRepository().GetByNickname(this.textBoxInputNickname.Text).Port,
                 ProfilePhoto = RepositoryFactory.GetUserRepository().GetByNickname(this.textBoxInputNickname.Text).ProfilePhoto,
-                LastUsingServer = this.comboBoxServer.Text,
+                LastUsingServer = RepositoryFactory.GetServerRepository().GetByNameServer(this.comboBoxServer.Text),
             };
             try
             { new MainView(signedUser).Show(); }
