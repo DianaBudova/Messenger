@@ -40,7 +40,11 @@ namespace Messenger.Views
             passwordBinding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
             passwordBinding.ValidationRules.Add(new PasswordValidationRule());
             this.textBoxInputPassword.SetBinding(TextBox.TextProperty, passwordBinding);
-            
+
+            Binding lastUsingServerBinding = new(nameof(viewModel.LastUsingServer));
+            lastUsingServerBinding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
+            this.comboBoxServer.SetBinding(ComboBox.TextProperty, lastUsingServerBinding);
+
             this.comboBoxServer.ItemsSource = servers.Select(s => s.NameServer);
             this.comboBoxServer.SelectedItem = ConfigurationManager.AppSettings["ServerNameByDefault"];
             #endregion

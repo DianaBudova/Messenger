@@ -18,7 +18,6 @@ public class SignInViewModel : ViewModelBase
     public CommandBase CreateAccountCommand { get; }
 
     private string? nickname;
-    private string? password;
     public string? Nickname
     {
         get
@@ -29,6 +28,7 @@ public class SignInViewModel : ViewModelBase
             this.OnPropertyChanged();
         }
     }
+    private string? password;
     public string? Password
     {
         get
@@ -36,6 +36,17 @@ public class SignInViewModel : ViewModelBase
         set
         {
             this.password = value;
+            this.OnPropertyChanged();
+        }
+    }
+    private string? lastUsingServer;
+    public string? LastUsingServer
+    {
+        get
+        { return this.lastUsingServer; }
+        set
+        {
+            this.lastUsingServer = value;
             this.OnPropertyChanged();
         }
     }
@@ -49,10 +60,19 @@ public class SignInViewModel : ViewModelBase
 
     private void Login(object obj)
     {
-        if (this.Nickname.IsNullOrEmpty() ||
-            this.Password.IsNullOrEmpty())
+        if (this.LastUsingServer.IsNullOrEmpty())
         {
-            MessageBox.Show("Login or password are empty.", "", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show("Server is not chosen. Please choose a server.", "", MessageBoxButton.OK, MessageBoxImage.Error);
+            return;
+        }
+        if (this.Nickname.IsNullOrEmpty())
+        {
+            MessageBox.Show("Login is empty.", "", MessageBoxButton.OK, MessageBoxImage.Error);
+            return;
+        }
+        if (this.Password.IsNullOrEmpty())
+        {
+            MessageBox.Show("Password is empty.", "", MessageBoxButton.OK, MessageBoxImage.Error);
             return;
         }
         User? user = RepositoryFactory.GetUserRepository().GetByNickname(this.Nickname!);
@@ -67,6 +87,7 @@ public class SignInViewModel : ViewModelBase
             return;
         }
         MessageBox.Show("Login successfully.", "", MessageBoxButton.OK, MessageBoxImage.Information);
+        user.LastUsingServer = RepositoryFactory.GetServerRepository().GetByNameServer(this.LastUsingServer!);
         this.SignInCompleted?.Invoke(user);
     }
 
