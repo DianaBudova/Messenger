@@ -58,7 +58,7 @@ namespace Messenger.Views
             Binding messagesInChatBinding = new(nameof(viewModel.Messages));
             messagesInChatBinding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
             this.listViewMessagesInChat.SetBinding(ListBox.ItemsSourceProperty, messagesInChatBinding);
-
+            
             Binding selectedUserBinding = new(nameof(viewModel.SelectedUser));
             selectedUserBinding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
             this.listViewUsers.SetBinding(ListView.SelectedItemProperty, selectedUserBinding);

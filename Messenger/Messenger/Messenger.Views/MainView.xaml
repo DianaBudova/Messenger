@@ -4,12 +4,21 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Messenger.Views"
+        xmlns:converters="clr-namespace:Messenger.Views.Converters"
         mc:Ignorable="d"
         Title="Messenger" Height="450" Width="800"
         WindowStartupLocation="CenterScreen"
         Icon="Resources/Images/Send_White.png">
+    
     <Window.Resources>
-        <ResourceDictionary Source="Resources/UIStyles.xaml"/>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Resources/UIStyles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <converters:MessageConverter x:Key="MessageConverter"/>
+        </ResourceDictionary>
+                
     </Window.Resources>
 
     <Grid>
@@ -118,6 +127,24 @@
                      BorderThickness="1"
                      Margin="5"
                      x:Name="listViewMessagesInChat">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="Message" Width="200">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock>
+                                            <TextBlock.Text>
+                                                <MultiBinding Converter="{StaticResource MessageConverter}">
+                                                    <Binding Path="MessageType" />
+                                                    <Binding Path="Message" />
+                                                </MultiBinding>
+                                            </TextBlock.Text>
+                                        </TextBlock>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                        </GridView>
+                    </ListView.View>
                 </ListView>
 
                 <Grid Grid.Row="1">
