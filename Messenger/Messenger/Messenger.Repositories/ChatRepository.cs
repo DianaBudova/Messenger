@@ -45,6 +45,24 @@ internal class ChatRepository : IChatRepository
         { return false; }
     }
 
+    public bool Exists(Chat chat)
+    {
+        try
+        {
+            return this.context.Chat
+                .Where(prop => prop.SenderId == chat.SenderId)
+                .Where(prop => prop.RecipientId == chat.RecipientId)
+                .Where(prop => prop.Message.SequenceEqual(chat.Message))
+                .Where(prop => prop.MessageType == chat.MessageType)
+                .Where(prop => prop.DateTime == chat.DateTime)
+                .Any();
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
     public Chat? GetById(int id)
     {
         try

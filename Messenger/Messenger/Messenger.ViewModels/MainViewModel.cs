@@ -35,12 +35,6 @@ public class MainViewModel : ViewModelBase
     public CommandBase DeleteAccountCommand { get; }
 
     private string? searchedUser;
-    private string? inputMessage;
-    private string? nickname;
-    private byte[]? profilePhoto;
-    private User? selectedUser;
-    private Chat? selectedMessage;
-    private MultimediaMessage? messageToSend;
     public string? SearchedUser
     {
         get
@@ -51,6 +45,7 @@ public class MainViewModel : ViewModelBase
             this.OnPropertyChanged();
         }
     }
+    private string? inputMessage;
     public string? InputMessage
     {
         get
@@ -61,6 +56,7 @@ public class MainViewModel : ViewModelBase
             this.OnPropertyChanged();
         }
     }
+    private string? nickname;
     public string? Nickname
     {
         get
@@ -71,6 +67,7 @@ public class MainViewModel : ViewModelBase
             this.OnPropertyChanged();
         }
     }
+    private byte[]? profilePhoto;
     public byte[]? ProfilePhoto
     {
         get
@@ -81,6 +78,7 @@ public class MainViewModel : ViewModelBase
             OnPropertyChanged();
         }
     }
+    private User? selectedUser;
     public User? SelectedUser
     {
         get
@@ -89,8 +87,19 @@ public class MainViewModel : ViewModelBase
         {
             this.selectedUser = value;
             OnPropertyChanged();
+            if (this.SelectedUser is null)
+                this.Messages.Clear();
+            else
+            {
+                var messages = RepositoryFactory.GetChatRepository().GetBySenderRecipientId(this.SignedUser.Id, this.SelectedUser.Id);
+                if (messages is null)
+                    return;
+                foreach (var message in messages)
+                    this.Messages.Add(message);
+            }
         }
     }
+    private Chat? selectedMessage;
     public Chat? SelectedMessage
     {
         get
@@ -101,10 +110,19 @@ public class MainViewModel : ViewModelBase
             OnPropertyChanged();
         }
     }
+    private MultimediaMessage? messageToSend;
+    public MultimediaMessage? MultimediaMessage
+    {
+        get
+        { return this.messageToSend; }
+        set
+        {
+            this.messageToSend = value;
+            this.OnPropertyChanged();
+        }
+    }
 
     private ObservableCollection<User>? users;
-    private ObservableCollection<User>? tempUsers;
-    private ObservableCollection<Chat>? messages;
     public ObservableCollection<User> Users
     {
         get
@@ -115,6 +133,8 @@ public class MainViewModel : ViewModelBase
             OnPropertyChanged();
         }
     }
+    private ObservableCollection<User>? tempUsers;
+    private ObservableCollection<Chat>? messages;
     public ObservableCollection<Chat> Messages
     {
         get
@@ -127,16 +147,6 @@ public class MainViewModel : ViewModelBase
     }
 
     public readonly User SignedUser;
-    public MultimediaMessage? multimediaMessage
-    {
-        get
-        { return this.messageToSend; }
-        set
-        {
-            this.messageToSend = value;
-            this.OnPropertyChanged();
-        }
-    }
     private readonly TCPClient client;
     private readonly VoiceRecorderAdapter recorder;
 
@@ -168,6 +178,7 @@ public class MainViewModel : ViewModelBase
                     continue;
                 this.Users?.Add(new()
                 {
+                    Id = user.Id,
                     Nickname = user.Nickname,
                     EncryptedPassword = user.EncryptedPassword,
                     IpAddress = user.IpAddress,
@@ -287,10 +298,10 @@ public class MainViewModel : ViewModelBase
         };
         try
         {
-            if (this.multimediaMessage is not null && !this.multimediaMessage.Value.Content.IsNullOrEmpty())
+            if (this.MultimediaMessage is not null && !this.MultimediaMessage.Value.Content.IsNullOrEmpty())
             {
-                messageToSend.Content = this.multimediaMessage.Value.Content;
-                messageToSend.Type = this.multimediaMessage.Value.Type == MultimediaMessageType.File ? MessageType.File : MessageType.Audio;
+                messageToSend.Content = this.MultimediaMessage.Value.Content;
+                messageToSend.Type = this.MultimediaMessage.Value.Type == MultimediaMessageType.File ? MessageType.File : MessageType.Audio;
             }
             else if (!this.InputMessage.IsNullOrEmpty())
             {
@@ -393,7 +404,7 @@ public class MainViewModel : ViewModelBase
     {
         if (receivedMessage.Type != MessageType.EndOfLine)
             this.MessageReceived?.Invoke(receivedMessage);
-        else if (receivedMessage.Type == MessageType.EndOfLine)
+        else
         {
             MessageBox.Show("Server is shut down which you were connected. Try again later.", "Server shut down",
                 MessageBoxButton.OK, MessageBoxImage.Information);

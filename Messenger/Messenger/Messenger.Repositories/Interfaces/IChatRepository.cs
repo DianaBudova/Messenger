@@ -4,9 +4,10 @@ namespace Messenger.Repositories.Interfaces;
 
 public interface IChatRepository
 {
-    public Chat? Add(Chat server);
-    public Chat? Update(Chat server);
-    public bool Remove(Chat server);
+    public Chat? Add(Chat chat);
+    public Chat? Update(Chat chat);
+    public bool Remove(Chat chat);
+    public bool Exists(Chat chat);
     public Chat? GetById(int id);
     public List<Chat>? GetBySenderId(int id);
     public List<Chat>? GetByRecipientId(int id);

@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using Microsoft.Win32;
 using System;
+using Messenger.Repositories;
 
 namespace Messenger.Views
 {
@@ -94,7 +95,7 @@ namespace Messenger.Views
             view.ShowDialog();
             if (view.FinishedMessage is null)
                 return;
-            this.viewModel.multimediaMessage = view.FinishedMessage.Value;
+            this.viewModel.MultimediaMessage = view.FinishedMessage.Value;
         }
 
         private void ViewModel_CompleteVoiceRecord()
@@ -103,7 +104,7 @@ namespace Messenger.Views
             view.ShowDialog();
             if (view.FinishedMessage is null)
                 return;
-            this.viewModel.multimediaMessage = view.FinishedMessage.Value;
+            this.viewModel.MultimediaMessage = view.FinishedMessage.Value;
         }
 
         private byte[]? ViewModel_CompleteChangeProfilePhoto()
@@ -124,7 +125,7 @@ namespace Messenger.Views
         private void ViewModel_MessageReceived(Message receivedMessage)
         {
             Message message = new(receivedMessage);
-            System.Windows.Forms.MessageBox.Show("Got message in client");
+            //System.Windows.Forms.MessageBox.Show("Got message in client");
         }
 
         protected override void OnClosed(EventArgs e)

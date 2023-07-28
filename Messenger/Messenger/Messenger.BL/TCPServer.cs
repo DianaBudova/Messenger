@@ -3,6 +3,7 @@ using System.Net.Sockets;
 using System.Text.Json;
 using Messenger.Models.DB;
 using Messenger.Repositories;
+using Messenger.Repositories.Interfaces;
 using SimpleTCP;
 
 namespace Messenger.BL;
@@ -65,13 +66,32 @@ public class TCPServer
 
     public void SendMessage(TcpClient tcpClient, Models.Application.Message message)
     {
+        if (message.Sender is null
+            || message.Recipient is null
+            || message.Content is null
+            || message.Content.Length <= 0
+            || message.Type == Models.Application.MessageType.EndOfLine)
+            return;
         byte[] data = JsonSerializer.SerializeToUtf8Bytes(message);
         if (this.server.IsStarted)
         {
             try
-            { tcpClient.GetStream().Write(data, 0, data.Length); }
+            {
+                tcpClient.GetStream().Write(data, 0, data.Length);
+                Chat chat = new()
+                {
+                    SenderId = RepositoryFactory.GetUserRepository().GetByNickname(message.Sender.Nickname)!.Id,
+                    RecipientId = RepositoryFactory.GetUserRepository().GetByNickname(message.Recipient.Nickname)!.Id,
+                    Message = message.Content,
+                    MessageType = message.Type,
+                    DateTime = message.DateTime,
+                };
+                IChatRepository chatRepository = RepositoryFactory.GetChatRepository();
+                if (!chatRepository.Exists(chat))
+                    chatRepository.Add(chat);
+            }
             catch
-            { throw new Exception("Error occurred while sending a message"); }
+            { throw new Exception("Error occurred while sending a message."); }
         }
     }
 
@@ -101,12 +121,14 @@ public class TCPServer
         this.MessageReceived?.Invoke(receivedMessage);
         Chat chat = new()
         {
-            SenderId = RepositoryFactory.GetUserRepository().GetByNickname(receivedMessage.Sender.Nickname).Id,
-            RecipientId = RepositoryFactory.GetUserRepository().GetByNickname(receivedMessage.Recipient.Nickname).Id,
+            SenderId = RepositoryFactory.GetUserRepository().GetByNickname(receivedMessage.Sender.Nickname)!.Id,
+            RecipientId = RepositoryFactory.GetUserRepository().GetByNickname(receivedMessage.Recipient.Nickname)!.Id,
             Message = receivedMessage.Content,
             MessageType = receivedMessage.Type,
             DateTime = receivedMessage.DateTime,
         };
-        RepositoryFactory.GetChatRepository().Add(chat);
+        IChatRepository chatRepository = RepositoryFactory.GetChatRepository();
+        if (!chatRepository.Exists(chat))
+            chatRepository.Add(chat);
     }
 }
