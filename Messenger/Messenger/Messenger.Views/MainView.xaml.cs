@@ -125,7 +125,6 @@ namespace Messenger.Views
         private void ViewModel_MessageReceived(Message receivedMessage)
         {
             Message message = new(receivedMessage);
-            System.Windows.Forms.MessageBox.Show("Got message in client");
         }
 
         protected override void OnClosed(EventArgs e)

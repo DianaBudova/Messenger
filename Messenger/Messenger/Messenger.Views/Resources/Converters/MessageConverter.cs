@@ -6,7 +6,7 @@ using Messenger.Models.Application;
 using System.IO;
 using Newtonsoft.Json.Linq;
 
-namespace Messenger.Views.Converters;
+namespace Messenger.Views.Resources.Converters;
 
 public class MessageConverter : IMultiValueConverter
 {

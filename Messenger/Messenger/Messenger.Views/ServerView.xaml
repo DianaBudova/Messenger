@@ -4,13 +4,18 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Messenger.Views"
+        xmlns:converters="clr-namespace:Messenger.Views.Resources.Converters"
         mc:Ignorable="d"
         Title="Server"
         Height="400" Width="650"
         WindowStartupLocation="CenterScreen"
         Icon="Resources/Images/Server.png">
     <Window.Resources>
-        <ResourceDictionary Source="Resources/UIStyles.xaml"/>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Resources/UIStyles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </Window.Resources>
     
     <Grid>
@@ -117,6 +122,11 @@
                      Style="{StaticResource ListBox}"
                      Margin="3"
                      Name="listBoxClients">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Client.RemoteEndPoint}"/>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
             </ListBox>
 
             <Button Grid.Row="2"
