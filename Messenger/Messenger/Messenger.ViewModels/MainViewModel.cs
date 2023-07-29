@@ -11,6 +11,11 @@ using System.Configuration;
 using System.Net;
 using System.Net.Sockets;
 using System.Text.Json;
+using System.Threading.Tasks;
+using System.Windows.Threading;
+using System.Linq;
+using Messenger.Common;
+using System.Threading;
 
 namespace Messenger.ViewModels;
 
@@ -87,15 +92,14 @@ public class MainViewModel : ViewModelBase
         {
             this.selectedUser = value;
             OnPropertyChanged();
-            if (this.SelectedUser is null)
-                this.Messages.Clear();
-            else
+            Application.Current.Dispatcher.Invoke(this.Messages.Clear);
+            if (this.SelectedUser is not null)
             {
                 var messages = RepositoryFactory.GetChatRepository().GetBySenderRecipientId(this.SignedUser.Id, this.SelectedUser.Id);
                 if (messages is null)
                     return;
                 foreach (var message in messages)
-                    this.Messages.Add(message);
+                    Application.Current.Dispatcher.Invoke(() => this.Messages.Add(message));
             }
         }
     }
@@ -152,6 +156,8 @@ public class MainViewModel : ViewModelBase
 
     public MainViewModel(User signedUser)
     {
+        RepositoryFactory.GetUserRepository().Update(signedUser);
+
         #region Initialize Commands
         this.SearchUserCommand = new(this.SearchUser);
         this.SendMessageCommand = new(this.SendMessage);
@@ -169,31 +175,8 @@ public class MainViewModel : ViewModelBase
         this.ProfilePhoto = signedUser.ProfilePhoto;
         this.Users = new();
         this.Messages = new();
-        var existedUsers = RepositoryFactory.GetUserRepository().GetAll();
-        foreach (var user in existedUsers!)
-        {
-            try
-            {
-                if (this.SignedUser.IsSimilar(user))
-                    continue;
-                this.Users?.Add(new()
-                {
-                    Id = user.Id,
-                    Nickname = user.Nickname,
-                    EncryptedPassword = user.EncryptedPassword,
-                    IpAddress = user.IpAddress,
-                    Port = user.Port,
-                    ProfilePhoto = user.ProfilePhoto,
-                });
-            }
-            catch
-            {
-                System.Windows.Forms.MessageBox.Show("Some error occured.", "", 
-                    System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
-                this.CompleteExit?.Invoke();
-            }
-        }
         this.recorder = new();
+        this.StartMonitoringUsersAsync();
         try
         {
             string? serverName = this.SignedUser.LastUsingServer?.NameServer ?? ConfigurationManager.AppSettings["ServerNameByDefault"];
@@ -203,13 +186,61 @@ public class MainViewModel : ViewModelBase
                 ?? throw new Exception();
             IPEndPoint ep = new(IPAddress.Parse(chosenServer.IpAddress), chosenServer.Port);
             this.client = new(ep);
-            RepositoryFactory.GetUserRepository().Update(this.SignedUser);
         }
         catch
         {
             Environment.Exit(0);
         }
         this.client.MessageReceived += Client_MessageReceived;
+    }
+
+    private async void StartMonitoringUsersAsync()
+    {
+        await Task.Run(() =>
+        {
+            while (true)
+            {
+                List<User> users = RepositoryFactory.GetUserRepository().GetAll();
+                if (users is null || users.Count == 0)
+                    continue;
+                users.Remove(users.Find(u => u.IsSimilar(this.SignedUser)));
+                users.Remove(users.Find(u => u.Port is null));
+                User? selUser = null;
+                if (this.SelectedUser is not null)
+                {
+                    selUser = new()
+                    {
+                        Id = this.SelectedUser.Id,
+                        Nickname = this.SelectedUser.Nickname,
+                        EncryptedPassword = this.SelectedUser.EncryptedPassword,
+                        IpAddress = this.SelectedUser.IpAddress,
+                        Port = this.SelectedUser.Port,
+                        ProfilePhoto = this.SelectedUser.ProfilePhoto,
+                        LastUsingServer = this.SelectedUser.LastUsingServer,
+                    };
+                }
+                Application.Current.Dispatcher.Invoke(this.Users.Clear);
+                foreach (var user in users)
+                    Application.Current.Dispatcher.Invoke(() => this.Users.Add(user));
+                if (selUser is not null)
+                {
+                    if (this.Users.Any(user => user.IsSimilar(selUser)))
+                        this.SelectedUser = new()
+                        {
+                            Id = selUser.Id,
+                            Nickname = selUser.Nickname,
+                            EncryptedPassword = selUser.EncryptedPassword,
+                            IpAddress = selUser.IpAddress,
+                            Port = selUser.Port,
+                            ProfilePhoto = selUser.ProfilePhoto,
+                            LastUsingServer = selUser.LastUsingServer,
+                        };
+                    else
+                        this.SelectedUser = null;
+                }
+                Thread.Sleep(1000);
+            }
+        });
     }
 
     public void ConnectToServer()

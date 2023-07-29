@@ -7,8 +7,6 @@ using System.Collections.ObjectModel;
 using System.Configuration;
 using System.Net;
 using System.Net.Sockets;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Messenger.ViewModels;
 
@@ -125,6 +123,13 @@ public class ServerViewModel : ViewModelBase
     private void Server_MessageReceived(Message message)
     {
         this.Messages = new(this.server!.Messages);
-        this.server!.SendMessage(this.Clients[0], message);
+        if (message.Recipient is null || message.Recipient.Port is null)
+            return;
+        TcpClient recipient = new();
+        try
+        { recipient.Connect(IPAddress.Parse(message.Recipient.IpAddress), message.Recipient.Port.Value); }
+        catch
+        { return; }
+        this.server!.SendMessage(recipient, message);
     }
 }

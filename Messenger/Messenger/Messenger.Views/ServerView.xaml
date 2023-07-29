@@ -116,7 +116,8 @@
             <ListBox Grid.Row="1"
                      Style="{StaticResource ListBox}"
                      Margin="3"
-                     Name="listBoxClients"/>
+                     Name="listBoxClients">
+            </ListBox>
 
             <Button Grid.Row="2"
                     Style="{StaticResource Button}"
