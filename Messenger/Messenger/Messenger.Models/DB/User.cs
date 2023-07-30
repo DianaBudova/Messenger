@@ -28,8 +28,10 @@ public class User
         Array.Copy(user.ProfilePhoto, this.ProfilePhoto, user.ProfilePhoto.Length);
     }
 
-    public bool IsSimilar(User another)
+    public bool IsSimilar(User? another)
     {
+        if (another is null)
+            return false;
         if (this.Nickname.Equals(another.Nickname))
             return true;
         return false;

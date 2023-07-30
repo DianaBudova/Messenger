@@ -222,22 +222,7 @@ public class MainViewModel : ViewModelBase
                 Application.Current.Dispatcher.Invoke(this.Users.Clear);
                 foreach (var user in users)
                     Application.Current.Dispatcher.Invoke(() => this.Users.Add(user));
-                if (selUser is not null)
-                {
-                    if (this.Users.Any(user => user.IsSimilar(selUser)))
-                        this.SelectedUser = new()
-                        {
-                            Id = selUser.Id,
-                            Nickname = selUser.Nickname,
-                            EncryptedPassword = selUser.EncryptedPassword,
-                            IpAddress = selUser.IpAddress,
-                            Port = selUser.Port,
-                            ProfilePhoto = selUser.ProfilePhoto,
-                            LastUsingServer = selUser.LastUsingServer,
-                        };
-                    else
-                        this.SelectedUser = null;
-                }
+                this.SelectedUser = this.Users.Where(user => user.IsSimilar(selUser)).FirstOrDefault();
                 Thread.Sleep(1000);
             }
         });
