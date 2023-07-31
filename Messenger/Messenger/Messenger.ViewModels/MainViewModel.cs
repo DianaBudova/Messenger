@@ -95,10 +95,12 @@ public class MainViewModel : ViewModelBase
             Application.Current.Dispatcher.Invoke(this.Messages.Clear);
             if (this.SelectedUser is not null)
             {
-                var messages = RepositoryFactory.GetChatRepository().GetBySenderRecipientId(this.SignedUser.Id, this.SelectedUser.Id);
-                if (messages is null)
+                var sentMessages = RepositoryFactory.GetChatRepository().GetBySenderRecipientId(this.SignedUser.Id, this.SelectedUser.Id);
+                var receivedMessages = RepositoryFactory.GetChatRepository().GetBySenderRecipientId(this.SelectedUser.Id, this.SignedUser.Id);
+                if (sentMessages is null || receivedMessages is null)
                     return;
-                foreach (var message in messages)
+                var allMessages = sentMessages.Concat(receivedMessages).OrderBy(item => item.DateTime).ToList();
+                foreach (var message in allMessages)
                     Application.Current.Dispatcher.Invoke(() => this.Messages.Add(message));
             }
         }
@@ -206,6 +208,7 @@ public class MainViewModel : ViewModelBase
                 users.Remove(users.Find(u => u.IsSimilar(this.SignedUser)));
                 users.Remove(users.Find(u => u.Port is null));
                 User? selUser = null;
+                Chat? selMessage = null;
                 if (this.SelectedUser is not null)
                 {
                     selUser = new()
@@ -219,10 +222,25 @@ public class MainViewModel : ViewModelBase
                         LastUsingServer = this.SelectedUser.LastUsingServer,
                     };
                 }
+                if (this.SelectedMessage is not null)
+                {
+                    selMessage = new()
+                    {
+                        Id = this.SelectedMessage.Id,
+                        DateTime = this.SelectedMessage.DateTime,
+                        Message = this.SelectedMessage.Message,
+                        MessageType = this.SelectedMessage.MessageType,
+                        Recipient = this.SelectedMessage.Recipient,
+                        RecipientId = this.SelectedMessage.RecipientId,
+                        Sender = this.SelectedMessage.Sender,
+                        SenderId = this.SelectedMessage.SenderId,
+                    };
+                }
                 Application.Current.Dispatcher.Invoke(this.Users.Clear);
                 foreach (var user in users)
                     Application.Current.Dispatcher.Invoke(() => this.Users.Add(user));
                 this.SelectedUser = this.Users.Where(user => user.IsSimilar(selUser)).FirstOrDefault();
+                this.SelectedMessage = this.Messages.Where(msg => msg.IsSimilar(selMessage)).FirstOrDefault();
                 Thread.Sleep(1000);
             }
         });
@@ -241,7 +259,7 @@ public class MainViewModel : ViewModelBase
             User? existedUser = RepositoryFactory.GetUserRepository().GetByNickname(this.SignedUser.Nickname);
             if (existedUser is null)
                 throw new ArgumentNullException(nameof(existedUser));
-            existedUser.Port = port;
+            this.SignedUser.Port = existedUser.Port = port;
             RepositoryFactory.GetUserRepository().Update(existedUser);
         }
         catch
