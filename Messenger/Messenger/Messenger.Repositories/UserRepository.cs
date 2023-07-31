@@ -1,7 +1,6 @@
 ﻿using Messenger.Repositories.Interfaces;
 using Messenger.DAL;
 using Messenger.Models.DB;
-using System.Collections.Generic;
 
 namespace Messenger.Repositories;
 
@@ -124,6 +123,14 @@ internal class UserRepository : IUserRepository
     {
         try
         { return this.context.User.ToList(); }
+        catch
+        { return null; }
+    }
+
+    public List<User>? GetAll(Predicate<User?> predicate)
+    {
+        try
+        { return this.context.User.AsEnumerable().Where(prop => predicate(prop)).ToList(); }
         catch
         { return null; }
     }

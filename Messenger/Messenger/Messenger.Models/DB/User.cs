@@ -1,6 +1,4 @@
-﻿using System.Configuration;
-
-namespace Messenger.Models.DB;
+﻿namespace Messenger.Models.DB;
 
 public class User
 {
@@ -28,12 +26,16 @@ public class User
         Array.Copy(user.ProfilePhoto, this.ProfilePhoto, user.ProfilePhoto.Length);
     }
 
-    public bool IsSimilar(User? another)
+    public override bool Equals(object? another)
     {
-        if (another is null)
+        if (another is null || another is not User)
             return false;
-        if (this.Nickname.Equals(another.Nickname))
-            return true;
-        return false;
+        User user = (User)another;
+        return this.Id == user.Id
+            && this.Nickname == user.Nickname
+            && this.EncryptedPassword == user.EncryptedPassword
+            && this.IpAddress == user.IpAddress
+            && this.Port == user.Port
+            && this.ProfilePhoto.SequenceEqual(user.ProfilePhoto);
     }
 }

@@ -13,4 +13,5 @@ public interface IUserRepository
     public User? GetByNickname(string nickname);
     public User? GetByPort(int port);
     public List<User>? GetAll();
+    public List<User>? GetAll(Predicate<User?> predicate);
 }

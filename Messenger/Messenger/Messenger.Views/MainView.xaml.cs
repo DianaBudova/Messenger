@@ -1,12 +1,12 @@
 ﻿using Messenger.Models.Application;
 using Messenger.Models.DB;
-using Messenger.ViewModels;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using Microsoft.Win32;
 using System;
-using Messenger.Repositories;
+using Messenger.ViewModels.MainViewModel;
+using System.Text;
 
 namespace Messenger.Views
 {
@@ -15,79 +15,123 @@ namespace Messenger.Views
     /// </summary>
     public partial class MainView : Window
     {
-        private readonly MainViewModel viewModel;
+        private readonly MainViewModelContainer container;
 
         public MainView(User signedUser)
         {
             InitializeComponent();
 
-            this.viewModel = new(signedUser);
-            this.DataContext = viewModel;
+            this.container = new()
+            {
+                MainViewModel = new(signedUser),
+                UserListingViewModel = new(signedUser),
+            };
+            this.DataContext = container;
 
             #region ViewModel Events
-            viewModel.CompleteChangeNickname += ViewModel_CompleteChangeNickname;
-            viewModel.CompleteChangePassword += ViewModel_CompleteChangePassword;
-            viewModel.CompleteVoiceRecord += ViewModel_CompleteVoiceRecord;
-            viewModel.CompleteAttachFile += ViewModel_CompleteAttachFile;
-            viewModel.CompleteChangeProfilePhoto += ViewModel_CompleteChangeProfilePhoto;
-            viewModel.CompleteExit += ViewModel_CompleteExit;
-            viewModel.MessageReceived += ViewModel_MessageReceived;
+            this.container.MainViewModel.CompleteChangeNickname += ViewModel_CompleteChangeNickname;
+            this.container.MainViewModel.CompleteChangePassword += ViewModel_CompleteChangePassword;
+            this.container.MainViewModel.CompleteVoiceRecord += ViewModel_CompleteVoiceRecord;
+            this.container.MainViewModel.CompleteAttachFile += ViewModel_CompleteAttachFile;
+            this.container.MainViewModel.CompleteChangeProfilePhoto += ViewModel_CompleteChangeProfilePhoto;
+            this.container.MainViewModel.CompleteExit += ViewModel_CompleteExit;
+            this.container.MainViewModel.MessageReceived += ViewModel_MessageReceived;
             #endregion
 
             #region ViewModel Bindings
-            Binding searchedUserBinding = new(nameof(viewModel.SearchedUser));
+            Binding searchedUserBinding = new(
+                new StringBuilder()
+                .Append(nameof(this.container.MainViewModel))
+                .Append('.')
+                .Append(nameof(this.container.MainViewModel.SearchedUser))
+                .ToString());
             searchedUserBinding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
             this.textBoxSearchUser.SetBinding(TextBox.TextProperty, searchedUserBinding);
 
-            Binding inputMessageBinding = new(nameof(viewModel.InputMessage));
+            Binding inputMessageBinding = new(
+                new StringBuilder()
+                .Append(nameof(this.container.MainViewModel))
+                .Append('.')
+                .Append(nameof(this.container.MainViewModel.InputMessage))
+                .ToString());
             inputMessageBinding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
             this.textBoxYourMessage.SetBinding(TextBox.TextProperty, inputMessageBinding);
 
-            Binding nicknameBinding = new(nameof(viewModel.Nickname));
+            Binding nicknameBinding = new(
+                new StringBuilder()
+                .Append(nameof(this.container.MainViewModel))
+                .Append('.')
+                .Append(nameof(this.container.MainViewModel.Nickname))
+                .ToString());
             nicknameBinding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
             this.textBoxYourNickname.SetBinding(TextBox.TextProperty, nicknameBinding);
             
-            Binding profilePhotoBinding = new(nameof(viewModel.ProfilePhoto));
+            Binding profilePhotoBinding = new(
+                new StringBuilder()
+                .Append(nameof(this.container.MainViewModel))
+                .Append('.')
+                .Append(nameof(this.container.MainViewModel.ProfilePhoto))
+                .ToString());
             profilePhotoBinding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
             this.imagePhotoProfile.SetBinding(Image.SourceProperty, profilePhotoBinding);
 
-            Binding usersBinding = new(nameof(viewModel.Users));
+            Binding usersBinding = new(
+                new StringBuilder()
+                .Append(nameof(this.container.UserListingViewModel))
+                .Append('.')
+                .Append(nameof(this.container.UserListingViewModel.Users))
+                .ToString());
             usersBinding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
             this.listViewUsers.SetBinding(ListView.ItemsSourceProperty, usersBinding);
 
-            Binding messagesInChatBinding = new(nameof(viewModel.Messages));
+            Binding messagesInChatBinding = new(
+                new StringBuilder()
+                .Append(nameof(this.container.MainViewModel))
+                .Append('.')
+                .Append(nameof(this.container.MainViewModel.Messages))
+                .ToString());
             messagesInChatBinding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
             this.listViewMessagesInChat.SetBinding(ListBox.ItemsSourceProperty, messagesInChatBinding);
             
-            Binding selectedUserBinding = new(nameof(viewModel.SelectedUser));
+            Binding selectedUserBinding = new(
+                new StringBuilder()
+                .Append(nameof(this.container.UserListingViewModel))
+                .Append('.')
+                .Append(nameof(this.container.UserListingViewModel.SelectedUser))
+                .ToString());
             selectedUserBinding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
             this.listViewUsers.SetBinding(ListView.SelectedItemProperty, selectedUserBinding);
 
-            Binding selectedMessageBinding = new(nameof(viewModel.SelectedMessage));
+            Binding selectedMessageBinding = new(
+                new StringBuilder()
+                .Append(nameof(this.container.MainViewModel))
+                .Append('.')
+                .Append(nameof(this.container.MainViewModel.SelectedMessage))
+                .ToString());
             selectedMessageBinding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
             this.listViewMessagesInChat.SetBinding(ListBox.SelectedItemProperty, selectedMessageBinding);
             #endregion
 
             #region ViewModel Commands
-            this.buttonSearchUser.Command = viewModel.SearchUserCommand;
-            this.buttonSendMessage.Command = viewModel.SendMessageCommand;
-            this.buttonVoiceRecord.Command = viewModel.VoiceRecordCommand;
-            this.buttonAttachFile.Command = viewModel.AttachFileCommand;
-            this.buttonChangeNickname.Command = viewModel.ChangeNicknameCommand;
-            this.buttonChangePassword.Command = viewModel.ChangePasswordCommand;
-            this.buttonChangePhoto.Command = viewModel.ChangeProfilePhotoCommand;
-            this.buttonClearPhoto.Command = viewModel.ClearProfilePhotoCommand;
-            this.buttonDeleteAccount.Command = viewModel.DeleteAccountCommand;
+            this.buttonSearchUser.Command = this.container.MainViewModel.SearchUserCommand;
+            this.buttonSendMessage.Command = this.container.MainViewModel.SendMessageCommand;
+            this.buttonVoiceRecord.Command = this.container.MainViewModel.VoiceRecordCommand;
+            this.buttonAttachFile.Command = this.container.MainViewModel.AttachFileCommand;
+            this.buttonChangeNickname.Command = this.container.MainViewModel.ChangeNicknameCommand;
+            this.buttonChangePassword.Command = this.container.MainViewModel.ChangePasswordCommand;
+            this.buttonChangePhoto.Command = this.container.MainViewModel.ChangeProfilePhotoCommand;
+            this.buttonClearPhoto.Command = this.container.MainViewModel.ClearProfilePhotoCommand;
+            this.buttonDeleteAccount.Command = this.container.MainViewModel.DeleteAccountCommand;
             #endregion
 
-            this.viewModel.ConnectToServer();
+            this.container.MainViewModel.ConnectToServer();
         }
 
         private void ViewModel_CompleteChangePassword() =>
-            new ChangePasswordView(this.viewModel.SignedUser).ShowDialog();
+            new ChangePasswordView(this.container.MainViewModel.SignedUser).ShowDialog();
 
         private void ViewModel_CompleteChangeNickname() =>
-            new ChangeNicknameView(this.viewModel.SignedUser).ShowDialog();
+            new ChangeNicknameView(this.container.MainViewModel.SignedUser).ShowDialog();
 
         private void ViewModel_CompleteAttachFile()
         {
@@ -95,7 +139,7 @@ namespace Messenger.Views
             view.ShowDialog();
             if (view.FinishedMessage is null)
                 return;
-            this.viewModel.MultimediaMessage = view.FinishedMessage.Value;
+            this.container.MainViewModel.MultimediaMessage = view.FinishedMessage.Value;
         }
 
         private void ViewModel_CompleteVoiceRecord()
@@ -104,7 +148,7 @@ namespace Messenger.Views
             view.ShowDialog();
             if (view.FinishedMessage is null)
                 return;
-            this.viewModel.MultimediaMessage = view.FinishedMessage.Value;
+            this.container.MainViewModel.MultimediaMessage = view.FinishedMessage.Value;
         }
 
         private byte[]? ViewModel_CompleteChangeProfilePhoto()
@@ -118,7 +162,7 @@ namespace Messenger.Views
 
         private void ViewModel_CompleteExit()
         {
-            this.viewModel.DisconnectFromServer();
+            this.container.MainViewModel.DisconnectFromServer();
             this.Dispatcher.Invoke(this.Close);
         }
 
@@ -129,7 +173,7 @@ namespace Messenger.Views
 
         protected override void OnClosed(EventArgs e)
         {
-            this.viewModel.DisconnectFromServer();
+            this.container.MainViewModel.DisconnectFromServer();
             this.Dispatcher.Invoke(this.Close);
         }
     }
