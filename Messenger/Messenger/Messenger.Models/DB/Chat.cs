@@ -25,4 +25,17 @@ public class Chat
                             return true;
         return false;
     }
+
+    public override bool Equals(object? another)
+    {
+        if (another is null || another is not Chat)
+            return false;
+        Chat chat = (Chat)another;
+        return this.Id == chat.Id
+            && this.SenderId == chat.SenderId
+            && this.RecipientId == chat.RecipientId
+            && this.MessageType == chat.MessageType
+            && this.Message.SequenceEqual(chat.Message)
+            && this.DateTime == chat.DateTime;
+    }
 }

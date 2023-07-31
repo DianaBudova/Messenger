@@ -13,9 +13,9 @@ using System.Net.Sockets;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Linq;
-using System.Threading;
+using System.Diagnostics;
 
-namespace Messenger.ViewModels.MainViewModel;
+namespace Messenger.ViewModels;
 
 public class MainViewModel : ViewModelBase
 {
@@ -81,39 +81,6 @@ public class MainViewModel : ViewModelBase
             OnPropertyChanged();
         }
     }
-    private User? selectedUser;
-    public User? SelectedUser
-    {
-        get
-        { return selectedUser; }
-        set
-        {
-            selectedUser = value;
-            OnPropertyChanged();
-            Application.Current.Dispatcher.Invoke(Messages.Clear);
-            if (SelectedUser is not null)
-            {
-                var sentMessages = RepositoryFactory.GetChatRepository().GetBySenderRecipientId(SignedUser.Id, SelectedUser.Id);
-                var receivedMessages = RepositoryFactory.GetChatRepository().GetBySenderRecipientId(SelectedUser.Id, SignedUser.Id);
-                if (sentMessages is null || receivedMessages is null)
-                    return;
-                var allMessages = sentMessages.Concat(receivedMessages).OrderBy(item => item.DateTime).ToList();
-                foreach (var message in allMessages)
-                    Application.Current.Dispatcher.Invoke(() => Messages.Add(message));
-            }
-        }
-    }
-    private Chat? selectedMessage;
-    public Chat? SelectedMessage
-    {
-        get
-        { return selectedMessage; }
-        set
-        {
-            selectedMessage = value;
-            OnPropertyChanged();
-        }
-    }
     private MultimediaMessage? messageToSend;
     public MultimediaMessage? MultimediaMessage
     {
@@ -126,6 +93,54 @@ public class MainViewModel : ViewModelBase
         }
     }
     private ObservableCollection<User>? tempUsers;
+    private User? selectedUser;
+    public User? SelectedUser
+    {
+        get
+        { return selectedUser; }
+        set
+        {
+            selectedUser = value;
+            OnPropertyChanged();
+            if (SelectedUser is not null)
+            {
+                var sentMessages = RepositoryFactory.GetChatRepository().GetBySenderRecipientId(SignedUser.Id, SelectedUser.Id);
+                var receivedMessages = RepositoryFactory.GetChatRepository().GetBySenderRecipientId(SelectedUser.Id, SignedUser.Id);
+                if (sentMessages is null || receivedMessages is null)
+                    return;
+                var allMessages = sentMessages.Concat(receivedMessages).OrderBy(item => item.DateTime).ToList();
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    this.Messages = new(allMessages);
+                });
+                //foreach (var message in allMessages)
+                //    Application.Current.Dispatcher.Invoke(() => Messages.Add(message));
+            }
+            else
+                Application.Current.Dispatcher.Invoke(Messages.Clear);
+        }
+    }
+    private Chat? selectedMessage;
+    public Chat? SelectedMessage
+    {
+        get => selectedMessage;
+        set
+        {
+            selectedMessage = value;
+            OnPropertyChanged();
+        }
+    }
+    private ObservableCollection<User>? users;
+    public ObservableCollection<User>? Users
+    {
+        get => users;
+        set
+        {
+            users = value;
+            OnPropertyChanged();
+        }
+    }
+    public bool HasUsers => users?.Count > 0;
     private ObservableCollection<Chat>? messages;
     public ObservableCollection<Chat> Messages
     {
@@ -141,6 +156,7 @@ public class MainViewModel : ViewModelBase
     public readonly User SignedUser;
     private readonly TCPClient client;
     private readonly VoiceRecorderAdapter recorder;
+    private readonly int millisecondsDelay = 1000;
 
     public MainViewModel(User signedUser)
     {
@@ -161,8 +177,11 @@ public class MainViewModel : ViewModelBase
         SignedUser = signedUser;
         Nickname = signedUser.Nickname;
         ProfilePhoto = signedUser.ProfilePhoto;
+        Users = new();
+        Messages = new();
         Messages = new();
         recorder = new();
+        Task.Run(StartMonitoringUsers);
         try
         {
             string? serverName = SignedUser.LastUsingServer?.NameServer ?? ConfigurationManager.AppSettings["ServerNameByDefault"];
@@ -180,7 +199,30 @@ public class MainViewModel : ViewModelBase
         client.MessageReceived += Client_MessageReceived;
     }
 
-    public User ConnectToServer()
+    private async Task StartMonitoringUsers()
+    {
+        while (true)
+        {
+            List<User>? users = RepositoryFactory.GetUserRepository().GetAll(this.IsUserMatch);
+            if (users is not null && users.Count > 0)
+            {
+                User? tempSelectedUser = SelectedUser is null ? null : SelectedUser;
+                Chat? tempSelectedMessage = SelectedMessage is null ? null : SelectedMessage;
+                Application.Current.Dispatcher.Invoke(() =>
+                { this.Users = new(users); });
+                SelectedUser = this.Users!.Where(user => user.Equals(tempSelectedUser)).FirstOrDefault();
+                SelectedMessage = this.Messages.Where(msg => msg.Equals(tempSelectedMessage)).FirstOrDefault();
+            }
+            else
+                Application.Current.Dispatcher.Invoke(this.Users!.Clear);
+            await Task.Delay(millisecondsDelay);
+        }
+    }
+
+    private bool IsUserMatch(User? user) =>
+        user is not null && user.Port.HasValue && !user.Equals(this.SignedUser);
+
+    public void ConnectToServer()
     {
         try
         {
@@ -190,10 +232,10 @@ public class MainViewModel : ViewModelBase
             int port = ((IPEndPoint)client.Client.LocalEndPoint!).Port;
             if (port <= 0)
                 throw new ArgumentNullException(nameof(port));
-            User? existedUser = RepositoryFactory.GetUserRepository().GetByNickname(this.SignedUser.Nickname);
+            User? existedUser = RepositoryFactory.GetUserRepository().GetByNickname(SignedUser.Nickname);
             if (existedUser is null)
                 throw new ArgumentNullException(nameof(existedUser));
-            this.SignedUser.Port = existedUser.Port = port;
+            SignedUser.Port = existedUser.Port = port;
             RepositoryFactory.GetUserRepository().Update(existedUser);
         }
         catch
@@ -203,7 +245,6 @@ public class MainViewModel : ViewModelBase
             else
                 Environment.Exit(0);
         }
-        return this.SignedUser;
     }
 
     public void DisconnectFromServer()
@@ -223,36 +264,36 @@ public class MainViewModel : ViewModelBase
 
     private void SearchUser(object obj)
     {
-        //try
-        //{
-        //    if (SearchedUser.IsNullOrEmpty())
-        //    {
-        //        if (tempUsers is not null || tempUsers?.Count > 0)
-        //        {
-        //            Users = new(tempUsers);
-        //            tempUsers.Clear();
-        //        }
-        //        return;
-        //    }
-        //    var allUsers = RepositoryFactory.GetUserRepository().GetAll();
-        //    if (allUsers is null)
-        //        return;
-        //    allUsers.Remove(allUsers.Find(user => SignedUser.IsSimilar(user)));
-        //    if (tempUsers is null || tempUsers.Count == 0)
-        //        tempUsers = new(Users);
-        //    List<User> searchedUsers = new();
-        //    foreach (var user in allUsers)
-        //        if (user.Nickname.Contains(SearchedUser!))
-        //            searchedUsers.Add(user);
-        //    Users.Clear();
-        //    Users = new(searchedUsers);
-        //}
-        //catch
-        //{
-        //    MessageBox.Show("Some error occured.", "",
-        //        MessageBoxButton.OK, MessageBoxImage.Error);
-        //    return;
-        //}
+        try
+        {
+            if (SearchedUser.IsNullOrEmpty())
+            {
+                if (tempUsers is not null || tempUsers?.Count > 0)
+                {
+                    Users = new(tempUsers);
+                    tempUsers.Clear();
+                }
+                return;
+            }
+            var allUsers = RepositoryFactory.GetUserRepository().GetAll();
+            if (allUsers is null)
+                return;
+            allUsers.Remove(allUsers.Find(user => SignedUser.Equals(user)));
+            if (tempUsers is null || tempUsers.Count == 0)
+                tempUsers = new(Users);
+            List<User> searchedUsers = new();
+            foreach (var user in allUsers)
+                if (user.Nickname.Contains(SearchedUser!))
+                    searchedUsers.Add(user);
+            Users.Clear();
+            Users = new(searchedUsers);
+        }
+        catch
+        {
+            MessageBox.Show("Some error occured.", "",
+                MessageBoxButton.OK, MessageBoxImage.Error);
+            return;
+        }
     }
 
     private void SendMessage(object obj)
