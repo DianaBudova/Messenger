@@ -10,8 +10,8 @@ using Messenger.Repositories;
 using System.Collections.Generic;
 using Messenger.Models.DB;
 using System.Linq;
-using System.Net.Sockets;
-using System.Net;
+using Microsoft.IdentityModel.Tokens;
+using Messenger.Common.EqualityComparers;
 
 namespace Messenger.Views
 {
@@ -85,9 +85,19 @@ namespace Messenger.Views
         private void ViewModel_CompleteSignIn()
         {
             List<Server>? servers = RepositoryFactory.GetServerRepository().GetAll();
-            if (servers is not null ||
-                servers!.Select(s => s.NameServer).Contains(ConfigurationManager.AppSettings["ServerNameByDefault"]))
-                new SignInView(servers!).Show();
+            if (servers.IsNullOrEmpty())
+            {
+                MessageBox.Show("There are no active servers.", "No servers",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+            if (!servers!.Contains(Server.DefaultServer, new ServerEqualityComparer()))
+            {
+                MessageBox.Show("There is no default server.", "No default server",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+            new SignInView(servers!).Show();
         }
 
         private void ViewModel_CompleteExit()

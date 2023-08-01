@@ -64,7 +64,7 @@ internal class ServerRepository : IServerRepository
         try
         {
             return this.context.Server
-                .Where(prop => prop.NameServer.Equals(nameServer))
+                .Where(prop => prop.NameServer == nameServer)
                 .First();
         }
         catch

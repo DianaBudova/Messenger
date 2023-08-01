@@ -1,10 +1,10 @@
-﻿using Messenger.Models.Application;
-using Messenger.Models.DB;
+﻿using Messenger.Models.DB;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using Microsoft.Win32;
 using System;
+using System.IO;
 using Messenger.ViewModels;
 
 namespace Messenger.Views
@@ -111,7 +111,7 @@ namespace Messenger.Views
             fileDialog.Filter = "Image Files|*.jpg;*.jpeg;*.png;";
             if (fileDialog.ShowDialog() != true)
                 return null;
-            return System.IO.File.ReadAllBytes(fileDialog.FileName);
+            return File.ReadAllBytes(fileDialog.FileName);
         }
 
         private void ViewModel_CompleteExit()

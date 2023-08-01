@@ -89,6 +89,18 @@ public class SignUpViewModel : ViewModelBase
             MessageBox.Show("Some error occurred while adding a new user.", "", MessageBoxButton.OK, MessageBoxImage.Error);
             return;
         }
+        Server? serverByDefault = RepositoryFactory.GetServerRepository().GetByNameServer(ConfigurationManager.AppSettings["ServerNameByDefault"]);
+        if (serverByDefault is null)
+        {
+            MessageBox.Show("Server was not set as default.", "", MessageBoxButton.OK, MessageBoxImage.Error);
+            return;
+        }
+        newUser.LastUsingServer = serverByDefault;
+        if (RepositoryFactory.GetUserRepository().Update(newUser) is null)
+        {
+            MessageBox.Show("Server did not set as default.", "", MessageBoxButton.OK, MessageBoxImage.Error);
+            return;
+        }
         MessageBox.Show("New user was registered successfully.", "", MessageBoxButton.OK, MessageBoxImage.Information);
         this.SignUpCompleted?.Invoke();
     }

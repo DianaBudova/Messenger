@@ -27,7 +27,8 @@ internal class UserRepository : IUserRepository
 
     public User? Update(User user)
     {
-        User? existingUser = this.context.User.FirstOrDefault(eu => eu.Id == user.Id);
+        User? existingUser = this.context.User
+            .FirstOrDefault(eu => eu.Id == user.Id);
         if (existingUser is null)
             return null;
         existingUser.Nickname = user.Nickname;
@@ -49,7 +50,8 @@ internal class UserRepository : IUserRepository
 
     public bool Remove(User user)
     {
-        var relatedChats = this.context.Chat.Where(c => c.SenderId == user.Id || c.RecipientId == user.Id);
+        var relatedChats = this.context.Chat
+            .Where(c => c.SenderId == user.Id || c.RecipientId == user.Id);
         this.context.Chat.RemoveRange(relatedChats);
         this.context.ReseedIdentity<Chat>();
         this.context.User.Remove(user);
@@ -65,11 +67,7 @@ internal class UserRepository : IUserRepository
         try
         {
             return this.context.User
-                .Where(prop => prop.Id == user.Id)
-                .Where(prop => prop.Nickname.Equals(user.Nickname))
-                .Where(prop => prop.EncryptedPassword.Equals(user.EncryptedPassword))
-                .Where(prop => prop.IpAddress.Equals(user.IpAddress))
-                .Where(prop => prop.Port.Equals(user.Port))
+                .Where(prop => prop.Equals(user))
                 .Any();
         }
         catch
@@ -133,7 +131,12 @@ internal class UserRepository : IUserRepository
     public List<User>? GetAll(Predicate<User?> predicate)
     {
         try
-        { return this.context.User.AsEnumerable().Where(prop => predicate(prop)).ToList(); }
+        {
+            return this.context.User
+                .AsEnumerable()
+                .Where(prop => predicate(prop))
+                .ToList();
+        }
         catch
         { return null; }
     }
