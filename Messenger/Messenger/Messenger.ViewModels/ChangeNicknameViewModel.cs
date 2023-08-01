@@ -14,26 +14,27 @@ public class ChangeNicknameViewModel : ViewModelBase
     public CommandBase CancelCommand { get; }
 
     private string? newNickname;
-    private readonly string? oldNickname;
-    public string NewNickname
+    private string? oldNickname;
+    public string? NewNickname
     {
-        get
-        { return newNickname; }
+        get => this.newNickname;
         set
         {
-            newNickname = value;
+            this.newNickname = value;
             this.OnPropertyChanged();
         }
     }
-    public string OldNickname
+    public string? OldNickname
     {
-        get
-        { return this.oldNickname; }
+        get => this.oldNickname;
         set
         {
+            this.oldNickname = value;
             this.OnPropertyChanged();
         }
     }
+
+    private readonly User currentUser;
 
     public ChangeNicknameViewModel(User currentUser)
     {
@@ -43,16 +44,17 @@ public class ChangeNicknameViewModel : ViewModelBase
         #endregion
 
         this.NewNickname = currentUser.Nickname;
-        this.oldNickname = currentUser.Nickname;
+        this.OldNickname = currentUser.Nickname;
+        this.currentUser = currentUser;
     }
 
     private void Confirm(object obj)
     {
         if (this.NewNickname.IsNullOrEmpty())
             return;
-        if (this.NewNickname.Equals(this.OldNickname))
+        if (this.NewNickname!.Equals(this.OldNickname))
             return;
-        var updatedUser = RepositoryFactory.GetUserRepository().GetByNickname(this.OldNickname);
+        var updatedUser = RepositoryFactory.GetUserRepository().GetByNickname(this.currentUser.Nickname);
         if (updatedUser is null)
             return;
         updatedUser.Nickname = this.NewNickname;

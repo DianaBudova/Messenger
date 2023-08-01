@@ -30,7 +30,6 @@ namespace Messenger.Views
             this.viewModel.CompleteAttachFile += ViewModel_CompleteAttachFile;
             this.viewModel.CompleteChangeProfilePhoto += ViewModel_CompleteChangeProfilePhoto;
             this.viewModel.CompleteExit += ViewModel_CompleteExit;
-            this.viewModel.MessageReceived += ViewModel_MessageReceived;
             #endregion
 
             #region ViewModel Bindings
@@ -119,11 +118,6 @@ namespace Messenger.Views
         {
             this.viewModel.DisconnectFromServer();
             this.Dispatcher.Invoke(this.Close);
-        }
-
-        private void ViewModel_MessageReceived(Message receivedMessage)
-        {
-            Message message = new(receivedMessage);
         }
 
         protected override void OnClosed(EventArgs e)

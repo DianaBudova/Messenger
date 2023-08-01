@@ -24,7 +24,6 @@ public class MainViewModel : ViewModelBase
     public event Action? CompleteVoiceRecord;
     public event Action? CompleteAttachFile;
     public event Action? CompleteExit;
-    public event Action<Message>? MessageReceived;
     public event Func<byte[]?>? CompleteChangeProfilePhoto;
 
     public CommandBase SearchUserCommand { get; }
@@ -109,12 +108,7 @@ public class MainViewModel : ViewModelBase
                 if (sentMessages is null || receivedMessages is null)
                     return;
                 var allMessages = sentMessages.Concat(receivedMessages).OrderBy(item => item.DateTime).ToList();
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    this.Messages = new(allMessages);
-                });
-                //foreach (var message in allMessages)
-                //    Application.Current.Dispatcher.Invoke(() => Messages.Add(message));
+                Application.Current.Dispatcher.Invoke(() => { this.Messages = new(allMessages); });
             }
             else
                 Application.Current.Dispatcher.Invoke(Messages.Clear);
@@ -126,30 +120,30 @@ public class MainViewModel : ViewModelBase
         get => selectedMessage;
         set
         {
-            selectedMessage = value;
-            OnPropertyChanged();
+            this.selectedMessage = value;
+            this.OnPropertyChanged();
         }
     }
     private ObservableCollection<User>? users;
     public ObservableCollection<User>? Users
     {
-        get => users;
+        get => this.users;
         set
         {
-            users = value;
-            OnPropertyChanged();
+            this.users = value;
+            this.OnPropertyChanged();
         }
     }
     public bool HasUsers => users?.Count > 0;
     private ObservableCollection<Chat>? messages;
-    public ObservableCollection<Chat> Messages
+    public ObservableCollection<Chat>? Messages
     {
         get
-        { return messages; }
+        { return this.messages; }
         set
         {
-            messages = value;
-            OnPropertyChanged();
+            this.messages = value;
+            this.OnPropertyChanged();
         }
     }
 
@@ -211,7 +205,7 @@ public class MainViewModel : ViewModelBase
                 Application.Current.Dispatcher.Invoke(() =>
                 { this.Users = new(users); });
                 SelectedUser = this.Users!.Where(user => user.Equals(tempSelectedUser)).FirstOrDefault();
-                SelectedMessage = this.Messages.Where(msg => msg.Equals(tempSelectedMessage)).FirstOrDefault();
+                SelectedMessage = this.Messages!.Where(msg => msg.Equals(tempSelectedMessage)).FirstOrDefault();
             }
             else
                 Application.Current.Dispatcher.Invoke(this.Users!.Clear);
@@ -220,7 +214,7 @@ public class MainViewModel : ViewModelBase
     }
 
     private bool IsUserMatch(User? user) =>
-        user is not null && user.Port.HasValue && !user.Equals(this.SignedUser);
+        user is not null && !user.Equals(this.SignedUser) && user.Port.HasValue;
 
     public void ConnectToServer()
     {
@@ -395,26 +389,24 @@ public class MainViewModel : ViewModelBase
         if (MessageBox.Show("Are you sure you want to delete the current account?", "To delete the account?",
             MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes)
             return;
-        var deletedUser = RepositoryFactory.GetUserRepository().GetByNickname(SignedUser.Nickname);
+        var userRepos = RepositoryFactory.GetUserRepository();
+        var deletedUser = userRepos.GetByNickname(this.SignedUser.Nickname);
         if (deletedUser is null)
         {
             MessageBox.Show("Such a user does not exist in the database.", "",
                 MessageBoxButton.OK, MessageBoxImage.Error);
             return;
         }
-        RepositoryFactory.GetUserRepository().Remove(deletedUser);
+        userRepos.Remove(deletedUser);
         MessageBox.Show("User was deleted successfully!", "",
             MessageBoxButton.OK, MessageBoxImage.Information);
-        RepositoryFactory.GetUserRepository().Update(new(RepositoryFactory.GetUserRepository().GetByNickname(SignedUser.Nickname)) { Port = null });
         client.Disconnect();
         CompleteExit?.Invoke();
     }
 
     private void Client_MessageReceived(Message receivedMessage)
     {
-        if (receivedMessage.Type != MessageType.EndOfLine)
-            MessageReceived?.Invoke(receivedMessage);
-        else
+        if (receivedMessage.Type == MessageType.EndOfLine)
         {
             MessageBox.Show("Server is shut down which you were connected. Try again later.", "Server shut down",
                 MessageBoxButton.OK, MessageBoxImage.Information);

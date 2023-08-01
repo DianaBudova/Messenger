@@ -81,6 +81,11 @@ public class SignInViewModel : ViewModelBase
             MessageBox.Show("Nickname was entered incorrectly.", "", MessageBoxButton.OK, MessageBoxImage.Error);
             return;
         }
+        if (user.Port.HasValue)
+        {
+            MessageBox.Show("This user is already online.", "", MessageBoxButton.OK, MessageBoxImage.Error);
+            return;
+        }
         if (!HashData.VerifyData(user.EncryptedPassword, this.Password!))
         {
             MessageBox.Show("Password was entered incorrectly.", "", MessageBoxButton.OK, MessageBoxImage.Error);

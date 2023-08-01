@@ -27,7 +27,7 @@ internal class UserRepository : IUserRepository
 
     public User? Update(User user)
     {
-        User? existingUser = this.context.User.FirstOrDefault(u => u.Nickname == user.Nickname);
+        User? existingUser = this.context.User.FirstOrDefault(eu => eu.Id == user.Id);
         if (existingUser is null)
             return null;
         existingUser.Nickname = user.Nickname;
@@ -49,6 +49,9 @@ internal class UserRepository : IUserRepository
 
     public bool Remove(User user)
     {
+        var relatedChats = this.context.Chat.Where(c => c.SenderId == user.Id || c.RecipientId == user.Id);
+        this.context.Chat.RemoveRange(relatedChats);
+        this.context.ReseedIdentity<Chat>();
         this.context.User.Remove(user);
         this.context.ReseedIdentity<User>();
         try

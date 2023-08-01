@@ -12,20 +12,6 @@ public class User
     public List<Chat>? SentChat { get; set; }
     public List<Chat>? ReceivedChat { get; set; }
 
-    public User() { }
-
-    public User(User? user)
-    {
-        if (user is null)
-            throw new ArgumentNullException(nameof(user));
-        this.Id = user.Id;
-        this.Nickname = new(user.Nickname);
-        this.EncryptedPassword = new(user.EncryptedPassword);
-        this.IpAddress = new(user.IpAddress);
-        this.Port = user.Port;
-        Array.Copy(user.ProfilePhoto, this.ProfilePhoto, user.ProfilePhoto.Length);
-    }
-
     public override bool Equals(object? another)
     {
         if (another is null || another is not User)

@@ -13,19 +13,6 @@ public class Chat
     public MessageType MessageType { get; set; }
     public DateTime DateTime { get; set; }
 
-    public bool IsSimilar(Chat? another)
-    {
-        if (another is null)
-            return false;
-        if (this.SenderId == another.SenderId)
-            if (this.RecipientId == another.RecipientId)
-                if (this.MessageType == another.MessageType)
-                    if (this.Message.SequenceEqual(another.Message))
-                        if (this.DateTime == another.DateTime)
-                            return true;
-        return false;
-    }
-
     public override bool Equals(object? another)
     {
         if (another is null || another is not Chat)

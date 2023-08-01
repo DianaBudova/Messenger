@@ -16,7 +16,6 @@ public class DataContext : DbContext
         if (connectionString is null)
             return;
         optionsBuilder.UseSqlServer(connectionString);
-
         base.OnConfiguring(optionsBuilder);
     }
 
@@ -30,13 +29,13 @@ public class DataContext : DbContext
             .HasOne(prop => prop.Sender)
             .WithMany(prop => prop.SentChat)
             .HasForeignKey(prop => prop.SenderId)
-            .OnDelete(DeleteBehavior.NoAction);
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<Chat>()
             .HasOne(prop => prop.Recipient)
             .WithMany(prop => prop.ReceivedChat)
             .HasForeignKey(prop => prop.RecipientId)
-            .OnDelete(DeleteBehavior.NoAction);
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<Server>()
             .HasIndex(prop => prop.NameServer)
