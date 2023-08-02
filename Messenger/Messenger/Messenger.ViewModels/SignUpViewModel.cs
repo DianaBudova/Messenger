@@ -7,7 +7,7 @@ using System.Net;
 using System;
 using Messenger.Models.DB;
 using System.Configuration;
-using Messenger.BL;
+using System.Linq;
 
 namespace Messenger.ViewModels;
 
@@ -76,7 +76,10 @@ public class SignUpViewModel : ViewModelBase
             MessageBox.Show("New password and repeated password do not match.", "", MessageBoxButton.OK, MessageBoxImage.Error);
             return;
         }
-        string ipAddress = "127.0.0.1";
+        string ipAddress = Dns.GetHostAddresses(Dns.GetHostName())
+            .Where(ipAddress => ipAddress.AddressFamily == AddressFamily.InterNetwork)
+            .First()
+            .ToString();
         User newUser = new()
         {
             Nickname = this.NewNickname!,

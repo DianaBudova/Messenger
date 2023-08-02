@@ -1,4 +1,5 @@
 ﻿using System.Configuration;
+using System.Net;
 
 namespace Messenger.Models.DB;
 

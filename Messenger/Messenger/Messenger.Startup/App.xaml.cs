@@ -18,7 +18,6 @@ namespace Messenger.Startup
             using DataContext context = new();
             if (!(context.Database.GetService<IDatabaseCreator>() as RelationalDatabaseCreator)!.Exists())
                 context.Database.EnsureCreated();
-
             this.ConfigureTables(context);
         }
 
