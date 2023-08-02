@@ -17,6 +17,8 @@
             </ResourceDictionary.MergedDictionaries>
 
             <converters:MessageConverter x:Key="MessageConverter"/>
+            <converters:UserConverter x:Key="UserConverter"/>
+            <converters:OnlineOfflineConverter x:Key="OnlineOfflineConverter"/>
         </ResourceDictionary>
     </Window.Resources>
 
@@ -75,6 +77,14 @@
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
+
+                            <GridViewColumn Header="Status">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Port, Converter={StaticResource OnlineOfflineConverter}}"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
                         </GridView>
                     </ListView.View>
                 </ListView>
@@ -129,6 +139,41 @@
                      x:Name="listViewMessagesInChat">
                     <ListView.View>
                         <GridView>
+                            <GridViewColumn Header="From" Width="150">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <DockPanel>
+                                            <Ellipse Width="25"
+                                                     Height="25"
+                                                     Margin="2">
+                                                <Ellipse.Fill>
+                                                    <ImageBrush ImageSource="{Binding SenderId, Converter={StaticResource UserConverter}, ConverterParameter='ProfilePhoto'}"/>
+                                                </Ellipse.Fill>
+                                            </Ellipse>
+                                            <TextBlock Text="{Binding SenderId, Converter={StaticResource UserConverter}, ConverterParameter='Nickname'}"
+                                                       VerticalAlignment="Center"/>
+                                        </DockPanel>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+
+                            <GridViewColumn Header="To" Width="150">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <DockPanel>
+                                            <Ellipse Width="25"
+                                                     Height="25">
+                                                <Ellipse.Fill>
+                                                    <ImageBrush ImageSource="{Binding RecipientId, Converter={StaticResource UserConverter}, ConverterParameter='ProfilePhoto'}"/>
+                                                </Ellipse.Fill>
+                                            </Ellipse>
+                                            <TextBlock Text="{Binding RecipientId, Converter={StaticResource UserConverter}, ConverterParameter='Nickname'}"
+                                                       VerticalAlignment="Center"/>
+                                        </DockPanel>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+
                             <GridViewColumn Header="Message" Width="200">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
@@ -144,7 +189,7 @@
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
                             
-                            <GridViewColumn Header="Type of message" Width="50">
+                            <GridViewColumn Header="Type" Width="60">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <TextBlock Text="{Binding MessageType}"/>

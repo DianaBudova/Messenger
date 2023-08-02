@@ -214,7 +214,7 @@ public class MainViewModel : ViewModelBase
     }
 
     private bool IsUserMatch(User? user) =>
-        user is not null && !user.Equals(this.SignedUser) && user.Port.HasValue;
+        user is not null && !user.Equals(this.SignedUser);
 
     public void ConnectToServer()
     {

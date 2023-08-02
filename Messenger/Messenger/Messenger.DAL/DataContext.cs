@@ -29,13 +29,13 @@ public class DataContext : DbContext
             .HasOne(prop => prop.Sender)
             .WithMany(prop => prop.SentChat)
             .HasForeignKey(prop => prop.SenderId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.NoAction);
 
         modelBuilder.Entity<Chat>()
             .HasOne(prop => prop.Recipient)
             .WithMany(prop => prop.ReceivedChat)
             .HasForeignKey(prop => prop.RecipientId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.NoAction);
 
         modelBuilder.Entity<Server>()
             .HasIndex(prop => prop.NameServer)

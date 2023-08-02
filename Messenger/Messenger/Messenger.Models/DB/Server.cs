@@ -11,7 +11,7 @@ public class Server
 
     public static Server DefaultServer { get; } = new()
     {
-        Id = 1,
+        Id = 0,
         NameServer = ConfigurationManager.AppSettings["ServerNameByDefault"]!,
         IpAddress = "127.0.0.1",
         Port = 8888,
@@ -22,8 +22,7 @@ public class Server
         if (another is null || another is not Server)
             return false;
         Server server = (Server)another;
-        return this.Id == server.Id
-            && this.NameServer == server.NameServer
+        return this.NameServer == server.NameServer
             && this.IpAddress == server.IpAddress
             && this.Port == server.Port;
     }
