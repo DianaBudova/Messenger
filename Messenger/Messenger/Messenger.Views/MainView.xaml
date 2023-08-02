@@ -19,6 +19,7 @@
             <converters:MessageConverter x:Key="MessageConverter"/>
             <converters:UserConverter x:Key="UserConverter"/>
             <converters:OnlineOfflineConverter x:Key="OnlineOfflineConverter"/>
+            <converters:OnlineOfflineColorConverter x:Key="OnlineOfflineColorConverter"/>
         </ResourceDictionary>
     </Window.Resources>
 
@@ -81,7 +82,8 @@
                             <GridViewColumn Header="Status">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
-                                        <TextBlock Text="{Binding Port, Converter={StaticResource OnlineOfflineConverter}}"/>
+                                        <TextBlock Text="{Binding Port, Converter={StaticResource OnlineOfflineConverter}}"
+                                                   Foreground="{Binding Port, Converter={StaticResource OnlineOfflineColorConverter}}"/>
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
