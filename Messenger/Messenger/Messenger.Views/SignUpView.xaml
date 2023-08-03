@@ -78,17 +78,6 @@
                      Style="{StaticResource TextBox}"
                      Validation.ErrorTemplate="{StaticResource ErrorTemplate}"
                      Name="textBoxInputNewPassword"/>
-
-                <!--<Button Grid.Column="2"
-                    Style="{StaticResource Button}"
-                    Name="buttonShowNewPassword">
-                <StackPanel>
-                    <Image Width="16"
-                           Height="16"
-                           Margin="1.5, 0"
-                           Source="/Messenger.Views;component/Resources/Images/OpenedEye.png"/>
-                </StackPanel>
-            </Button>-->
             </Grid>
             <!--#endregion-->
 
@@ -110,17 +99,6 @@
                      Style="{StaticResource TextBox}"
                      Validation.ErrorTemplate="{StaticResource ErrorTemplate}"
                      Name="textBoxInputRepeatedPassword"/>
-
-                <!--<Button Grid.Column="2"
-                    Style="{StaticResource Button}"
-                    Name="buttonShowRepeatedPassword">
-                <StackPanel>
-                    <Image Width="16"
-                           Height="16"
-                           Margin="1.5, 0"
-                           Source="/Messenger.Views;component/Resources/Images/OpenedEye.png"/>
-                </StackPanel>
-            </Button>-->
             </Grid>
             <!--#endregion-->
 

@@ -1,1 +1,0 @@
-1. Change words "row" and "column" to "Row" and "Column" in .xaml files in #region area.

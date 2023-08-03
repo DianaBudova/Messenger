@@ -27,7 +27,7 @@
                 <RowDefinition/>
             </Grid.RowDefinitions>
 
-            <!--#region First row-->
+            <!--#region First Row-->
             <Button Grid.Row="0"
                 Name="buttonAttachFile"
                 Style="{StaticResource Button}">
@@ -42,7 +42,7 @@
             </Button>
             <!--#endregion-->
 
-            <!--#region Second row-->
+            <!--#region Second Row-->
             <Grid Grid.Row="1">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="0.3*"/>
@@ -78,7 +78,7 @@
             </Grid>
             <!--#endregion-->
 
-            <!--#region Third row-->
+            <!--#region Third Row-->
             <Grid Grid.Row="2">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>

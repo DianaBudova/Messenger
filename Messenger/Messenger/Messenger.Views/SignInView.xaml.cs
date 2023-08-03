@@ -5,10 +5,9 @@ using Messenger.ViewModels;
 using Messenger.Validation;
 using Messenger.Models.DB;
 using Messenger.Repositories;
-using Messenger.Cryptography;
-using System.Collections.Generic;
 using System.Linq;
 using System.Configuration;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Messenger.Views
 {
@@ -19,6 +18,14 @@ namespace Messenger.Views
     {
         public SignInView()
         {
+            var servers = RepositoryFactory.GetServerRepository().GetAll().Select(s => s.NameServer);
+            if (servers.IsNullOrEmpty())
+            {
+                this.ViewModel_CompleteCancel();
+                return;
+            }
+            var defaultServer = ConfigurationManager.AppSettings["ServerNameByDefault"];
+
             InitializeComponent();
 
             SignInViewModel viewModel = new();
@@ -45,8 +52,8 @@ namespace Messenger.Views
             lastUsingServerBinding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
             this.comboBoxServer.SetBinding(ComboBox.TextProperty, lastUsingServerBinding);
 
-            this.comboBoxServer.ItemsSource = RepositoryFactory.GetServerRepository().GetAll().Select(s => s.NameServer);
-            this.comboBoxServer.SelectedItem = ConfigurationManager.AppSettings["ServerNameByDefault"];
+            this.comboBoxServer.ItemsSource = servers;
+            this.comboBoxServer.SelectedItem = defaultServer;
             #endregion
 
             #region ViewModel Commands

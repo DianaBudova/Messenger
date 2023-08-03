@@ -88,23 +88,6 @@
                      Style="{StaticResource TextBox}"
                      Validation.ErrorTemplate="{StaticResource ErrorTemplate}"
                      Name="textBoxInputPassword"/>
-
-                <!--<PasswordBox Grid.Column="1"
-                     MinWidth="200"
-                     Style="{StaticResource PasswordBox}"
-                     Validation.ErrorTemplate="{StaticResource ErrorTemplate}"
-                     Name="passwordBoxInputPassword"/>-->
-
-                <!--<Button Grid.Column="2"
-                    Style="{StaticResource Button}"
-                    Name="buttonShowPassword">
-                <StackPanel>
-                    <Image Width="16"
-                           Height="16"
-                           Margin="1.5, 0"
-                           Source="/Messenger.Views;component/Resources/Images/OpenedEye.png"/>
-                </StackPanel>
-            </Button>-->
             </Grid>
             <!--#endregion-->
 

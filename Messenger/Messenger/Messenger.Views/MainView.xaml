@@ -40,7 +40,7 @@
                 <RowDefinition Height="10*"/>
             </Grid.RowDefinitions>
 
-            <!--#region First column-->
+            <!--#region First Column-->
             <Label Grid.Row="0"
                Grid.Column="0"
                Style="{StaticResource Caption}">
@@ -121,7 +121,7 @@
             </Grid>
             <!--#endregion-->
 
-            <!--#region Second column-->
+            <!--#region Second Column-->
             <Label Grid.Row="0"
                Grid.Column="1"
                Style="{StaticResource Caption}">
@@ -268,7 +268,7 @@
             </Grid>
             <!--#endregion-->
 
-            <!--#region Third column-->
+            <!--#region Third Column-->
             <Label Grid.Row="0"
                Grid.Column="2"
                Style="{StaticResource Caption}">
