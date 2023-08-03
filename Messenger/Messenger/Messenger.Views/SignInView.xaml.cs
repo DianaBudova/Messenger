@@ -17,7 +17,7 @@ namespace Messenger.Views
     /// </summary>
     public partial class SignInView : Window
     {
-        public SignInView(IEnumerable<Server> servers)
+        public SignInView()
         {
             InitializeComponent();
 
@@ -45,7 +45,7 @@ namespace Messenger.Views
             lastUsingServerBinding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
             this.comboBoxServer.SetBinding(ComboBox.TextProperty, lastUsingServerBinding);
 
-            this.comboBoxServer.ItemsSource = servers.Select(s => s.NameServer);
+            this.comboBoxServer.ItemsSource = RepositoryFactory.GetServerRepository().GetAll().Select(s => s.NameServer);
             this.comboBoxServer.SelectedItem = ConfigurationManager.AppSettings["ServerNameByDefault"];
             #endregion
 

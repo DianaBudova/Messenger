@@ -12,11 +12,9 @@ namespace Messenger.ViewModels;
 
 public class ServerViewModel : ViewModelBase
 {
-    public event Action? CompleteSignIn;
     public event Action? CompleteExit;
     public CommandBase StartCommand { get; }
     public CommandBase StopCommand { get; }
-    public CommandBase SignInCommand { get; }
 
     private string? selectedClient;
     private bool isStarted;
@@ -71,7 +69,6 @@ public class ServerViewModel : ViewModelBase
         #region Initialize Commands
         this.StartCommand = new(this.Start);
         this.StopCommand = new(this.Stop);
-        this.SignInCommand = new(this.SignIn);
         #endregion
 
         this.isStarted = false;
@@ -103,11 +100,6 @@ public class ServerViewModel : ViewModelBase
     private void Stop(object obj)
     {
         this.server!.Stop();
-    }
-
-    private void SignIn(object obj)
-    {
-        this.CompleteSignIn?.Invoke();
     }
 
     private void Server_ClientsChanged()

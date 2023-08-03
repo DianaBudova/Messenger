@@ -6,12 +6,6 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media.Imaging;
 using System.Configuration;
-using Messenger.Repositories;
-using System.Collections.Generic;
-using Messenger.Models.DB;
-using System.Linq;
-using Microsoft.IdentityModel.Tokens;
-using Messenger.Common.EqualityComparers;
 
 namespace Messenger.Views
 {
@@ -30,7 +24,6 @@ namespace Messenger.Views
             this.DataContext = viewModel;
 
             #region ViewModel Events
-            viewModel.CompleteSignIn += ViewModel_CompleteSignIn;
             viewModel.CompleteExit += ViewModel_CompleteExit;
             #endregion
 
@@ -78,26 +71,7 @@ namespace Messenger.Views
             #region ViewModel Commands
             this.buttonStart.Command = viewModel.StartCommand;
             this.buttonStop.Command = viewModel.StopCommand;
-            this.buttonOpenSignInView.Command = viewModel.SignInCommand;
             #endregion
-        }
-
-        private void ViewModel_CompleteSignIn()
-        {
-            List<Server>? servers = RepositoryFactory.GetServerRepository().GetAll();
-            if (servers.IsNullOrEmpty())
-            {
-                MessageBox.Show("There are no active servers.", "No servers",
-                    MessageBoxButton.OK, MessageBoxImage.Information);
-                return;
-            }
-            if (!servers!.Contains(Server.DefaultServer, new ServerEqualityComparer()))
-            {
-                MessageBox.Show("There is no default server.", "No default server",
-                    MessageBoxButton.OK, MessageBoxImage.Information);
-                return;
-            }
-            new SignInView(servers!).Show();
         }
 
         private void ViewModel_CompleteExit()

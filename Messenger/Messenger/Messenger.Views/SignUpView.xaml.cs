@@ -58,34 +58,34 @@ namespace Messenger.Views
 
         private void ViewModel_CompleteSignIn()
         {
-            List<Server>? servers = RepositoryFactory.GetServerRepository().GetAll();
-            if (servers.IsNullOrEmpty())
-            {
-                MessageBox.Show("There are no active servers.", "No servers",
-                    MessageBoxButton.OK, MessageBoxImage.Information);
-                this.Close();
-                return;
-            }
-            if (!servers!.Contains(Server.DefaultServer, new ServerEqualityComparer()))
-            {
-                MessageBox.Show("There is no default server.", "No default server",
-                    MessageBoxButton.OK, MessageBoxImage.Information);
-                this.Close();
-                return;
-            }
-            new SignInView(servers!).Show();
+            //List<Server>? servers = RepositoryFactory.GetServerRepository().GetAll();
+            //if (servers.IsNullOrEmpty())
+            //{
+            //    MessageBox.Show("There are no active servers.", "No servers",
+            //        MessageBoxButton.OK, MessageBoxImage.Information);
+            //    this.Close();
+            //    return;
+            //}
+            //if (!servers!.Contains(Server.DefaultServer, new ServerEqualityComparer()))
+            //{
+            //    MessageBox.Show("There is no default server.", "No default server",
+            //        MessageBoxButton.OK, MessageBoxImage.Information);
+            //    this.Close();
+            //    return;
+            //}
+            new SignInView(/*servers!*/).Show();
             this.Close();
         }
 
         private void ViewModel_SignUpCompleted()
         {
-            List<Server>? servers = RepositoryFactory.GetServerRepository().GetAll();
-            if (servers is not null ||
-                servers!.Select(s => s.NameServer).Contains(ConfigurationManager.AppSettings["ServerNameByDefault"]))
-                new SignInView(servers!).Show();
-            else
-                MessageBox.Show("There are no working servers at the moment. Try again later.", "Servers are not working",
-                    MessageBoxButton.OK, MessageBoxImage.Information);
+            //List<Server>? servers = RepositoryFactory.GetServerRepository().GetAll();
+            //if (servers is not null ||
+            //    servers!.Select(s => s.NameServer).Contains(ConfigurationManager.AppSettings["ServerNameByDefault"]))
+                new SignInView(/*servers!*/).Show();
+            //else
+            //    MessageBox.Show("There are no working servers at the moment. Try again later.", "Servers are not working",
+            //        MessageBoxButton.OK, MessageBoxImage.Information);
             this.Close();
         }
 

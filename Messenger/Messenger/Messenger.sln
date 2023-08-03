@@ -19,9 +19,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Messenger.BL", "Messenger.B
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Messenger.Common", "Messenger.Common\Messenger.Common.csproj", "{94599498-CBCB-490A-BA5D-942B230BAB17}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Messenger.Repositories", "Messenger.Repositories\Messenger.Repositories.csproj", "{BA4DFEAC-BD1A-4834-991E-60107AE94EDF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Messenger.Repositories", "Messenger.Repositories\Messenger.Repositories.csproj", "{BA4DFEAC-BD1A-4834-991E-60107AE94EDF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Messenger.DAL", "Messenger.DAL\Messenger.DAL.csproj", "{7FCF2B22-8ADF-4FD0-91EE-9D29E2C0C0F0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Messenger.DAL", "Messenger.DAL\Messenger.DAL.csproj", "{7FCF2B22-8ADF-4FD0-91EE-9D29E2C0C0F0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Messenger.ServerStartup", "Messenger.ServerStartup\Messenger.ServerStartup.csproj", "{113CD706-4C24-40B5-95D1-12074280C338}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -69,6 +71,10 @@ Global
 		{7FCF2B22-8ADF-4FD0-91EE-9D29E2C0C0F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7FCF2B22-8ADF-4FD0-91EE-9D29E2C0C0F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7FCF2B22-8ADF-4FD0-91EE-9D29E2C0C0F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{113CD706-4C24-40B5-95D1-12074280C338}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{113CD706-4C24-40B5-95D1-12074280C338}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{113CD706-4C24-40B5-95D1-12074280C338}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{113CD706-4C24-40B5-95D1-12074280C338}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

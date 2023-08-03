@@ -4,7 +4,6 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Messenger.Views"
-        xmlns:converters="clr-namespace:Messenger.Views.Resources.Converters"
         mc:Ignorable="d"
         Title="Server"
         Height="400" Width="650"
@@ -110,7 +109,6 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition/>
-                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
             <Label Grid.Row="0"
@@ -128,11 +126,6 @@
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
-
-            <Button Grid.Row="2"
-                    Style="{StaticResource Button}"
-                    Content="Open Sign In"
-                    Name="buttonOpenSignInView"/>
         </Grid>
         <!--#endregion-->
     </Grid>
