@@ -1,5 +1,4 @@
 ﻿using System.Configuration;
-using System.Net;
 
 namespace Messenger.Models.DB;
 
@@ -14,7 +13,7 @@ public class Server
     {
         Id = 0,
         NameServer = ConfigurationManager.AppSettings["ServerNameByDefault"]!,
-        IpAddress = "127.0.0.1",
+        IpAddress = "192.168.77.166",
         Port = 8888,
     };
 
