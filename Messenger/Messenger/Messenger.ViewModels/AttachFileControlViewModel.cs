@@ -11,9 +11,9 @@ public class AttachFileControlViewModel : ViewModelBase
     public event Action<MultimediaMessage>? CompleteConfirm;
     public event Action? CompleteCancel;
 
-    public CommandBase AttachFileCommand { get; set; }
-    public CommandBase ConfirmCommand { get; set; }
-    public CommandBase CancelCommand { get; set; }
+    public CommandBase AttachFileCommand { get; }
+    public CommandBase ConfirmCommand { get; }
+    public CommandBase CancelCommand { get; }
 
     private string? path;
     private long size;
@@ -38,7 +38,7 @@ public class AttachFileControlViewModel : ViewModelBase
         }
     }
 
-    private File? currentFile { get; set; }
+    private File? currentFile;
 
     public AttachFileControlViewModel()
     {

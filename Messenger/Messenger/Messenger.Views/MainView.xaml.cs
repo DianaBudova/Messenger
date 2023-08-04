@@ -29,6 +29,7 @@ namespace Messenger.Views
             this.viewModel.CompleteVoiceRecord += ViewModel_CompleteVoiceRecord;
             this.viewModel.CompleteAttachFile += ViewModel_CompleteAttachFile;
             this.viewModel.CompleteChangeProfilePhoto += ViewModel_CompleteChangeProfilePhoto;
+            this.viewModel.MessageSendCompleted += ViewModel_MessageSendCompleted;
             this.viewModel.CompleteExit += ViewModel_CompleteExit;
             #endregion
 
@@ -112,6 +113,11 @@ namespace Messenger.Views
             if (fileDialog.ShowDialog() != true)
                 return null;
             return File.ReadAllBytes(fileDialog.FileName);
+        }
+
+        private void ViewModel_MessageSendCompleted()
+        {
+            this.textBoxYourMessage.Text = string.Empty;
         }
 
         private void ViewModel_CompleteExit()

@@ -23,6 +23,7 @@ public class MainViewModel : ViewModelBase
     public event Action? CompleteChangePassword;
     public event Action? CompleteVoiceRecord;
     public event Action? CompleteAttachFile;
+    public event Action? MessageSendCompleted;
     public event Action? CompleteExit;
     public event Func<byte[]?>? CompleteChangeProfilePhoto;
 
@@ -315,6 +316,7 @@ public class MainViewModel : ViewModelBase
             else
                 throw new Exception();
             client.SendMessage(messageToSend);
+            this.MessageSendCompleted?.Invoke();
         }
         catch
         {
