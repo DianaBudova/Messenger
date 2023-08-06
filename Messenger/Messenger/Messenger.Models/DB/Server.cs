@@ -8,7 +8,6 @@ public class Server
     public string NameServer { get; set; }
     public string IpAddress { get; set; }
     public int Port { get; set; }
-
     public static Server DefaultServer { get; } = new()
     {
         Id = 0,

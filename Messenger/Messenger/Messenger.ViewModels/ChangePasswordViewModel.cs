@@ -15,7 +15,7 @@ public class ChangePasswordViewModel : ViewModelBase
     public CommandBase CancelCommand { get; }
 
     private string? newPassword;
-    public string NewPassword
+    public string? NewPassword
     {
         get
         { return newPassword; }
