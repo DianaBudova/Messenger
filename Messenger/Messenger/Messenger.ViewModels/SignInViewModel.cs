@@ -4,6 +4,9 @@ using Messenger.Cryptography;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using Messenger.Models.DB;
+using System.Net;
+using System.Linq;
+using System.Net.Sockets;
 
 namespace Messenger.ViewModels;
 
@@ -93,6 +96,10 @@ public class SignInViewModel : ViewModelBase
         }
         MessageBox.Show("Login successfully.", "", MessageBoxButton.OK, MessageBoxImage.Information);
         user.LastUsingServer = RepositoryFactory.GetServerRepository().GetByNameServer(this.LastUsingServer!);
+        user.IpAddress = Dns.GetHostAddresses(Dns.GetHostName())
+            .Where(ipAddress => ipAddress.AddressFamily == AddressFamily.InterNetwork)
+            .First()
+            .ToString();
         this.SignInCompleted?.Invoke(user);
     }
 

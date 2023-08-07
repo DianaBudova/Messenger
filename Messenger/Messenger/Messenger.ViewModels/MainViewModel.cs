@@ -13,7 +13,7 @@ using System.Net.Sockets;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Linq;
-using System.Diagnostics;
+using System.Windows.Threading;
 
 namespace Messenger.ViewModels;
 
@@ -169,29 +169,29 @@ public class MainViewModel : ViewModelBase
         DeleteAccountCommand = new(DeleteAccount);
         #endregion
 
-        SignedUser = signedUser;
-        Nickname = signedUser.Nickname;
-        ProfilePhoto = signedUser.ProfilePhoto;
-        Users = new();
-        Messages = new();
-        Messages = new();
-        recorder = new();
-        Task.Run(StartMonitoringUsers);
+        this.SignedUser = signedUser;
+        this.Nickname = signedUser.Nickname;
+        this.ProfilePhoto = signedUser.ProfilePhoto;
+        this.Users = new();
+        this.Messages = new();
+        this.Messages = new();
+        this.recorder = new();
+        Task.Run(this.StartMonitoringUsers);
         try
         {
-            string? serverName = SignedUser.LastUsingServer?.NameServer ?? ConfigurationManager.AppSettings["ServerNameByDefault"];
+            string? serverName = this.SignedUser.LastUsingServer?.NameServer ?? ConfigurationManager.AppSettings["ServerNameByDefault"];
             if (serverName is null)
                 throw new Exception();
             Server? chosenServer = RepositoryFactory.GetServerRepository().GetByNameServer(serverName)
                 ?? throw new Exception();
             IPEndPoint ep = new(IPAddress.Parse(chosenServer.IpAddress), chosenServer.Port);
-            client = new(ep);
+            this.client = new(ep);
         }
         catch
         {
             Environment.Exit(0);
         }
-        client.MessageReceived += Client_MessageReceived;
+        this.client.MessageReceived += Client_MessageReceived;
     }
 
     private async Task StartMonitoringUsers()
@@ -201,16 +201,19 @@ public class MainViewModel : ViewModelBase
             List<User>? users = RepositoryFactory.GetUserRepository().GetAll(this.IsUserMatch);
             if (users is not null && users.Count > 0)
             {
-                User? tempSelectedUser = SelectedUser is null ? null : SelectedUser;
-                Chat? tempSelectedMessage = SelectedMessage is null ? null : SelectedMessage;
+                User? tempSelectedUser = this.SelectedUser is null ? null : this.SelectedUser;
+                Chat? tempSelectedMessage = this.SelectedMessage is null ? null : this.SelectedMessage;
+
                 Application.Current.Dispatcher.Invoke(() =>
                 { this.Users = new(users); });
-                SelectedUser = this.Users!.Where(user => user.Equals(tempSelectedUser)).FirstOrDefault();
-                SelectedMessage = this.Messages!.Where(msg => msg.Equals(tempSelectedMessage)).FirstOrDefault();
+                this.SelectedUser = this.Users!.Where(user => user.Equals(tempSelectedUser)).FirstOrDefault();
+                this.SelectedMessage = this.Messages!.Where(msg => msg.Equals(tempSelectedMessage)).FirstOrDefault();
+                if (!this.SearchedUser.IsNullOrEmpty())
+                    this.SearchUser(null);
             }
             else
                 Application.Current.Dispatcher.Invoke(this.Users!.Clear);
-            await Task.Delay(millisecondsDelay);
+            await Task.Delay(this.millisecondsDelay);
         }
     }
 
@@ -227,16 +230,16 @@ public class MainViewModel : ViewModelBase
             int port = ((IPEndPoint)client.Client.LocalEndPoint!).Port;
             if (port <= 0)
                 throw new ArgumentNullException(nameof(port));
-            User? existedUser = RepositoryFactory.GetUserRepository().GetByNickname(SignedUser.Nickname);
+            User? existedUser = RepositoryFactory.GetUserRepository().GetByNickname(this.SignedUser.Nickname);
             if (existedUser is null)
                 throw new ArgumentNullException(nameof(existedUser));
-            SignedUser.Port = existedUser.Port = port;
+            this.SignedUser.Port = existedUser.Port = port;
             RepositoryFactory.GetUserRepository().Update(existedUser);
         }
         catch
         {
-            if (CompleteExit is not null)
-                CompleteExit.Invoke();
+            if (this.CompleteExit is not null)
+                this.CompleteExit.Invoke();
             else
                 Environment.Exit(0);
         }
@@ -246,8 +249,8 @@ public class MainViewModel : ViewModelBase
     {
         try
         {
-            client.Disconnect();
-            User? existedUser = RepositoryFactory.GetUserRepository().GetByNickname(SignedUser.Nickname);
+            this.client.Disconnect();
+            User? existedUser = RepositoryFactory.GetUserRepository().GetByNickname(this.SignedUser.Nickname);
             if (existedUser is null)
                 return;
             existedUser.Port = null;
@@ -261,27 +264,29 @@ public class MainViewModel : ViewModelBase
     {
         try
         {
-            if (SearchedUser.IsNullOrEmpty())
+            if (this.SearchedUser.IsNullOrEmpty())
             {
-                if (tempUsers is not null || tempUsers?.Count > 0)
+                if (this.tempUsers is not null || this.tempUsers?.Count > 0)
                 {
-                    Users = new(tempUsers);
-                    tempUsers.Clear();
+                    Dispatcher.CurrentDispatcher.Invoke(() => this.Users = new(this.tempUsers));
+                    Dispatcher.CurrentDispatcher.Invoke(this.tempUsers.Clear);
                 }
                 return;
             }
             var allUsers = RepositoryFactory.GetUserRepository().GetAll();
             if (allUsers is null)
                 return;
-            allUsers.Remove(allUsers.Find(user => SignedUser.Equals(user)));
-            if (tempUsers is null || tempUsers.Count == 0)
-                tempUsers = new(Users);
+            allUsers.Remove(allUsers.Find(this.SignedUser.Equals));
+            if (this.tempUsers is null || this.tempUsers.Count == 0)
+                this.tempUsers = new(this.Users!);
             List<User> searchedUsers = new();
             foreach (var user in allUsers)
-                if (user.Nickname.Contains(SearchedUser!))
+                if (user.Nickname.Contains(this.SearchedUser!))
                     searchedUsers.Add(user);
-            Users.Clear();
-            Users = new(searchedUsers);
+            if (searchedUser.IsNullOrEmpty())
+                Dispatcher.CurrentDispatcher.Invoke(() => this.Users!.Clear);
+            else
+                Dispatcher.CurrentDispatcher.Invoke(() => this.Users = new(searchedUsers));
         }
         catch
         {
@@ -293,7 +298,7 @@ public class MainViewModel : ViewModelBase
 
     private void SendMessage(object obj)
     {
-        if (SelectedUser is null)
+        if (this.SelectedUser is null)
             return;
         Message messageToSend = new()
         {
@@ -303,19 +308,19 @@ public class MainViewModel : ViewModelBase
         };
         try
         {
-            if (MultimediaMessage is not null && !MultimediaMessage.Value.Content.IsNullOrEmpty())
+            if (this.MultimediaMessage is not null && !this.MultimediaMessage.Value.Content.IsNullOrEmpty())
             {
-                messageToSend.Content = MultimediaMessage.Value.Content;
-                messageToSend.Type = MultimediaMessage.Value.Type == MultimediaMessageType.File ? MessageType.File : MessageType.Audio;
+                messageToSend.Content = this.MultimediaMessage.Value.Content;
+                messageToSend.Type = this.MultimediaMessage.Value.Type == MultimediaMessageType.File ? MessageType.File : MessageType.Audio;
             }
-            else if (!InputMessage.IsNullOrEmpty())
+            else if (!this.InputMessage.IsNullOrEmpty())
             {
-                messageToSend.Content = JsonSerializer.SerializeToUtf8Bytes(InputMessage);
+                messageToSend.Content = JsonSerializer.SerializeToUtf8Bytes(this.InputMessage);
                 messageToSend.Type = MessageType.Text;
             }
             else
                 throw new Exception();
-            client.SendMessage(messageToSend);
+            this.client.SendMessage(messageToSend);
             this.MessageSendCompleted?.Invoke();
         }
         catch
