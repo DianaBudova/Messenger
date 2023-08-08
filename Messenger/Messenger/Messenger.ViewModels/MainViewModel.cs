@@ -13,7 +13,6 @@ using System.Net.Sockets;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Linq;
-using System.Windows.Threading;
 
 namespace Messenger.ViewModels;
 
@@ -27,7 +26,6 @@ public class MainViewModel : ViewModelBase
     public event Action? CompleteExit;
     public event Func<byte[]?>? CompleteChangeProfilePhoto;
 
-    public CommandBase SearchUserCommand { get; }
     public CommandBase SendMessageCommand { get; }
     public CommandBase VoiceRecordCommand { get; }
     public CommandBase AttachFileCommand { get; }
@@ -161,7 +159,7 @@ public class MainViewModel : ViewModelBase
         RepositoryFactory.GetUserRepository().Update(signedUser);
 
         #region Initialize Commands
-        SearchUserCommand = new(SearchUser);
+        //SearchUserCommand = new(SearchUser);
         SendMessageCommand = new(SendMessage);
         VoiceRecordCommand = new(VoiceRecord);
         AttachFileCommand = new(AttachFile);
@@ -201,26 +199,24 @@ public class MainViewModel : ViewModelBase
     {
         while (true)
         {
-            if (this.SearchedUser.IsNullOrEmpty())
+            List<User>? users;
+            users = RepositoryFactory.GetUserRepository().GetAll(this.IsUserMatch);
+            if (users is not null && users.Count > 0)
             {
-                List<User>? users = RepositoryFactory.GetUserRepository().GetAll(this.IsUserMatch);
-                if (users is not null && users.Count > 0)
-                {
-                    User? tempSelectedUser = this.SelectedUser is null ? null : this.SelectedUser;
-                    Chat? tempSelectedMessage = this.SelectedMessage is null ? null : this.SelectedMessage;
-                    Application.Current.Dispatcher.Invoke(() => this.Users = new(users));
-                    this.SelectedUser = this.Users!.Where(user => user.Equals(tempSelectedUser)).FirstOrDefault();
-                    this.SelectedMessage = this.Messages!.Where(msg => msg.Equals(tempSelectedMessage)).FirstOrDefault();
-                }
-                else
-                    Application.Current.Dispatcher.Invoke(this.Users!.Clear);
+                User? tempSelectedUser = this.SelectedUser is null ? null : this.SelectedUser;
+                Chat? tempSelectedMessage = this.SelectedMessage is null ? null : this.SelectedMessage;
+                Application.Current.Dispatcher.Invoke(() => this.Users = new(users));
+                this.SelectedUser = this.Users!.Where(user => user.Equals(tempSelectedUser)).FirstOrDefault();
+                this.SelectedMessage = this.Messages!.Where(msg => msg.Equals(tempSelectedMessage)).FirstOrDefault();
             }
+            else
+                Application.Current.Dispatcher.Invoke(this.Users!.Clear);
             await Task.Delay(this.millisecondsDelay);
         }
     }
 
     private bool IsUserMatch(User? user) =>
-        user is not null && !user.Equals(this.SignedUser);
+        user is not null && !user.Equals(this.SignedUser) && (this.SearchedUser.IsNullOrEmpty() || user.Nickname.Contains(this.SearchedUser!));
 
     public void ConnectToServer()
     {
@@ -260,29 +256,6 @@ public class MainViewModel : ViewModelBase
         }
         catch
         { }
-    }
-
-    private void SearchUser(object obj)
-    {
-        try
-        {
-            if (this.SearchedUser.IsNullOrEmpty())
-            {
-                var users = RepositoryFactory.GetUserRepository().GetAll((user) => !user.Equals(this.SignedUser));
-                if (!users.IsNullOrEmpty())
-                    Dispatcher.CurrentDispatcher.Invoke(() => this.Users = new(users!));
-                return;
-            }
-            var sortedUsers = RepositoryFactory.GetUserRepository().GetAll((user) => user!.Nickname.Contains(this.SearchedUser!) && !user.Equals(this.SignedUser));
-            Dispatcher.CurrentDispatcher.Invoke(() => this.Users = new(sortedUsers!));
-
-        }
-        catch
-        {
-            MessageBox.Show("Some error occured.", "",
-                MessageBoxButton.OK, MessageBoxImage.Error);
-            return;
-        }
     }
 
     private void SendMessage(object obj)

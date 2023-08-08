@@ -2,6 +2,7 @@
 using Messenger.Models.DB;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
+using System;
 using System.Configuration;
 using System.Linq;
 using System.Windows;
@@ -18,10 +19,10 @@ namespace Messenger.ServerStartup
             using DataContext context = new();
             if (!(context.Database.GetService<IDatabaseCreator>() as RelationalDatabaseCreator)!.Exists())
                 context.Database.EnsureCreated();
-            this.ConfigureTables(context);
+            App.ConfigureTables(context);
         }
 
-        private void ConfigureTables(DataContext context)
+        private static void ConfigureTables(DataContext context)
         {
             if (context.Server.Any())
                 return;

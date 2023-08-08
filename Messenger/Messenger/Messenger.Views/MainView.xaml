@@ -95,7 +95,6 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition/>
-                        <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
                     <Label Grid.Column="0"
@@ -106,17 +105,6 @@
                     <TextBox Grid.Column="1"
                          Style="{StaticResource TextBox}"
                          x:Name="textBoxSearchUser"/>
-
-                    <Button Grid.Column="2"
-                        Style="{StaticResource Button}"
-                        x:Name="buttonSearchUser">
-                        <StackPanel>
-                            <Image Width="20"
-                               Height="18"
-                               Margin="0, 1"
-                               Source="/Messenger.Views;component/Resources/Images/Loupe.png"/>
-                        </StackPanel>
-                    </Button>
                 </Grid>
             </Grid>
             <!--#endregion-->

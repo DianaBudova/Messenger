@@ -68,7 +68,6 @@ namespace Messenger.Views
             #endregion
 
             #region ViewModel Commands
-            this.buttonSearchUser.Command = this.viewModel.SearchUserCommand;
             this.buttonSendMessage.Command = this.viewModel.SendMessageCommand;
             this.buttonVoiceRecord.Command = this.viewModel.VoiceRecordCommand;
             this.buttonAttachFile.Command = this.viewModel.AttachFileCommand;

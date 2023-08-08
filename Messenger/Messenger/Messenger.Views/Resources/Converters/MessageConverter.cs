@@ -5,11 +5,15 @@ using System.Text;
 using Messenger.Models.Application;
 using System.IO;
 using Newtonsoft.Json.Linq;
+using Messenger.Common;
 
 namespace Messenger.Views.Resources.Converters;
 
 public class MessageConverter : IMultiValueConverter
 {
+    private const uint minCharsForAudioMessage = 10;
+    private const uint maxCharsForAudioMessage = 20;
+
     public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
     {
         if (values.Length == 2 && values[0] is MessageType messageType && values[1] is byte[] messageData)
@@ -28,7 +32,8 @@ public class MessageConverter : IMultiValueConverter
                     string fileName = Path.GetFileName(filePath);
                     return fileName;
                 case MessageType.Audio:
-                    return "Audio Message";
+                    //return CharSetForAudioMessage.BuildString(MessageConverter.minCharsForAudioMessage, MessageConverter.maxCharsForAudioMessage);
+                    return "⠙⣅⠯⣄⠸⢵⡽⣴⠃⠣⣔⡞⢋⡆⢪⣹⡀";
                 default:
                     return "Unknown Message";
             }
