@@ -122,6 +122,11 @@ public class MainViewModel : ViewModelBase
         {
             this.selectedMessage = value;
             this.OnPropertyChanged();
+            //if (selectedMessage is not null)
+            //{
+            //    if (selectedMessage.MessageType == MessageType.Audio)
+            //        recorder.PlayAudio(selectedMessage.Message);
+            //}
         }
     }
     private ObservableCollection<User>? users;
@@ -134,7 +139,6 @@ public class MainViewModel : ViewModelBase
             this.OnPropertyChanged();
         }
     }
-    public bool HasUsers => users?.Count > 0;
     private ObservableCollection<Chat>? messages;
     public ObservableCollection<Chat>? Messages
     {
@@ -175,7 +179,6 @@ public class MainViewModel : ViewModelBase
         this.Messages = new();
         this.Messages = new();
         this.recorder = new();
-        Task.Run(this.StartMonitoringUsers);
         try
         {
             string? serverName = this.SignedUser.LastUsingServer?.NameServer ?? ConfigurationManager.AppSettings["ServerNameByDefault"];
@@ -191,6 +194,7 @@ public class MainViewModel : ViewModelBase
             Environment.Exit(0);
         }
         this.client.MessageReceived += Client_MessageReceived;
+        Task.Run(this.StartMonitoringUsers);
     }
 
     private async Task StartMonitoringUsers()
