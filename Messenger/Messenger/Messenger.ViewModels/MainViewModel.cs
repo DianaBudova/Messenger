@@ -102,7 +102,7 @@ public class MainViewModel : ViewModelBase
         {
             selectedUser = value;
             OnPropertyChanged();
-            if (SelectedUser is not null)
+            if (selectedUser is not null)
             {
                 var sentMessages = RepositoryFactory.GetChatRepository().GetBySenderRecipientId(SignedUser.Id, SelectedUser.Id);
                 var receivedMessages = RepositoryFactory.GetChatRepository().GetBySenderRecipientId(SelectedUser.Id, SignedUser.Id);
@@ -198,21 +198,20 @@ public class MainViewModel : ViewModelBase
     {
         while (true)
         {
-            List<User>? users = RepositoryFactory.GetUserRepository().GetAll(this.IsUserMatch);
-            if (users is not null && users.Count > 0)
+            if (this.SearchedUser.IsNullOrEmpty())
             {
-                User? tempSelectedUser = this.SelectedUser is null ? null : this.SelectedUser;
-                Chat? tempSelectedMessage = this.SelectedMessage is null ? null : this.SelectedMessage;
-
-                Application.Current.Dispatcher.Invoke(() =>
-                { this.Users = new(users); });
-                this.SelectedUser = this.Users!.Where(user => user.Equals(tempSelectedUser)).FirstOrDefault();
-                this.SelectedMessage = this.Messages!.Where(msg => msg.Equals(tempSelectedMessage)).FirstOrDefault();
-                if (!this.SearchedUser.IsNullOrEmpty())
-                    this.SearchUser(null);
+                List<User>? users = RepositoryFactory.GetUserRepository().GetAll(this.IsUserMatch);
+                if (users is not null && users.Count > 0)
+                {
+                    User? tempSelectedUser = this.SelectedUser is null ? null : this.SelectedUser;
+                    Chat? tempSelectedMessage = this.SelectedMessage is null ? null : this.SelectedMessage;
+                    Application.Current.Dispatcher.Invoke(() => this.Users = new(users));
+                    this.SelectedUser = this.Users!.Where(user => user.Equals(tempSelectedUser)).FirstOrDefault();
+                    this.SelectedMessage = this.Messages!.Where(msg => msg.Equals(tempSelectedMessage)).FirstOrDefault();
+                }
+                else
+                    Application.Current.Dispatcher.Invoke(this.Users!.Clear);
             }
-            else
-                Application.Current.Dispatcher.Invoke(this.Users!.Clear);
             await Task.Delay(this.millisecondsDelay);
         }
     }
@@ -266,27 +265,14 @@ public class MainViewModel : ViewModelBase
         {
             if (this.SearchedUser.IsNullOrEmpty())
             {
-                if (this.tempUsers is not null || this.tempUsers?.Count > 0)
-                {
-                    Dispatcher.CurrentDispatcher.Invoke(() => this.Users = new(this.tempUsers));
-                    Dispatcher.CurrentDispatcher.Invoke(this.tempUsers.Clear);
-                }
+                var users = RepositoryFactory.GetUserRepository().GetAll((user) => !user.Equals(this.SignedUser));
+                if (!users.IsNullOrEmpty())
+                    Dispatcher.CurrentDispatcher.Invoke(() => this.Users = new(users!));
                 return;
             }
-            var allUsers = RepositoryFactory.GetUserRepository().GetAll();
-            if (allUsers is null)
-                return;
-            allUsers.Remove(allUsers.Find(this.SignedUser.Equals));
-            if (this.tempUsers is null || this.tempUsers.Count == 0)
-                this.tempUsers = new(this.Users!);
-            List<User> searchedUsers = new();
-            foreach (var user in allUsers)
-                if (user.Nickname.Contains(this.SearchedUser!))
-                    searchedUsers.Add(user);
-            if (searchedUser.IsNullOrEmpty())
-                Dispatcher.CurrentDispatcher.Invoke(() => this.Users!.Clear);
-            else
-                Dispatcher.CurrentDispatcher.Invoke(() => this.Users = new(searchedUsers));
+            var sortedUsers = RepositoryFactory.GetUserRepository().GetAll((user) => user!.Nickname.Contains(this.SearchedUser!) && !user.Equals(this.SignedUser));
+            Dispatcher.CurrentDispatcher.Invoke(() => this.Users = new(sortedUsers!));
+
         }
         catch
         {
