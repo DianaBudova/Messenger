@@ -13,15 +13,10 @@ public class VoiceRecorderAdapter
         this.State = VoiceRecorderState.None;
     }
 
-    public void StartRecording(string? outputPath)
+    public void StartRecording()
     {
-        if (outputPath is null)
-        {
-            this.State = VoiceRecorderState.None;
-            return;
-        }
         this.State = VoiceRecorderState.Records;
-        this.recorder.StartRecording(outputPath);
+        this.recorder.StartRecording();
     }
 
     public byte[] StopRecording()

@@ -92,7 +92,6 @@ public class MainViewModel : ViewModelBase
             OnPropertyChanged();
         }
     }
-    private ObservableCollection<User>? tempUsers;
     private User? selectedUser;
     public User? SelectedUser
     {

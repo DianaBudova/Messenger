@@ -17,6 +17,7 @@
             </ResourceDictionary.MergedDictionaries>
 
             <converters:MessageConverter x:Key="MessageConverter"/>
+            <converters:ActionConverter x:Key="ActionConverter"/>
             <converters:UserConverter x:Key="UserConverter"/>
             <converters:OnlineOfflineConverter x:Key="OnlineOfflineConverter"/>
             <converters:OnlineOfflineColorConverter x:Key="OnlineOfflineColorConverter"/>
@@ -141,6 +142,24 @@
                      x:Name="listViewMessagesInChat">
                     <ListView.View>
                         <GridView>
+                            <GridView.ColumnHeaderContainerStyle>
+                                <Style TargetType="{x:Type GridViewColumnHeader}">
+                                    <Setter Property="HorizontalContentAlignment" Value="Center" />
+                                </Style>
+                            </GridView.ColumnHeaderContainerStyle>
+                            <GridViewColumn Header="Action" Width="Auto">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <DockPanel>
+                                            <Button Style="{StaticResource Button}"
+                                                    Name="buttonAction"
+                                                    Padding="5"
+                                                    Content="{Binding MessageType, Converter={StaticResource ActionConverter}}"/>
+                                        </DockPanel>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            
                             <GridViewColumn Header="From" Width="150">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>

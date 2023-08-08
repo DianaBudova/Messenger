@@ -1,5 +1,4 @@
-﻿using Messenger.Common;
-using Messenger.BL;
+﻿using Messenger.BL;
 using System;
 using Messenger.Models.Application;
 using Newtonsoft.Json;
@@ -21,7 +20,7 @@ public class VoiceRecordControlViewModel : ViewModelBase
     public CommandBase CancelCommand { get; }
 
     private byte[]? currentVoiceMessage;
-    private VoiceRecorderAdapter voiceRecorder;
+    private readonly VoiceRecorderAdapter voiceRecorder;
 
     public VoiceRecordControlViewModel()
     {
@@ -41,7 +40,7 @@ public class VoiceRecordControlViewModel : ViewModelBase
     public void StartRecordingVoiceMessage(object? obj)
     {
         if (this.voiceRecorder.CanStartRecording())
-            this.voiceRecorder.StartRecording(VoiceRecorderExtensions.GenerateOutputPath());
+            this.voiceRecorder.StartRecording();
     }
 
     public void PauseRecordingVoiceMessage(object? obj)
