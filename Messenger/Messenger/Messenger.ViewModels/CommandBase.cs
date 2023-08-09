@@ -25,13 +25,9 @@ public class CommandBase : ICommand
         this.canExecute = canExecute;
     }
 
-    public bool CanExecute(object? parameter)
-    {
-        return true;
-    }
+    public bool CanExecute(object? parameter) =>
+        true;
 
-    public void Execute(object? parameter)
-    {
-        execute?.Invoke(parameter);
-    }
+    public void Execute(object? parameter) =>
+        this.execute?.Invoke(parameter);
 }

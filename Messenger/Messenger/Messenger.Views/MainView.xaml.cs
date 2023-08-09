@@ -24,13 +24,14 @@ namespace Messenger.Views
             this.DataContext = viewModel;
 
             #region ViewModel Events
-            this.viewModel.CompleteChangeNickname += ViewModel_CompleteChangeNickname;
-            this.viewModel.CompleteChangePassword += ViewModel_CompleteChangePassword;
-            this.viewModel.CompleteVoiceRecord += ViewModel_CompleteVoiceRecord;
-            this.viewModel.CompleteAttachFile += ViewModel_CompleteAttachFile;
-            this.viewModel.CompleteChangeProfilePhoto += ViewModel_CompleteChangeProfilePhoto;
-            this.viewModel.MessageSendCompleted += ViewModel_MessageSendCompleted;
-            this.viewModel.CompleteExit += ViewModel_CompleteExit;
+            this.viewModel.CompleteChangeNickname += this.ViewModel_CompleteChangeNickname;
+            this.viewModel.CompleteChangePassword += this.ViewModel_CompleteChangePassword;
+            this.viewModel.CompleteVoiceRecord += this.ViewModel_CompleteVoiceRecord;
+            this.viewModel.CompleteAttachFile += this.ViewModel_CompleteAttachFile;
+            this.viewModel.CompleteChangeProfilePhoto += this.ViewModel_CompleteChangeProfilePhoto;
+            this.viewModel.MessageSendCompleted += this.ViewModel_MessageSendCompleted;
+            this.viewModel.CompleteFailed += this.ViewModel_CompleteFailed;
+            this.viewModel.CompleteExit += this.ViewModel_CompleteExit;
             #endregion
 
             #region ViewModel Bindings
@@ -114,9 +115,14 @@ namespace Messenger.Views
             return File.ReadAllBytes(fileDialog.FileName);
         }
 
-        private void ViewModel_MessageSendCompleted()
-        {
+        private void ViewModel_MessageSendCompleted() =>
             this.textBoxYourMessage.Text = string.Empty;
+
+        private void ViewModel_CompleteFailed()
+        {
+            MessageBox.Show("Something went wrong.", "",
+                MessageBoxButton.OK, MessageBoxImage.Error);
+            this.Close();
         }
 
         private void ViewModel_CompleteExit()

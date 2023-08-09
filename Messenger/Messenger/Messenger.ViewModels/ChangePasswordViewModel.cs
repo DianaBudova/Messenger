@@ -9,6 +9,7 @@ namespace Messenger.ViewModels;
 public class ChangePasswordViewModel : ViewModelBase
 {
     public event Action? ConfirmCompleted;
+    public event Action? ConfirmFailed;
     public event Action? CompleteCancel;
 
     public CommandBase ConfirmCommand { get; }
@@ -17,11 +18,10 @@ public class ChangePasswordViewModel : ViewModelBase
     private string? newPassword;
     public string? NewPassword
     {
-        get
-        { return newPassword; }
+        get => this.newPassword;
         set
         {
-            newPassword = value;
+            this.newPassword = value;
             this.OnPropertyChanged();
         }
     }
@@ -30,8 +30,8 @@ public class ChangePasswordViewModel : ViewModelBase
     public ChangePasswordViewModel(User currentUser)
     {
         #region Initialize Commands
-        this.ConfirmCommand = new(Confirm);
-        this.CancelCommand = new(Cancel);
+        this.ConfirmCommand = new(this.Confirm);
+        this.CancelCommand = new(this.Cancel);
         #endregion
 
         this.currentUser = currentUser;
@@ -40,17 +40,23 @@ public class ChangePasswordViewModel : ViewModelBase
     private void Confirm(object obj)
     {
         if (this.NewPassword.IsNullOrEmpty())
+        {
+            this.CompleteCancel?.Invoke();
             return;
-        var updatedUser = RepositoryFactory.GetUserRepository().GetByNickname(this.currentUser.Nickname);
+        }
+        var updatedUser = RepositoryFactory.SharedUserRepository.GetByNickname(this.currentUser.Nickname);
         if (updatedUser is null)
+        {
+            this.ConfirmFailed?.Invoke();
             return;
-        updatedUser.EncryptedPassword = HashData.EncryptData(this.NewPassword);
-        RepositoryFactory.GetUserRepository().Update(updatedUser);
-        this.ConfirmCompleted?.Invoke();
+        }
+        updatedUser.EncryptedPassword = HashData.EncryptData(this.NewPassword!);
+        if (RepositoryFactory.SharedUserRepository.Update(updatedUser)?.EncryptedPassword == updatedUser.EncryptedPassword)
+            this.ConfirmCompleted?.Invoke();
+        else
+            this.ConfirmFailed?.Invoke();
     }
 
-    private void Cancel(object obj)
-    {
+    private void Cancel(object obj) =>
         this.CompleteCancel?.Invoke();
-    }
 }

@@ -16,45 +16,44 @@ public class AttachFileControlViewModel : ViewModelBase
     public CommandBase CancelCommand { get; }
 
     private string? path;
-    private long size;
-    public string Path
+    public string? Path
     {
-        get
-        { return this.path; }
+        get => this.path;
         set
         {
             this.path = value;
             this.OnPropertyChanged();
         }
     }
+    private long size;
     public long Size
     {
-        get
-        { return this.size; }
+        get => this.size;
         set
         {
             this.size = value;
             this.OnPropertyChanged();
         }
     }
-
     private File? currentFile;
 
     public AttachFileControlViewModel()
     {
+        #region Initialize Commands
         this.AttachFileCommand = new(this.AttachFile);
         this.ConfirmCommand = new(this.Confirm);
         this.CancelCommand = new(this.Cancel);
+        #endregion
     }
 
-    public void AttachFile(object obj)
+    private void AttachFile(object obj)
     {
         this.currentFile = this.CompleteAttachment?.Invoke();
-        this.Path = currentFile?.Path ?? string.Empty;
-        this.Size = currentFile?.SizeBytes ?? 0;
+        this.Path = this.currentFile?.Path ?? string.Empty;
+        this.Size = this.currentFile?.SizeBytes ?? 0;
     }
 
-    public void Confirm(object obj)
+    private void Confirm(object obj)
     {
         if (this.currentFile is null)
             return;
@@ -66,8 +65,6 @@ public class AttachFileControlViewModel : ViewModelBase
         this.CompleteConfirm?.Invoke(message);
     }
 
-    public void Cancel(object obj)
-    {
+    private void Cancel(object obj) =>
         this.CompleteCancel?.Invoke();
-    }
 }

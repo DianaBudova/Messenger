@@ -8,13 +8,13 @@ namespace Messenger.ViewModels;
 public class ChangeNicknameViewModel : ViewModelBase
 {
     public event Action? ConfirmCompleted;
+    public event Action? ConfirmFailed;
     public event Action? CompleteCancel;
 
     public CommandBase ConfirmCommand { get; }
     public CommandBase CancelCommand { get; }
 
     private string? newNickname;
-    private string? oldNickname;
     public string? NewNickname
     {
         get => this.newNickname;
@@ -24,6 +24,7 @@ public class ChangeNicknameViewModel : ViewModelBase
             this.OnPropertyChanged();
         }
     }
+    private string? oldNickname;
     public string? OldNickname
     {
         get => this.oldNickname;
@@ -33,14 +34,13 @@ public class ChangeNicknameViewModel : ViewModelBase
             this.OnPropertyChanged();
         }
     }
-
     private readonly User currentUser;
 
     public ChangeNicknameViewModel(User currentUser)
     {
         #region Initialize Commands
-        this.ConfirmCommand = new(Confirm);
-        this.CancelCommand = new(Cancel);
+        this.ConfirmCommand = new(this.Confirm);
+        this.CancelCommand = new(this.Cancel);
         #endregion
 
         this.NewNickname = currentUser.Nickname;
@@ -50,20 +50,25 @@ public class ChangeNicknameViewModel : ViewModelBase
 
     private void Confirm(object obj)
     {
-        if (this.NewNickname.IsNullOrEmpty())
+        if (this.NewNickname.IsNullOrEmpty()
+            ||this.NewNickname!.Equals(this.OldNickname))
+        {
+            this.CompleteCancel?.Invoke();
             return;
-        if (this.NewNickname!.Equals(this.OldNickname))
-            return;
-        var updatedUser = RepositoryFactory.GetUserRepository().GetByNickname(this.currentUser.Nickname);
+        }
+        var updatedUser = RepositoryFactory.SharedUserRepository.GetByNickname(this.currentUser.Nickname);
         if (updatedUser is null)
+        {
+            this.ConfirmFailed?.Invoke();
             return;
+        }
         updatedUser.Nickname = this.NewNickname;
-        RepositoryFactory.GetUserRepository().Update(updatedUser);
-        this.ConfirmCompleted?.Invoke();
+        if (RepositoryFactory.SharedUserRepository.Update(updatedUser)?.Nickname == updatedUser.Nickname)
+            this.ConfirmCompleted?.Invoke();
+        else
+            this.ConfirmFailed?.Invoke();
     }
 
-    private void Cancel(object obj)
-    {
+    private void Cancel(object obj) =>
         this.CompleteCancel?.Invoke();
-    }
 }

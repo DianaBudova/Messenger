@@ -20,8 +20,9 @@ namespace Messenger.Views
             this.DataContext = viewModel;
 
             #region ViewModel Events
-            viewModel.ConfirmCompleted += ViewModel_ConfirmCompleted;
-            viewModel.CompleteCancel += ViewModel_CompleteCancel;
+            viewModel.ConfirmCompleted += this.ViewModel_ConfirmCompleted;
+            viewModel.ConfirmFailed += this.ViewModel_ConfirmFailed;
+            viewModel.CompleteCancel += this.ViewModel_CompleteCancel;
             #endregion
 
             #region ViewModel Bindings
@@ -44,9 +45,14 @@ namespace Messenger.Views
             this.Close();
         }
 
-        private void ViewModel_CompleteCancel()
+        private void ViewModel_ConfirmFailed()
         {
+            MessageBox.Show("Something went wrong.", "",
+                MessageBoxButton.OK, MessageBoxImage.Error);
             this.Close();
         }
+
+        private void ViewModel_CompleteCancel() =>
+            this.Close();
     }
 }
