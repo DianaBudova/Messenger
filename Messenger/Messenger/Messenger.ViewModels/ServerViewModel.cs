@@ -13,37 +13,24 @@ namespace Messenger.ViewModels;
 public class ServerViewModel : ViewModelBase
 {
     public event Action? CompleteExit;
+
     public CommandBase StartCommand { get; }
     public CommandBase StopCommand { get; }
 
-    private string? selectedClient;
     private bool isStarted;
-    public string? SelectedClient
-    {
-        get
-        { return this.selectedClient; }
-        set
-        {
-            this.selectedClient = value;
-            this.OnPropertyChanged();
-        }
-    }
     public bool IsStarted
     {
-        get
-        { return this.isStarted; }
+        get => this.isStarted;
         set
         {
             this.isStarted = value;
             this.OnPropertyChanged();
         }
     }
-
     private ObservableCollection<TcpClient>? clients;
-    public ObservableCollection<TcpClient> Clients
+    public ObservableCollection<TcpClient>? Clients
     {
-        get
-        { return this.clients!; }
+        get => this.clients;
         set
         {
             this.clients = value;
@@ -51,17 +38,15 @@ public class ServerViewModel : ViewModelBase
         }
     }
     private ObservableCollection<Message>? messages;
-    public ObservableCollection<Message> Messages
+    public ObservableCollection<Message>? Messages
     {
-        get
-        { return this.messages!; }
+        get => this.messages;
         set
         {
             this.messages = value;
             this.OnPropertyChanged();
         }
     }
-
     private readonly TCPServer? server;
 
     public ServerViewModel()
@@ -71,7 +56,6 @@ public class ServerViewModel : ViewModelBase
         this.StopCommand = new(this.Stop);
         #endregion
 
-        this.isStarted = false;
         try
         {
             string? serverName = ConfigurationManager.AppSettings["ServerNameByDefault"] 
@@ -80,48 +64,39 @@ public class ServerViewModel : ViewModelBase
                 ?? throw new ArgumentNullException(nameof(chosenServer));
             IPEndPoint ep = new(IPAddress.Parse(chosenServer!.IpAddress), chosenServer.Port);
             this.server = new(ep);
-            this.server.ClientsChanged += Server_ClientsChanged;
-            this.server.StateChanged += Server_StateChanged;
-            this.server.MessageReceived += Server_MessageReceived;
             this.Clients = new();
             this.Messages = new();
         }
         catch
-        {
-            Environment.Exit(0);
-        }
+        { Environment.Exit(0); }
+        this.server.ClientsChanged += this.Server_ClientsChanged;
+        this.server.StateChanged += this.Server_StateChanged;
+        this.server.MessageReceived += this.Server_MessageReceived;
     }
 
-    private void Start(object obj)
-    {
+    private void Start(object obj) =>
         this.server!.Start();
-    }
 
-    private void Stop(object obj)
-    {
+    private void Stop(object obj) =>
         this.server!.Stop();
-    }
 
-    private void Server_ClientsChanged()
-    {
+    private void Server_ClientsChanged() =>
         this.Clients = new(this.server!.Clients);
-    }
 
-    private void Server_StateChanged(bool isStarted)
-    {
+    private void Server_StateChanged(bool isStarted) =>
         this.IsStarted = isStarted;
-    }
 
     private void Server_MessageReceived(Message message)
     {
         this.Messages = new(this.server!.Messages);
         if (message.Recipient is null || message.Recipient.Port is null)
             return;
-        TcpClient recipient = new();
         try
-        { recipient.Connect(IPAddress.Parse(message.Recipient.IpAddress), message.Recipient.Port.Value); }
-        catch
-        { return; }
-        this.server!.SendMessage(recipient, message);
+        {
+            using TcpClient recipient = new();
+            recipient.Connect(IPAddress.Parse(message.Recipient.IpAddress), message.Recipient.Port.Value);
+            this.server!.SendMessage(recipient, message);
+        }
+        catch { }
     }
 }

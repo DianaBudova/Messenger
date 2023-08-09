@@ -24,7 +24,7 @@ namespace Messenger.Views
             this.DataContext = viewModel;
 
             #region ViewModel Events
-            viewModel.CompleteExit += ViewModel_CompleteExit;
+            viewModel.CompleteExit += this.ViewModel_CompleteExit;
             #endregion
 
             #region ViewModel Bindings
@@ -35,10 +35,6 @@ namespace Messenger.Views
             Binding messagesBinding = new(nameof(viewModel.Messages));
             messagesBinding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
             this.listBoxMessages.SetBinding(ListBox.ItemsSourceProperty, messagesBinding);
-
-            Binding selectedClientBinding = new(nameof(viewModel.SelectedClient));
-            selectedClientBinding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
-            this.listBoxClients.SetBinding(ListBox.SelectedItemProperty, selectedClientBinding);
 
             Binding isStartedBinding = new(nameof(viewModel.IsStarted));
             isStartedBinding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
@@ -74,10 +70,8 @@ namespace Messenger.Views
             #endregion
         }
 
-        private void ViewModel_CompleteExit()
-        {
+        private void ViewModel_CompleteExit() =>
             Dispatcher.Invoke(this.Close);
-        }
 
         protected override void OnClosing(CancelEventArgs e)
         {

@@ -97,12 +97,16 @@ public class MainViewModel : ViewModelBase
             this.OnPropertyChanged();
             if (this.SelectedUser is not null)
             {
-                var sentMessages = RepositoryFactory.SharedChatRepository.GetBySenderRecipientId(this.SignedUser.Id, this.SelectedUser!.Id);
-                var receivedMessages = RepositoryFactory.SharedChatRepository.GetBySenderRecipientId(this.SelectedUser.Id, this.SignedUser.Id);
-                if (sentMessages is null || receivedMessages is null)
-                    return;
-                var allMessages = sentMessages.Concat(receivedMessages).OrderBy(item => item.DateTime).ToList();
-                Application.Current.Dispatcher.Invoke(() => this.Messages = new(allMessages));
+                try
+                {
+                    var sentMessages = RepositoryFactory.GetChatRepository().GetBySenderRecipientId(this.SignedUser.Id, this.SelectedUser!.Id);
+                    var receivedMessages = RepositoryFactory.GetChatRepository().GetBySenderRecipientId(this.SelectedUser.Id, this.SignedUser.Id);
+                    if (sentMessages is null || receivedMessages is null)
+                        return;
+                    var allMessages = sentMessages.Concat(receivedMessages).OrderBy(item => item.DateTime).ToList();
+                    Application.Current.Dispatcher.Invoke(() => this.Messages = new(allMessages));
+                }
+                catch { }
             }
             else
                 Application.Current.Dispatcher.Invoke(() => this.Messages?.Clear());
@@ -145,7 +149,7 @@ public class MainViewModel : ViewModelBase
 
     public MainViewModel(User signedUser)
     {
-        RepositoryFactory.SharedUserRepository.Update(signedUser);
+        RepositoryFactory.GetUserRepository().Update(signedUser);
 
         #region Initialize Commands
         this.SendMessageCommand = new(this.SendMessage);
@@ -169,7 +173,7 @@ public class MainViewModel : ViewModelBase
         {
             string? serverName = this.SignedUser.LastUsingServer?.NameServer ?? ConfigurationManager.AppSettings["ServerNameByDefault"]
                 ?? throw new Exception();
-            Server? chosenServer = RepositoryFactory.SharedServerRepository.GetByNameServer(serverName)
+            Server? chosenServer = RepositoryFactory.GetServerRepository().GetByNameServer(serverName)
                 ?? throw new Exception();
             IPEndPoint ep = new(IPAddress.Parse(chosenServer.IpAddress), chosenServer.Port);
             this.client = new(ep);
@@ -184,9 +188,15 @@ public class MainViewModel : ViewModelBase
     {
         while (true)
         {
-            List<User>? users = RepositoryFactory.SharedUserRepository.GetAll(this.IsUserMatch);
+            List<User>? users = RepositoryFactory.GetUserRepository().GetAll(this.IsUserMatch);
             if (users is not null && users.Count > 0)
+            {
+                User? tempSelectedUser = SelectedUser is null ? null : SelectedUser;
+                Chat? tempSelectedMessage = SelectedMessage is null ? null : SelectedMessage;
                 Application.Current.Dispatcher.Invoke(() => this.Users = new(users));
+                this.SelectedUser = this.Users!.Where(user => user.Equals(tempSelectedUser)).FirstOrDefault();
+                this.SelectedMessage = this.Messages!.Where(msg => msg.Equals(tempSelectedMessage)).FirstOrDefault();
+            }
             else
                 Application.Current.Dispatcher.Invoke(() => this.Users?.Clear());
             await Task.Delay(this.millisecondsDelay);
@@ -204,13 +214,13 @@ public class MainViewModel : ViewModelBase
             if (client is null)
                 throw new ArgumentNullException(nameof(client));
             int port = ((IPEndPoint)client.Client.LocalEndPoint!).Port;
-            if (!RegisteredPortExtensions.IsPortRegistered(port))
+            if (!RegisteredPortExtensions.IsPortAppropriate(port))
                 throw new ArgumentNullException(nameof(port));
-            User? existedUser = RepositoryFactory.SharedUserRepository.GetByNickname(this.SignedUser.Nickname);
+            User? existedUser = RepositoryFactory.GetUserRepository().GetByNickname(this.SignedUser.Nickname);
             if (existedUser is null)
                 throw new ArgumentNullException(nameof(existedUser));
             this.SignedUser.Port = existedUser.Port = port;
-            RepositoryFactory.SharedUserRepository.Update(existedUser);
+            RepositoryFactory.GetUserRepository().Update(existedUser);
         }
         catch
         {
@@ -226,11 +236,11 @@ public class MainViewModel : ViewModelBase
         try
         {
             this.client.Disconnect();
-            User? existedUser = RepositoryFactory.SharedUserRepository.GetByNickname(this.SignedUser.Nickname);
+            User? existedUser = RepositoryFactory.GetUserRepository().GetByNickname(this.SignedUser.Nickname);
             if (existedUser is null)
                 return;
             existedUser.Port = null;
-            RepositoryFactory.SharedUserRepository.Update(existedUser);
+            RepositoryFactory.GetUserRepository().Update(existedUser);
         }
         catch
         { }
@@ -284,27 +294,27 @@ public class MainViewModel : ViewModelBase
 
     private void ChangeNickname(object obj)
     {
-        int? currentUserId = RepositoryFactory.SharedUserRepository.GetByNickname(SignedUser.Nickname)?.Id;
+        int? currentUserId = RepositoryFactory.GetUserRepository().GetByNickname(SignedUser.Nickname)?.Id;
         if (currentUserId.HasValue)
         {
             this.CompleteFailed?.Invoke();
             return;
         }
         this.CompleteChangeNickname?.Invoke();
-        this.SignedUser.Nickname = RepositoryFactory.SharedUserRepository.GetById(currentUserId!.Value)!.Nickname;
+        this.SignedUser.Nickname = RepositoryFactory.GetUserRepository().GetById(currentUserId!.Value)!.Nickname;
         this.Nickname = this.SignedUser.Nickname;
     }
 
     private void ChangePassword(object obj)
     {
-        int? currentUserId = RepositoryFactory.SharedUserRepository.GetByNickname(SignedUser.Nickname)?.Id;
+        int? currentUserId = RepositoryFactory.GetUserRepository().GetByNickname(SignedUser.Nickname)?.Id;
         if (currentUserId.HasValue)
         {
             this.CompleteFailed?.Invoke();
             return;
         }
         this.CompleteChangePassword?.Invoke();
-        this.SignedUser.EncryptedPassword = RepositoryFactory.SharedUserRepository.GetById(currentUserId!.Value)!.EncryptedPassword;
+        this.SignedUser.EncryptedPassword = RepositoryFactory.GetUserRepository().GetById(currentUserId!.Value)!.EncryptedPassword;
     }
 
     private void ChangeProfilePhoto(object obj)
@@ -314,11 +324,11 @@ public class MainViewModel : ViewModelBase
             return;
         this.SignedUser.ProfilePhoto = image;
         this.ProfilePhoto = image;
-        var updatedUser = RepositoryFactory.SharedUserRepository.GetByNickname(this.SignedUser.Nickname);
+        var updatedUser = RepositoryFactory.GetUserRepository().GetByNickname(this.SignedUser.Nickname);
         if (updatedUser is null)
             return;
         updatedUser.ProfilePhoto = image;
-        RepositoryFactory.SharedUserRepository.Update(updatedUser);
+        RepositoryFactory.GetUserRepository().Update(updatedUser);
     }
 
     private void ClearProfilePhoto(object obj)
@@ -328,7 +338,7 @@ public class MainViewModel : ViewModelBase
             return;
         this.SignedUser.ProfilePhoto = System.IO.File.ReadAllBytes(ConfigurationManager.AppSettings["ImagesPath"] + "UnknownUser.png");
         this.ProfilePhoto = System.IO.File.ReadAllBytes(ConfigurationManager.AppSettings["ImagesPath"] + "UnknownUser.png");
-        var updatedUser = RepositoryFactory.SharedUserRepository.GetByNickname(this.SignedUser.Nickname);
+        var updatedUser = RepositoryFactory.GetUserRepository().GetByNickname(this.SignedUser.Nickname);
         if (updatedUser is null)
         {
             MessageBox.Show("Such a user does not exist in the database.", "",
@@ -336,7 +346,7 @@ public class MainViewModel : ViewModelBase
             return;
         }
         updatedUser.ProfilePhoto = System.IO.File.ReadAllBytes(ConfigurationManager.AppSettings["ImagesPath"] + "UnknownUser.png");
-        RepositoryFactory.SharedUserRepository.Update(updatedUser);
+        RepositoryFactory.GetUserRepository().Update(updatedUser);
     }
 
     public void DeleteAccount(object obj)
@@ -344,14 +354,14 @@ public class MainViewModel : ViewModelBase
         if (MessageBox.Show("Are you sure you want to delete the current account?", "To delete the account?",
             MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes)
             return;
-        var deletedUser = RepositoryFactory.SharedUserRepository.GetByNickname(this.SignedUser.Nickname);
+        var deletedUser = RepositoryFactory.GetUserRepository().GetByNickname(this.SignedUser.Nickname);
         if (deletedUser is null)
         {
             MessageBox.Show("Such a user does not exist in the database.", "",
                 MessageBoxButton.OK, MessageBoxImage.Error);
             return;
         }
-        RepositoryFactory.SharedUserRepository.Remove(deletedUser);
+        RepositoryFactory.GetUserRepository().Remove(deletedUser);
         MessageBox.Show("User was deleted successfully!", "",
             MessageBoxButton.OK, MessageBoxImage.Information);
         this.client.Disconnect();

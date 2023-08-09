@@ -56,14 +56,14 @@ public class ChangeNicknameViewModel : ViewModelBase
             this.CompleteCancel?.Invoke();
             return;
         }
-        var updatedUser = RepositoryFactory.SharedUserRepository.GetByNickname(this.currentUser.Nickname);
+        var updatedUser = RepositoryFactory.GetUserRepository().GetByNickname(this.currentUser.Nickname);
         if (updatedUser is null)
         {
             this.ConfirmFailed?.Invoke();
             return;
         }
         updatedUser.Nickname = this.NewNickname;
-        if (RepositoryFactory.SharedUserRepository.Update(updatedUser)?.Nickname == updatedUser.Nickname)
+        if (RepositoryFactory.GetUserRepository().Update(updatedUser)?.Nickname == updatedUser.Nickname)
             this.ConfirmCompleted?.Invoke();
         else
             this.ConfirmFailed?.Invoke();

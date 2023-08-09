@@ -44,14 +44,14 @@ public class ChangePasswordViewModel : ViewModelBase
             this.CompleteCancel?.Invoke();
             return;
         }
-        var updatedUser = RepositoryFactory.SharedUserRepository.GetByNickname(this.currentUser.Nickname);
+        var updatedUser = RepositoryFactory.GetUserRepository().GetByNickname(this.currentUser.Nickname);
         if (updatedUser is null)
         {
             this.ConfirmFailed?.Invoke();
             return;
         }
         updatedUser.EncryptedPassword = HashData.EncryptData(this.NewPassword!);
-        if (RepositoryFactory.SharedUserRepository.Update(updatedUser)?.EncryptedPassword == updatedUser.EncryptedPassword)
+        if (RepositoryFactory.GetUserRepository().Update(updatedUser)?.EncryptedPassword == updatedUser.EncryptedPassword)
             this.ConfirmCompleted?.Invoke();
         else
             this.ConfirmFailed?.Invoke();

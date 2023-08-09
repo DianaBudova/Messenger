@@ -19,8 +19,8 @@ namespace Messenger.Views
             this.DataContext = viewModel;
 
             #region ViewModel Events
-            viewModel.CompleteConfirm += ViewModel_CompleteConfirm;
-            viewModel.CompleteCancel += ViewModel_CompleteCancel;
+            viewModel.CompleteConfirm += this.ViewModel_CompleteConfirm;
+            viewModel.CompleteCancel += this.ViewModel_CompleteCancel;
             #endregion
 
             #region ViewModel Bindings
@@ -43,9 +43,7 @@ namespace Messenger.Views
             this.Close();
         }
 
-        private void ViewModel_CompleteCancel()
-        {
+        private void ViewModel_CompleteCancel() =>
             this.Close();
-        }
     }
 }

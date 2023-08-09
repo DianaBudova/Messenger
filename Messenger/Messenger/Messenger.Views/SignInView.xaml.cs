@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using Messenger.ViewModels;
@@ -18,13 +19,24 @@ namespace Messenger.Views
     {
         public SignInView()
         {
-            var servers = RepositoryFactory.GetServerRepository().GetAll().Select(s => s.NameServer);
+            var servers = RepositoryFactory.GetServerRepository().GetAll();
             if (servers.IsNullOrEmpty())
             {
                 this.ViewModel_CompleteCancel();
                 return;
             }
+            var serverNames = servers!.Select(s => s.NameServer);
+            if (serverNames.IsNullOrEmpty())
+            {
+                this.ViewModel_CompleteCancel();
+                return;
+            }
             var defaultServer = ConfigurationManager.AppSettings["ServerNameByDefault"];
+            if (defaultServer.IsNullOrEmpty())
+            {
+                this.ViewModel_CompleteCancel();
+                return;
+            }
 
             InitializeComponent();
 
@@ -32,9 +44,9 @@ namespace Messenger.Views
             this.DataContext = viewModel;
 
             #region ViewModel Events
-            viewModel.SignInCompleted += ViewModel_SignInCompleted;
-            viewModel.CompleteSignUp += ViewModel_CompleteSignUp;
-            viewModel.CompleteCancel += ViewModel_CompleteCancel;
+            viewModel.SignInCompleted += this.ViewModel_SignInCompleted;
+            viewModel.CompleteSignUp += this.ViewModel_CompleteSignUp;
+            viewModel.CompleteCancel += this.ViewModel_CompleteCancel;
             #endregion
 
             #region ViewModel Bindings
@@ -52,7 +64,7 @@ namespace Messenger.Views
             lastUsingServerBinding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
             this.comboBoxServer.SetBinding(ComboBox.TextProperty, lastUsingServerBinding);
 
-            this.comboBoxServer.ItemsSource = servers;
+            this.comboBoxServer.ItemsSource = serverNames;
             this.comboBoxServer.SelectedItem = defaultServer;
             #endregion
 
@@ -81,9 +93,7 @@ namespace Messenger.Views
             this.Close();
         }
 
-        private void ViewModel_CompleteCancel()
-        {
+        private void ViewModel_CompleteCancel() =>
             this.Close();
-        }
     }
 }

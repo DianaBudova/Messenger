@@ -25,11 +25,11 @@ public class VoiceRecordControlViewModel : ViewModelBase
     public VoiceRecordControlViewModel()
     {
         #region Initialize Commands
-        this.StartRecordingVoiceCommand = new(this.StartRecordingVoiceMessage);
-        this.PauseRecordingVoiceCommand = new(this.PauseRecordingVoiceMessage);
-        this.StopRecordingVoiceCommand = new(this.StopRecordingVoiceMessage);
-        this.StartListeningVoiceMessageCommand = new(this.StartListeningVoiceMessage);
-        this.StopListeningVoiceMessageCommand = new(this.StopListeningVoiceMessage);
+        this.StartRecordingVoiceCommand = new(this.StartRecordingVoice);
+        this.PauseRecordingVoiceCommand = new(this.PauseRecordingVoice);
+        this.StopRecordingVoiceCommand = new(this.StopRecordingVoice);
+        this.StartListeningVoiceMessageCommand = new(this.StartListeningVoice);
+        this.StopListeningVoiceMessageCommand = new(this.StopListeningVoice);
         this.ConfirmCommand = new(this.Confirm);
         this.CancelCommand = new(this.Cancel);
         #endregion
@@ -37,36 +37,32 @@ public class VoiceRecordControlViewModel : ViewModelBase
         this.voiceRecorder = new();
     }
 
-    public void StartRecordingVoiceMessage(object? obj)
+    private void StartRecordingVoice(object? obj)
     {
         if (this.voiceRecorder.CanStartRecording())
             this.voiceRecorder.StartRecording();
     }
 
-    public void PauseRecordingVoiceMessage(object? obj)
-    {
+    private void PauseRecordingVoice(object? obj)
+    { }
 
-    }
-
-    public void StopRecordingVoiceMessage(object? obj)
+    private void StopRecordingVoice(object? obj)
     {
         if (this.voiceRecorder.CanStopRecording())
             this.currentVoiceMessage = this.voiceRecorder.StopRecording();
     }
 
-    public void StartListeningVoiceMessage(object? obj)
+    private void StartListeningVoice(object? obj)
     {
         if (this.currentVoiceMessage is not null &&
             this.currentVoiceMessage.Length > 0)
             this.voiceRecorder.PlayAudio(this.currentVoiceMessage);
     }
 
-    public void StopListeningVoiceMessage(object? obj)
-    {
+    private void StopListeningVoice(object? obj) =>
         this.voiceRecorder.StopPlayingAudio();
-    }
 
-    public void Confirm(object? obj)
+    private void Confirm(object? obj)
     {
         if (this.currentVoiceMessage is null)
             return;
@@ -78,7 +74,7 @@ public class VoiceRecordControlViewModel : ViewModelBase
         this.CompleteConfirm?.Invoke(message);
     }
 
-    public void Cancel(object? obj)
+    private void Cancel(object? obj)
     {
         this.voiceRecorder.StopPlayingAudio();
         this.CompleteCancel?.Invoke();

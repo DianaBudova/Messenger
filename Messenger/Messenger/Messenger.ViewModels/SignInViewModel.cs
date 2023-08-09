@@ -23,8 +23,7 @@ public class SignInViewModel : ViewModelBase
     private string? nickname;
     public string? Nickname
     {
-        get
-        { return this.nickname; }
+        get => this.nickname;
         set
         {
             this.nickname = value;
@@ -34,8 +33,7 @@ public class SignInViewModel : ViewModelBase
     private string? password;
     public string? Password
     {
-        get
-        { return this.password; }
+        get => this.password;
         set
         {
             this.password = value;
@@ -45,8 +43,7 @@ public class SignInViewModel : ViewModelBase
     private string? lastUsingServer;
     public string? LastUsingServer
     {
-        get
-        { return this.lastUsingServer; }
+        get => this.lastUsingServer;
         set
         {
             this.lastUsingServer = value;
@@ -56,9 +53,11 @@ public class SignInViewModel : ViewModelBase
 
     public SignInViewModel()
     {
+        #region Initialize Commands
         this.LoginCommand = new(this.Login);
         this.CancelCommand = new(this.Cancel);
         this.CreateAccountCommand = new(this.CreateAccount);
+        #endregion
     }
 
     private void Login(object obj)
@@ -109,8 +108,6 @@ public class SignInViewModel : ViewModelBase
             this.CompleteCancel?.Invoke();
     }
 
-    private void CreateAccount(object obj)
-    {
+    private void CreateAccount(object obj) =>
         this.CompleteSignUp?.Invoke();
-    }
 }

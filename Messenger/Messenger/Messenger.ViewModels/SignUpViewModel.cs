@@ -22,32 +22,29 @@ public class SignUpViewModel : ViewModelBase
     public CommandBase SignInCommand { get; }
 
     private string? newNickname;
-    private string? newPassword;
-    private string? repeatedPassword;
     public string? NewNickname
     {
-        get
-        { return this.newNickname; }
+        get => this.newNickname;
         set
         {
             this.newNickname = value;
             this.OnPropertyChanged();
         }
     }
+    private string? newPassword;
     public string? NewPassword
     {
-        get
-        { return this.newPassword; }
+        get => this.newPassword;
         set
         {
             this.newPassword = value;
             this.OnPropertyChanged();
         }
     }
+    private string? repeatedPassword;
     public string? RepeatedPassword
     {
-        get
-        { return this.repeatedPassword; }
+        get => this.repeatedPassword;
         set
         {
             this.repeatedPassword = value;
@@ -57,9 +54,11 @@ public class SignUpViewModel : ViewModelBase
 
     public SignUpViewModel()
     {
+        #region Initialize Commands
         this.CreateAccountCommand = new(this.CreateAccount);
         this.CancelCommand = new(this.Cancel);
         this.SignInCommand = new(this.SignIn);
+        #endregion
     }
 
     private void CreateAccount(object obj)
@@ -76,32 +75,37 @@ public class SignUpViewModel : ViewModelBase
             MessageBox.Show("New password and repeated password do not match.", "", MessageBoxButton.OK, MessageBoxImage.Error);
             return;
         }
-        string ipAddress = Dns.GetHostAddresses(Dns.GetHostName())
-            .Where(ipAddress => ipAddress.AddressFamily == AddressFamily.InterNetwork)
-            .First()
-            .ToString();
         User newUser = new()
         {
             Nickname = this.NewNickname!,
             EncryptedPassword = HashData.EncryptData(this.NewPassword!),
             ProfilePhoto = System.IO.File.ReadAllBytes(ConfigurationManager.AppSettings["ImagesPath"] + "UnknownUser.png"),
-            IpAddress = ipAddress,
+            IpAddress = Dns.GetHostAddresses(Dns.GetHostName())
+            .Where(ipAddress => ipAddress.AddressFamily == AddressFamily.InterNetwork)
+            .First()
+            .ToString(),
         };
         if (RepositoryFactory.GetUserRepository().Add(newUser) is null)
         {
             MessageBox.Show("Some error occurred while adding a new user.", "", MessageBoxButton.OK, MessageBoxImage.Error);
             return;
         }
-        Server? serverByDefault = RepositoryFactory.GetServerRepository().GetByNameServer(ConfigurationManager.AppSettings["ServerNameByDefault"]);
+        string? defaultServer = ConfigurationManager.AppSettings["ServerNameByDefault"];
+        if (defaultServer.IsNullOrEmpty())
+        {
+            MessageBox.Show("Default server was not found.", "", MessageBoxButton.OK, MessageBoxImage.Error);
+            return;
+        }
+        Server? serverByDefault = RepositoryFactory.GetServerRepository().GetByNameServer(defaultServer!);
         if (serverByDefault is null)
         {
-            MessageBox.Show("Server was not set as default.", "", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show("No default server was set.", "", MessageBoxButton.OK, MessageBoxImage.Error);
             return;
         }
         newUser.LastUsingServer = serverByDefault;
         if (RepositoryFactory.GetUserRepository().Update(newUser) is null)
         {
-            MessageBox.Show("Server did not set as default.", "", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show("No default server was set in a new account.", "", MessageBoxButton.OK, MessageBoxImage.Error);
             return;
         }
         MessageBox.Show("New user was registered successfully.", "", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -114,8 +118,6 @@ public class SignUpViewModel : ViewModelBase
             this.CompleteCancel?.Invoke();
     }
 
-    private void SignIn(object obj)
-    {
+    private void SignIn(object obj) =>
         this.CompleteSignIn?.Invoke();
-    }
 }
