@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.Linq;
 using System.Text;
 using System.Windows.Controls;
 
@@ -12,18 +13,17 @@ public class PasswordValidationRule : ValidationRule
 
     public override ValidationResult Validate(object value, CultureInfo cultureInfo)
     {
-        string val = value.ToString()!;
-        if (val.Length < minLength || val.Length > maxLength)
-            return new ValidationResult(false, $"Password length should be from {minLength} to {maxLength} characters");
+        string? val = value?.ToString();
+        if (val is null)
+            return new ValidationResult(false, "Something went wrong.");
+        if (val.Length < PasswordValidationRule.minLength || val.Length > PasswordValidationRule.maxLength)
+            return new ValidationResult(false, $"Password length should be from {PasswordValidationRule.minLength} to {PasswordValidationRule.maxLength} characters.");
         foreach (var ch in this.inaccessibleChars)
         {
-            if (val.Contains(ch))
-            {
-                StringBuilder stringError = new($"Password shouldn't contain inaccessible chars: ");
-                foreach (var ch2 in this.inaccessibleChars)
-                    stringError.Append($"\"{ch2}\", ");
-                return new ValidationResult(false, stringError.Remove(stringError.Length - 2, 2).ToString());
-            }
+            if (!val.Contains(ch))
+                continue;
+            StringBuilder stringError = new($"Password shouldn't contain inaccessible chars: {string.Join(", ", this.inaccessibleChars.Select(c => $"'{c}'"))}.");
+            return new ValidationResult(false, stringError.ToString());
         }
         return ValidationResult.ValidResult;
     }

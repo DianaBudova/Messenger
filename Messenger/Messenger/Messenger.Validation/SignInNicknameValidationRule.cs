@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Linq;
 using System.Text;
 using System.Windows.Controls;
 
@@ -13,17 +14,14 @@ public class SignInNicknameValidationRule : ValidationRule
     public override ValidationResult Validate(object value, CultureInfo cultureInfo)
     {
         string val = value.ToString()!;
-        if (val.Length < minLength || val.Length > maxLength)
-            return new ValidationResult(false, $"Nickname length should be from {minLength} to {maxLength} characters");
+        if (val.Length < SignInNicknameValidationRule.minLength || val.Length > SignInNicknameValidationRule.maxLength)
+            return new ValidationResult(false, $"Nickname length should be from {SignInNicknameValidationRule.minLength} to {SignInNicknameValidationRule.maxLength} characters.");
         foreach (var ch in this.inaccessibleChars)
         {
-            if (val.Contains(ch))
-            {
-                StringBuilder stringError = new($"Nickname shouldn't contain inaccessible chars: ");
-                foreach (var ch2 in this.inaccessibleChars)
-                    stringError.Append($"'{ch2}', ");
-                return new ValidationResult(false, stringError.Remove(stringError.Length - 2, 2).ToString());
-            }
+            if (!val.Contains(ch))
+                continue;
+            StringBuilder stringError = new($"Nickname shouldn't contain inaccessible chars: {string.Join(", ", this.inaccessibleChars.Select(c => $"'{c}'"))}.");
+            return new ValidationResult(false, stringError.ToString());
         }
         return ValidationResult.ValidResult;
     }
