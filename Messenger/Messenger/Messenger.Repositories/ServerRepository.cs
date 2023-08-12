@@ -1,8 +1,6 @@
 ﻿using Messenger.DAL;
 using Messenger.Models.DB;
 using Messenger.Repositories.Interfaces;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Messenger.Repositories;
 
@@ -74,9 +72,7 @@ internal class ServerRepository : IServerRepository
     public List<Server>? GetAll()
     {
         try
-        {
-            return this.context.Server.ToList();
-        }
+        { return this.context.Server.ToList(); }
         catch
         { return null; }
     }

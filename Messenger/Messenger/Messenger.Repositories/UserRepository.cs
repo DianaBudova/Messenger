@@ -20,9 +20,7 @@ internal class UserRepository : IUserRepository
             return result;
         }
         catch
-        {
-            return null;
-        }
+        { return null; }
     }
 
     public User? Update(User user)
@@ -43,9 +41,7 @@ internal class UserRepository : IUserRepository
             return existingUser;
         }
         catch
-        {
-            return null;
-        }
+        { return null; }
     }
 
     public bool Remove(User user)

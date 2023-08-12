@@ -50,17 +50,11 @@ internal class ChatRepository : IChatRepository
         try
         {
             return this.context.Chat
-                .Where(prop => prop.SenderId == chat.SenderId)
-                .Where(prop => prop.RecipientId == chat.RecipientId)
-                .Where(prop => prop.Message.SequenceEqual(chat.Message))
-                .Where(prop => prop.MessageType == chat.MessageType)
-                .Where(prop => prop.DateTime == chat.DateTime)
+                .Where(prop => prop.Equals(chat))
                 .Any();
         }
         catch
-        {
-            return false;
-        }
+        { return false; }
     }
 
     public Chat? GetById(int id)
@@ -115,9 +109,7 @@ internal class ChatRepository : IChatRepository
     public List<Chat>? GetAll()
     {
         try
-        {
-            return this.context.Chat.ToList();
-        }
+        { return this.context.Chat.ToList(); }
         catch
         { return null; }
     }

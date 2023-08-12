@@ -21,7 +21,6 @@ public class User
             && this.Nickname == user.Nickname
             && this.EncryptedPassword == user.EncryptedPassword
             && this.IpAddress == user.IpAddress
-            //&& this.Port == user.Port
             && this.ProfilePhoto.SequenceEqual(user.ProfilePhoto);
     }
 }
