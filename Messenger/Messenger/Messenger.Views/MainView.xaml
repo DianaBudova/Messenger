@@ -9,7 +9,7 @@
         Title="Messenger" Height="450" Width="800"
         WindowStartupLocation="CenterScreen"
         Icon="Resources/Images/Send_White.png">
-    
+
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -124,9 +124,10 @@
                 </Grid.RowDefinitions>
 
                 <ListView Grid.Row="0"
-                     BorderThickness="1"
-                     Margin="5"
-                     x:Name="listViewMessagesInChat">
+                          BorderThickness="1"
+                          Margin="5"
+                          x:Name="listViewMessagesInChat"
+                          MouseDoubleClick="listViewMessagesInChat_MouseDoubleClick">
                     <ListView.View>
                         <GridView>
                             <GridViewColumn Header="From" Width="150">

@@ -4,8 +4,14 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using Microsoft.Win32;
 using System;
-using System.IO;
 using Messenger.ViewModels;
+using Messenger.Models.Application;
+using Messenger.Common;
+using Newtonsoft.Json.Linq;
+using System.Text;
+using Microsoft.IdentityModel.Tokens;
+using System.Linq;
+using System.IO;
 
 namespace Messenger.Views
 {
@@ -112,7 +118,7 @@ namespace Messenger.Views
             fileDialog.Filter = "Image Files|*.jpg;*.jpeg;*.png;";
             if (fileDialog.ShowDialog() != true)
                 return null;
-            return File.ReadAllBytes(fileDialog.FileName);
+            return System.IO.File.ReadAllBytes(fileDialog.FileName);
         }
 
         private void ViewModel_MessageSendCompleted() =>
@@ -135,6 +141,34 @@ namespace Messenger.Views
         {
             this.viewModel.DisconnectFromServer();
             this.Dispatcher.Invoke(this.Close);
+        }
+
+        private void listViewMessagesInChat_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (sender is ListView listView)
+            {
+                object selectedItem = listView.SelectedItem;
+                if (selectedItem is Chat message)
+                {
+                    if (message.MessageType == MessageType.File)
+                    {
+                        string fileAsJson = Encoding.UTF8.GetString(message.Message);
+                        byte[]? content = JObject.Parse(fileAsJson)["Content"]?.ToObject<byte[]>();
+                        if (content.IsNullOrEmpty())
+                            return;
+                        string? path = JObject.Parse(fileAsJson)["Path"]?.ToString();
+                        if (path.IsNullOrEmpty())
+                            return;
+                        string? fileName = Path.GetFileName(path);
+                        if (fileName.IsNullOrEmpty())
+                            return;
+                        string downloadsPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Downloads" + $"\\{fileName}";
+                        System.IO.File.WriteAllBytes(downloadsPath, content!);
+                        MessageBox.Show("File from message successfully saved!", "File saved",
+                            MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
+                }
+            }
         }
     }
 }
