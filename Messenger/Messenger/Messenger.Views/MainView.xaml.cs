@@ -6,12 +6,12 @@ using Microsoft.Win32;
 using System;
 using Messenger.ViewModels;
 using Messenger.Models.Application;
-using Messenger.Common;
 using Newtonsoft.Json.Linq;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
-using System.Linq;
 using System.IO;
+using Messenger.BL;
+using System.Configuration;
 
 namespace Messenger.Views
 {
@@ -143,13 +143,18 @@ namespace Messenger.Views
             this.Dispatcher.Invoke(this.Close);
         }
 
-        private void listViewMessagesInChat_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void ListViewMessagesInChat_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             if (sender is ListView listView)
             {
                 object selectedItem = listView.SelectedItem;
                 if (selectedItem is Chat message)
                 {
+                    if (message.MessageType == MessageType.Audio)
+                    {
+                        VoiceRecorderAdapter voiceHelper = new();
+                        voiceHelper.PlayAudio(message.Message);
+                    }
                     if (message.MessageType == MessageType.File)
                     {
                         string fileAsJson = Encoding.UTF8.GetString(message.Message);
@@ -164,7 +169,7 @@ namespace Messenger.Views
                             return;
                         string downloadsPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Downloads" + $"\\{fileName}";
                         System.IO.File.WriteAllBytes(downloadsPath, content!);
-                        MessageBox.Show("File from message successfully saved!", "File saved",
+                        MessageBox.Show($"File from message successfully saved in this path \"{downloadsPath}\"!", "File saved",
                             MessageBoxButton.OK, MessageBoxImage.Information);
                     }
                 }

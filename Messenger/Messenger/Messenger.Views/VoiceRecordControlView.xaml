@@ -32,7 +32,6 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
                     <ColumnDefinition/>
-                    <ColumnDefinition/>
                     <ColumnDefinition Width="2*"/>
                 </Grid.ColumnDefinitions>
 
@@ -47,16 +46,6 @@
                 </Button>
 
                 <Button Grid.Column="1"
-                    Name="buttonPauseRecordingVoice"
-                    Style="{StaticResource Button}">
-                    <StackPanel>
-                        <Image Width="40"
-                           Height="40"
-                           Source="/Messenger.Views;component/Resources/Images/Pause.png"/>
-                    </StackPanel>
-                </Button>
-
-                <Button Grid.Column="2"
                     Name="buttonStopRecordingVoice"
                     Style="{StaticResource Button}">
                     <StackPanel>
@@ -66,10 +55,9 @@
                     </StackPanel>
                 </Button>
 
-                <Label Grid.Column="3"
-                   Style="{StaticResource Caption}">
-                    00:00:00
-                </Label>
+                <Image Grid.Column="2"
+                       Name="imageStatus"
+                       Height="45px"/>
             </Grid>
             <!--#endregion-->
 

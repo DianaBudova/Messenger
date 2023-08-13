@@ -127,7 +127,7 @@
                           BorderThickness="1"
                           Margin="5"
                           x:Name="listViewMessagesInChat"
-                          MouseDoubleClick="listViewMessagesInChat_MouseDoubleClick">
+                          MouseDoubleClick="ListViewMessagesInChat_MouseDoubleClick">
                     <ListView.View>
                         <GridView>
                             <GridViewColumn Header="From" Width="150">

@@ -14,6 +14,7 @@
     <None Remove="Resources\Images\Error.png" />
     <None Remove="Resources\Images\File.png" />
 	<None Remove="Resources\Images\GreenCircle.png" />
+	<None Remove="Resources\Images\GreyCircle.png" />
 	<None Remove="Resources\Images\Loupe.png" />
     <None Remove="Resources\Images\Microphone.png" />
     <None Remove="Resources\Images\Microphone2.png" />
@@ -49,6 +50,7 @@
     <Resource Include="Resources\Images\Error.png" />
     <Resource Include="Resources\Images\File.png" />
 	<Resource Include="Resources\Images\GreenCircle.png" />
+	<Resource Include="Resources\Images\GreyCircle.png" />
 	<Resource Include="Resources\Images\Loupe.png" />
     <Resource Include="Resources\Images\Microphone.png" />
     <Resource Include="Resources\Images\Microphone_White.png" />

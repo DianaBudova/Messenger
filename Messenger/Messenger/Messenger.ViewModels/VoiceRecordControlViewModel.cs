@@ -1,8 +1,6 @@
 ﻿using Messenger.BL;
 using System;
 using Messenger.Models.Application;
-using Newtonsoft.Json;
-using System.Text;
 
 namespace Messenger.ViewModels;
 
@@ -12,13 +10,22 @@ public class VoiceRecordControlViewModel : ViewModelBase
     public event Action? CompleteCancel;
 
     public CommandBase StartRecordingVoiceCommand { get; }
-    public CommandBase PauseRecordingVoiceCommand { get; }
     public CommandBase StopRecordingVoiceCommand { get; }
     public CommandBase StartListeningVoiceMessageCommand { get; }
     public CommandBase StopListeningVoiceMessageCommand { get; }
     public CommandBase ConfirmCommand { get; }
     public CommandBase CancelCommand { get; }
 
+    private bool isRecording;
+    public bool IsRecording
+    {
+        get => this.isRecording;
+        set
+        {
+            this.isRecording = value;
+            this.OnPropertyChanged();
+        }
+    }
     private byte[]? currentVoiceMessage;
     private readonly VoiceRecorderAdapter voiceRecorder;
 
@@ -26,7 +33,6 @@ public class VoiceRecordControlViewModel : ViewModelBase
     {
         #region Initialize Commands
         this.StartRecordingVoiceCommand = new(this.StartRecordingVoice);
-        this.PauseRecordingVoiceCommand = new(this.PauseRecordingVoice);
         this.StopRecordingVoiceCommand = new(this.StopRecordingVoice);
         this.StartListeningVoiceMessageCommand = new(this.StartListeningVoice);
         this.StopListeningVoiceMessageCommand = new(this.StopListeningVoice);
@@ -40,16 +46,19 @@ public class VoiceRecordControlViewModel : ViewModelBase
     private void StartRecordingVoice(object? obj)
     {
         if (this.voiceRecorder.CanStartRecording())
+        {
+            this.IsRecording = true;
             this.voiceRecorder.StartRecording();
+        }
     }
-
-    private void PauseRecordingVoice(object? obj)
-    { }
 
     private void StopRecordingVoice(object? obj)
     {
         if (this.voiceRecorder.CanStopRecording())
+        {
+            this.IsRecording = false;
             this.currentVoiceMessage = this.voiceRecorder.StopRecording();
+        }
     }
 
     private void StartListeningVoice(object? obj)
@@ -68,7 +77,7 @@ public class VoiceRecordControlViewModel : ViewModelBase
             return;
         MultimediaMessage message = new()
         {
-            Content = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(this.currentVoiceMessage)),
+            Content = this.currentVoiceMessage,
             Type = MultimediaMessageType.Audio,
         };
         this.CompleteConfirm?.Invoke(message);
