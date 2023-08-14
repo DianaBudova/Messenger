@@ -2,9 +2,9 @@
 
 namespace Messenger.Common;
 
-public static class CharSetForAudioMessage
+public static class AudioHelper
 {
-    public static readonly char[] Characters = {
+    public static readonly char[] CharSet = {
         '⠀', '⠁', '⠂', '⠃', '⠄', '⠅', '⠆', '⠇', 
         '⡀', '⡁', '⡂', '⡃', '⡄', '⡅', '⡆', '⡇',
         '⠈', '⠉', '⠊', '⠋', '⠌', '⠍', '⠎', '⠏',
@@ -39,8 +39,9 @@ public static class CharSetForAudioMessage
         if (minChars >= maxChars)
             return string.Empty;
         StringBuilder resultString = new();
+        int charSetLength = AudioHelper.CharSet.Count() - 1;
         for (uint i = minChars; i < maxChars; i++)
-            resultString.Append(CharSetForAudioMessage.Characters[Random.Shared.Next(0, CharSetForAudioMessage.Characters.Count() - 1)]);
+            resultString.Append(AudioHelper.CharSet[Random.Shared.Next(0, charSetLength)]);
         return resultString.ToString();
     }
 }

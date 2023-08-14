@@ -1,6 +1,6 @@
 ﻿namespace Messenger.Common;
 
-public static class RegisteredPortExtensions
+public static class PortHelper
 {
     public static readonly int MinPort = 1024;
     public static readonly int MaxPort = 65535;

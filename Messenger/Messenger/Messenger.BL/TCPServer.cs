@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Net.Sockets;
 using System.Text.Json;
+using Messenger.Common;
 using Messenger.Models.DB;
 using Messenger.Repositories;
 using Messenger.Repositories.Interfaces;
@@ -19,8 +20,7 @@ public class TCPServer
     private bool isStarted;
     public bool IsStarted
     {
-        get
-        { return this.isStarted; }
+        get => this.isStarted;
         private set
         {
             this.isStarted = value;
@@ -67,10 +67,7 @@ public class TCPServer
 
     public void SendMessage(TcpClient tcpClient, Models.Application.Message message)
     {
-        if (message.Sender is null
-            || message.Recipient is null
-            || message.Content is null
-            || message.Content.Length <= 0
+        if (!message.IsValid()
             || message.Type == Models.Application.MessageType.EndOfLine)
             return;
         byte[] data = JsonSerializer.SerializeToUtf8Bytes(message);
@@ -81,9 +78,9 @@ public class TCPServer
                 tcpClient.GetStream().Write(data, 0, data.Length);
                 Chat chat = new()
                 {
-                    SenderId = RepositoryFactory.GetUserRepository().GetByNickname(message.Sender.Nickname)!.Id,
-                    RecipientId = RepositoryFactory.GetUserRepository().GetByNickname(message.Recipient.Nickname)!.Id,
-                    Message = message.Content,
+                    SenderId = RepositoryFactory.GetUserRepository().GetByNickname(message.Sender!.Nickname)!.Id,
+                    RecipientId = RepositoryFactory.GetUserRepository().GetByNickname(message.Recipient!.Nickname)!.Id,
+                    Message = message.Content!,
                     MessageType = message.Type,
                     DateTime = message.DateTime,
                 };
@@ -111,20 +108,17 @@ public class TCPServer
     private void Server_DataReceived(object? sender, Message e)
     {
         byte[] receivedData = e.Data.ToArray();
-        Models.Application.Message receivedMessage = JsonSerializer.Deserialize<Models.Application.Message>(receivedData);
-        if (receivedMessage.Sender is null
-            || receivedMessage.Recipient is null
-            || receivedMessage.Content is null 
-            || receivedMessage.Content.Length <= 0
+        var receivedMessage = JsonSerializer.Deserialize<Models.Application.Message>(receivedData);
+        if (!receivedMessage.IsValid()
             || receivedMessage.Type == Models.Application.MessageType.EndOfLine)
             return;
         this.Messages.Add(receivedMessage);
         this.MessageReceived?.Invoke(receivedMessage);
         Chat chat = new()
         {
-            SenderId = RepositoryFactory.GetUserRepository().GetByNickname(receivedMessage.Sender.Nickname)!.Id,
-            RecipientId = RepositoryFactory.GetUserRepository().GetByNickname(receivedMessage.Recipient.Nickname)!.Id,
-            Message = receivedMessage.Content,
+            SenderId = RepositoryFactory.GetUserRepository().GetByNickname(receivedMessage.Sender!.Nickname)!.Id,
+            RecipientId = RepositoryFactory.GetUserRepository().GetByNickname(receivedMessage.Recipient!.Nickname)!.Id,
+            Message = receivedMessage.Content!,
             MessageType = receivedMessage.Type,
             DateTime = receivedMessage.DateTime,
         };

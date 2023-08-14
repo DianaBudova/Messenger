@@ -214,7 +214,7 @@ public class MainViewModel : ViewModelBase
             if (client is null)
                 throw new ArgumentNullException(nameof(client));
             int port = ((IPEndPoint)client.Client.LocalEndPoint!).Port;
-            if (!RegisteredPortExtensions.IsPortAppropriate(port))
+            if (!PortHelper.IsPortAppropriate(port))
                 throw new ArgumentNullException(nameof(port));
             User? existedUser = RepositoryFactory.GetUserRepository().GetByNickname(this.SignedUser.Nickname);
             if (existedUser is null)

@@ -11,7 +11,6 @@ using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using System.IO;
 using Messenger.BL;
-using System.Configuration;
 
 namespace Messenger.Views
 {

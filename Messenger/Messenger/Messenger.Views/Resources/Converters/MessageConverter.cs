@@ -12,7 +12,7 @@ namespace Messenger.Views.Resources.Converters;
 public class MessageConverter : IMultiValueConverter
 {
     private const uint minCharsForAudioMessage = 10;
-    private const uint maxCharsForAudioMessage = 20;
+    private const uint maxCharsForAudioMessage = 30;
 
     public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
     {
@@ -32,8 +32,8 @@ public class MessageConverter : IMultiValueConverter
                     string fileName = Path.GetFileName(filePath);
                     return fileName;
                 case MessageType.Audio:
-                    //return CharSetForAudioMessage.BuildString(MessageConverter.minCharsForAudioMessage, MessageConverter.maxCharsForAudioMessage);
-                    return "⠙⣅⠯⣄⠸⢵⡽⣴⠃⠣⣔⡞⢋⡆⢪⣹⡀";
+                    return AudioHelper.BuildString(MessageConverter.minCharsForAudioMessage, MessageConverter.maxCharsForAudioMessage);
+                    //return "⠙⣅⠯⣄⠸⢵⡽⣴⠃⠣⣔⡞⢋⡆⢪⣹⡀";
                 default:
                     return "Unknown Message";
             }

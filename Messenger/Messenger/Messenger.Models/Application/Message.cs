@@ -1,4 +1,5 @@
 ﻿using Messenger.Models.DB;
+using System.Runtime.CompilerServices;
 
 namespace Messenger.Models.Application;
 
