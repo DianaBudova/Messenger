@@ -20,7 +20,7 @@ namespace Messenger.Views
         {
             InitializeComponent();
 
-            viewModel = new();
+            this.viewModel = new();
             this.DataContext = viewModel;
 
             #region ViewModel Events

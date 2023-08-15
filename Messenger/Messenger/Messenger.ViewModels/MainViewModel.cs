@@ -77,13 +77,13 @@ public class MainViewModel : ViewModelBase
             this.OnPropertyChanged();
         }
     }
-    private MultimediaMessage? messageToSend;
+    private MultimediaMessage? multimediaMessage;
     public MultimediaMessage? MultimediaMessage
     {
-        get => this.messageToSend;
+        get => this.multimediaMessage;
         set
         {
-            this.messageToSend = value;
+            this.multimediaMessage = value;
             this.OnPropertyChanged();
         }
     }
