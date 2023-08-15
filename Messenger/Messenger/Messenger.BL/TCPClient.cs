@@ -7,11 +7,9 @@ namespace Messenger.BL;
 
 public class TCPClient
 {
-    public delegate void ClientDisconnectedHandler();
-    public event ClientDisconnectedHandler? ClientDisconnected;
+    public event Action? ClientDisconnected;
     public event Action<Models.Application.Message>? MessageReceived;
-    private readonly IPEndPoint ep;
-    private readonly SimpleTcpClient client;
+
     public bool IsConnected
     {
         get
@@ -37,6 +35,8 @@ public class TCPClient
             { return false; }
         }
     }
+    private readonly IPEndPoint ep;
+    private readonly SimpleTcpClient client;
 
     public TCPClient(IPEndPoint ep)
     {
@@ -49,8 +49,8 @@ public class TCPClient
     {
         if (this.IsConnected)
             return null;
-        return (this.client.Connect(ep.Address.ToString(), ep.Port).TcpClient ??
-            throw new SocketException());
+        return this.client.Connect(ep.Address.ToString(), ep.Port).TcpClient ??
+            throw new SocketException();
     }
 
     public void Disconnect()
@@ -59,7 +59,7 @@ public class TCPClient
             this.client.Disconnect();
     }
 
-    private void Events_DataReceived(object? sender, SimpleTCP.Message e)
+    private void Events_DataReceived(object? sender, Message e)
     {
         byte[] receivedData = e.Data.ToArray();
         Models.Application.Message receivedMessage = JsonSerializer.Deserialize<Models.Application.Message>(receivedData);
@@ -71,11 +71,11 @@ public class TCPClient
         try
         {
             if (!this.IsConnected)
-                throw new Exception();
+                throw new InvalidOperationException("Client is not connected.");
             byte[] data = JsonSerializer.SerializeToUtf8Bytes(message);
             this.client.Write(data);
         }
         catch (Exception ex)
-        { throw ex; }
+        { throw new Exception("Failed to send message.", ex); }
     }
 }

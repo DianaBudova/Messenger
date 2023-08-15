@@ -5,7 +5,6 @@ using Messenger.Common;
 using Messenger.Models.DB;
 using Messenger.Repositories;
 using Messenger.Repositories.Interfaces;
-using Microsoft.IdentityModel.Tokens;
 using SimpleTCP;
 
 namespace Messenger.BL;
@@ -15,8 +14,7 @@ public class TCPServer
     public event Action? ClientsChanged;
     public event Action<bool>? StateChanged;
     public event Action<Models.Application.Message>? MessageReceived;
-    private readonly SimpleTcpServer server;
-    private readonly IPEndPoint ep;
+
     private bool isStarted;
     public bool IsStarted
     {
@@ -29,6 +27,8 @@ public class TCPServer
     }
     public List<TcpClient> Clients { get; private set; }
     public List<Models.Application.Message> Messages { get; private set; }
+    private readonly SimpleTcpServer server;
+    private readonly IPEndPoint ep;
 
     public TCPServer(IPEndPoint ep)
     {

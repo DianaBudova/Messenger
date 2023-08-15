@@ -1,4 +1,5 @@
-﻿using NAudio.Wave;
+﻿using Microsoft.IdentityModel.Tokens;
+using NAudio.Wave;
 
 namespace Messenger.BL;
 
@@ -11,12 +12,11 @@ internal class VoiceRecorder
 
     public void StartRecording()
     {
-        this.audioMemoryStream = new MemoryStream();
-        this.bufferedWaveProvider = new BufferedWaveProvider(new WaveFormat(44100, 1));
-
-        this.waveIn = new WaveInEvent();
+        this.audioMemoryStream = new();
+        this.bufferedWaveProvider = new(new(44100, 1));
+        this.waveIn = new();
         this.waveIn.DataAvailable += WaveIn_DataAvailable;
-        this.waveIn.WaveFormat = new WaveFormat(44100, 1);
+        this.waveIn.WaveFormat = new(44100, 1);
         this.waveIn.StartRecording();
     }
 
@@ -25,7 +25,7 @@ internal class VoiceRecorder
         this.waveIn?.StopRecording();
         this.waveIn?.Dispose();
 
-        byte[] audioData = this.audioMemoryStream?.ToArray() ?? new byte[0];
+        byte[] audioData = this.audioMemoryStream?.ToArray() ?? Array.Empty<byte>();
 
         this.audioMemoryStream?.Dispose();
         this.bufferedWaveProvider = null;
@@ -35,25 +35,20 @@ internal class VoiceRecorder
 
     public void PlayAudio(byte[]? audio)
     {
-        if (audio is null)
+        if (audio.IsNullOrEmpty())
             return;
+        this.audioMemoryStream = new(audio!);
+        this.bufferedWaveProvider = new(new(44100, 1));
+        this.bufferedWaveProvider.AddSamples(audio, 0, audio!.Length);
 
-        this.audioMemoryStream = new MemoryStream(audio);
-        this.bufferedWaveProvider = new BufferedWaveProvider(new WaveFormat(44100, 1));
-        this.bufferedWaveProvider.AddSamples(audio, 0, audio.Length);
-
-        this.waveOut = new WaveOutEvent();
+        this.waveOut = new();
         this.waveOut.Init(this.bufferedWaveProvider);
         this.waveOut.Play();
     }
 
-    public void StopPlayingAudio()
-    {
+    public void StopPlayingAudio() =>
         this.waveOut?.Stop();
-    }
 
-    private void WaveIn_DataAvailable(object sender, WaveInEventArgs e)
-    {
+    private void WaveIn_DataAvailable(object? sender, WaveInEventArgs e) =>
         this.audioMemoryStream?.Write(e.Buffer, 0, e.BytesRecorded);
-    }
 }

@@ -25,15 +25,11 @@ public class VoiceRecorderAdapter
         return this.recorder.StopRecording();
     }
 
-    public void PlayAudio(byte[] audio)
-    {
+    public void PlayAudio(byte[] audio) =>
         this.recorder.PlayAudio(audio);
-    }
 
-    public void StopPlayingAudio()
-    {
+    public void StopPlayingAudio() =>
         this.recorder.StopPlayingAudio();
-    }
 
     public bool CanStartRecording()
     {
