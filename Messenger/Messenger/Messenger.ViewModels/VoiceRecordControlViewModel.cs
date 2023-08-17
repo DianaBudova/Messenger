@@ -11,8 +11,8 @@ public class VoiceRecordControlViewModel : ViewModelBase
 
     public CommandBase StartRecordingVoiceCommand { get; }
     public CommandBase StopRecordingVoiceCommand { get; }
-    public CommandBase StartListeningVoiceMessageCommand { get; }
-    public CommandBase StopListeningVoiceMessageCommand { get; }
+    public CommandBase StartListeningVoiceCommand { get; }
+    public CommandBase StopListeningVoiceCommand { get; }
     public CommandBase ConfirmCommand { get; }
     public CommandBase CancelCommand { get; }
 
@@ -34,8 +34,8 @@ public class VoiceRecordControlViewModel : ViewModelBase
         #region Initialize Commands
         this.StartRecordingVoiceCommand = new(this.StartRecordingVoice);
         this.StopRecordingVoiceCommand = new(this.StopRecordingVoice);
-        this.StartListeningVoiceMessageCommand = new(this.StartListeningVoice);
-        this.StopListeningVoiceMessageCommand = new(this.StopListeningVoice);
+        this.StartListeningVoiceCommand = new(this.StartListeningVoice);
+        this.StopListeningVoiceCommand = new(this.StopListeningVoice);
         this.ConfirmCommand = new(this.Confirm);
         this.CancelCommand = new(this.Cancel);
         #endregion

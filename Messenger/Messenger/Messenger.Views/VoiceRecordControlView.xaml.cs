@@ -60,8 +60,8 @@ namespace Messenger.Views
             #region ViewModel Commands
             this.buttonStartRecordingVoice.Command = viewModel.StartRecordingVoiceCommand;
             this.buttonStopRecordingVoice.Command = viewModel.StopRecordingVoiceCommand;
-            this.buttonStartListeningVoiceMessage.Command = viewModel.StartListeningVoiceMessageCommand;
-            this.buttonStopListeningVoiceMessage.Command= viewModel.StopListeningVoiceMessageCommand;
+            this.buttonStartListeningVoiceMessage.Command = viewModel.StartListeningVoiceCommand;
+            this.buttonStopListeningVoiceMessage.Command= viewModel.StopListeningVoiceCommand;
             this.buttonConfirm.Command = viewModel.ConfirmCommand;
             this.buttonCancel.Command = viewModel.CancelCommand;
             #endregion
